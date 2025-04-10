@@ -18,10 +18,30 @@ const Regex Shader::COMMENT_MULTI_LINE_REGEX("/\\*[\\s\\S]*?\\*/");
 const Regex Shader::MULTIPLE_BLANK_LINE_REGEX("\\n\\s*\\n\\s*\\n+");
 
 ///////////////////////////////////////////////////////////////////////////////
-Shader::Shader(const Path& vertexShaderPath, const Path& fragmentShaderPath)
+Shader::Shader(
+    const Path& vertexShaderPath,
+    const Path& fragmentShaderPath,
+    const String& definitions
+)
 {
     String vertexSource = ParseFromFile(vertexShaderPath);
     String fragmentSource = ParseFromFile(fragmentShaderPath);
+
+    if (!definitions.empty())
+    {
+        Uint64 idx = fragmentSource.find("#version");
+
+        if (idx != String::npos)
+        {
+            idx = fragmentSource.find("\n", idx);
+        }
+        else
+        {
+            idx = 0;
+        }
+
+        fragmentSource.insert(idx + 1, definitions);
+    }
 
     mVertexObject = Compile(vertexSource, GL_VERTEX_SHADER);
     mFragmentObject = Compile(fragmentSource, GL_FRAGMENT_SHADER);
@@ -248,6 +268,12 @@ void Shader::Use(void)
 void Shader::StopUsing(void)
 {
     glUseProgram(0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+GLuint Shader::GetProgram(void) const
+{
+    return (mProgram);
 }
 
 } // namespace Ray
