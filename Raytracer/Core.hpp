@@ -7,5 +7,4 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Core/Application.hpp"
-#include "Core/Event.hpp"
 #include "Core/Window.hpp"
