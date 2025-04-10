@@ -10,7 +10,9 @@
 #include "Maths.hpp"
 #include "Scene/Material.hpp"
 #include "Scene/Light.hpp"
+#include "Resources/Texture.hpp"
 #include "Utils/OpenGL.hpp"
+#include "Renderer/Renderer.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -28,12 +30,14 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     //
     ///////////////////////////////////////////////////////////////////////////
-    Vector<Material> mMaterials;        //<!
-    Vector<Light> mLights;              //<!
-    Vector<Index> mVertexIndices;       //<!
-    Vector<Vec4f> mVerticesUVX;         //<!
-    Vector<Vec4f> mNormalsUVY;          //<!
-    Vector<Mat4x4f> mTransforms;        //<!
+    Vector<Material> mMaterials;                //<!
+    Vector<Light> mLights;                      //<!
+    Vector<Index> mVertexIndices;               //<!
+    Vector<Vec4f> mVerticesUVX;                 //<!
+    Vector<Vec4f> mNormalsUVY;                  //<!
+    Vector<Mat4x4f> mTransforms;                //<!
+    Vector<UniquePtr<Texture>> mTextures;       //<!
+    Vector<Byte> mTextureMapsArray;             //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////
@@ -69,7 +73,8 @@ public:
     ///
     ///////////////////////////////////////////////////////////////////////////
     void CreateVerticesBuffer(
-        GLuint* verticesBuffer, GLuint* verticesTexture
+        GLuint* verticesBuffer,
+        GLuint* verticesTexture
     ) const;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -79,7 +84,8 @@ public:
     ///
     ///////////////////////////////////////////////////////////////////////////
     void CreateNormalsBuffer(
-        GLuint* normalsBuffer, GLuint* normalsTexture
+        GLuint* normalsBuffer,
+        GLuint* normalsTexture
     ) const;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -89,6 +95,17 @@ public:
     ///
     ///////////////////////////////////////////////////////////////////////////
     void CreateLightsTexture(GLuint* lightsTexture) const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    /// \param textureMapsArrayTexture
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void CreateTextureMapsArrayTexture(
+        GLuint* textureMapsArrayTexture,
+        const Renderer::Options& options
+    ) const;
 };
 
 } // namespace Ray

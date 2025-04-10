@@ -2,6 +2,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Renderer/Scene.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Maths/Vec4.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -109,6 +110,30 @@ void Scene::CreateLightsTexture(GLuint* lightsTexture) const
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Scene::CreateTextureMapsArrayTexture(
+    GLuint* textureMapsArrayTexture,
+    const Renderer::Options& options
+) const
+{
+    if (mTextures.empty())
+    {
+        return;
+    }
+
+    glGenTextures(1, textureMapsArrayTexture);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, *textureMapsArrayTexture);
+    glTexImage3D(
+        GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8,
+        options.textureArrayWidth, options.textureArrayHeight,
+        mTextures.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+        &mTextureMapsArray[0]
+    );
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
 
 } // namespace Ray
