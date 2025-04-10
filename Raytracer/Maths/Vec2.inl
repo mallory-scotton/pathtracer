@@ -49,4 +49,12 @@ Vec2<T>::operator sf::Vector2<T>(void) const
     return (sf::Vector2(x, y));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Vec2<T>& vec)
+{
+    os << '(' << vec.x << ", " << vec.y << ')';
+    return (os);
+}
+
 } // namespace Ray
