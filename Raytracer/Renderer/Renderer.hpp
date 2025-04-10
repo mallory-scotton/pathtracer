@@ -8,6 +8,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Config.hpp"
 #include "Renderer/Scene.hpp"
+#include "Resources/Shader.hpp"
+#include "Renderer/Quad.hpp"
 #include "Utils/OpenGL.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,33 +28,39 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     //
     ///////////////////////////////////////////////////////////////////////////
-    GLuint mBVHBuffer{0};                   //<!
-    GLuint mBVHTexture{0};                  //<!
-    GLuint mVertexIndicesBuffer{0};         //<!
-    GLuint mVertexIndicesTexture{0};        //<!
-    GLuint mVerticesBuffer{0};              //<!
-    GLuint mVerticesTexture{0};             //<!
-    GLuint mNormalsBuffer{0};               //<!
-    GLuint mNormalsTexture{0};              //<!
-    GLuint mMaterialsTexture{0};            //<!
-    GLuint mTransformsTexture{0};           //<!
-    GLuint mLightsTexture{0};               //<!
-    GLuint mTextureMapsArrayTexture{0};     //<!
-    GLuint mEnvMapTexture{0};               //<!
-    GLuint mEnvMapCDFTexture{0};            //<!
+    GLuint mBVHBuffer{0};                       //<!
+    GLuint mBVHTexture{0};                      //<!
+    GLuint mVertexIndicesBuffer{0};             //<!
+    GLuint mVertexIndicesTexture{0};            //<!
+    GLuint mVerticesBuffer{0};                  //<!
+    GLuint mVerticesTexture{0};                 //<!
+    GLuint mNormalsBuffer{0};                   //<!
+    GLuint mNormalsTexture{0};                  //<!
+    GLuint mMaterialsTexture{0};                //<!
+    GLuint mTransformsTexture{0};               //<!
+    GLuint mLightsTexture{0};                   //<!
+    GLuint mTextureMapsArrayTexture{0};         //<!
+    GLuint mEnvMapTexture{0};                   //<!
+    GLuint mEnvMapCDFTexture{0};                //<!
 
-    GLuint mPathTraceFBO{0};                //<!
-    GLuint mPathTraceFBOLowRes{0};          //<!
-    GLuint mAccumulationFBO{0};             //<!
-    GLuint mOutputFBO{0};                   //<!
+    GLuint mPathTraceFBO{0};                    //<!
+    GLuint mPathTraceFBOLowRes{0};              //<!
+    GLuint mAccumulationFBO{0};                 //<!
+    GLuint mOutputFBO{0};                       //<!
 
-    GLuint mPathTraceTextureLowRes{0};      //<!
-    GLuint mPathTraceTexture{0};            //<!
-    GLuint mAccumulationTexture{0};         //<!
-    GLuint mTileOutputTexture[2]{0};        //<!
-    GLuint mDenoisedTexture{0};             //<!
+    GLuint mPathTraceTextureLowRes{0};          //<!
+    GLuint mPathTraceTexture{0};                //<!
+    GLuint mAccumulationTexture{0};             //<!
+    GLuint mTileOutputTexture[2]{0};            //<!
+    GLuint mDenoisedTexture{0};                 //<!
 
-    SharedPtr<Scene> mScene;                //<!
+    SharedPtr<Scene> mScene;                    //<!
+
+    Quad mQuad;                                 //<!
+    UniquePtr<Shader> mPathTraceShader;         //<!
+    UniquePtr<Shader> mPathTraceShaderLowRes;   //<!
+    UniquePtr<Shader> mOutputShader;            //<!
+    UniquePtr<Shader> mTonemapShader;           //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////

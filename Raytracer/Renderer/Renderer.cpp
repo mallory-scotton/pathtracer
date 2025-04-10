@@ -46,6 +46,11 @@ Renderer::~Renderer()
     glDeleteFramebuffers(1, &mPathTraceFBOLowRes);
     glDeleteFramebuffers(1, &mAccumulationFBO);
     glDeleteFramebuffers(1, &mOutputFBO);
+
+    mPathTraceShader.reset();
+    mPathTraceShaderLowRes.reset();
+    mOutputShader.reset();
+    mTonemapShader.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
