@@ -24,6 +24,8 @@ Shader::Shader(
     const String& definitions
 )
 {
+    RAY_TRACE("Parsing shaders: " << fragmentShaderPath);
+
     String vertexSource = ParseFromFile(vertexShaderPath);
     String fragmentSource = ParseFromFile(fragmentShaderPath);
 
@@ -42,6 +44,8 @@ Shader::Shader(
 
         fragmentSource.insert(idx + 1, definitions);
     }
+
+    RAY_TRACE("Compiling shaders: " << fragmentShaderPath);
 
     mVertexObject = Compile(vertexSource, GL_VERTEX_SHADER);
     mFragmentObject = Compile(fragmentSource, GL_FRAGMENT_SHADER);
@@ -73,6 +77,8 @@ Shader::Shader(
         printf("Error %s\n", message.c_str());
         throw Exception(message.c_str());
     }
+
+    RAY_SUCCESS("Shader " << fragmentShaderPath << " compiled successfully");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -211,7 +217,7 @@ String Shader::RemoveComments(const String& content)
 
     while (std::regex_search(result, match, COMMENT_MULTI_LINE_REGEX))
     {
-        result.replace(match.position(), match.length() - 1, " ");
+        result.replace(match.position(), match.length(), " ");
     }
 
     while (std::regex_search(result, match, COMMENT_SINGLE_LINE_REGEX))
