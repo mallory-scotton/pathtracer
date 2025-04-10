@@ -2,6 +2,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Renderer/Renderer.hpp"
+#include "Renderer/Scene.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -147,7 +148,7 @@ void Renderer::InitGPUDataBuffers(void)
     mScene->CreateMaterialTexture(&mMaterialsTexture);
     mScene->CreateTransformsTexture(&mTransformsTexture);
     mScene->CreateLightsTexture(&mLightsTexture);
-    // TODO: Load Textures into the GPU buffers
+    mScene->CreateTextureMapsArrayTexture(&mTextureMapsArrayTexture, mOptions);
     // TODO: Load EnvMap into the GPU buffers
 
     glActiveTexture(GL_TEXTURE1);
