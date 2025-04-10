@@ -10,6 +10,86 @@ namespace Ray
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+String Renderer::Options::GetPathTraceShaderDefinitions(
+    const SharedPtr<Scene>& scene
+) const
+{
+    String defines;
+
+    if (enableEnvMap) // TODO: Check if the scene got env map
+    {
+        defines += "#define OPTION_ENVMAP\n";
+    }
+
+    if (enableRR)
+    {
+        defines += "#define OPTION_RR\n";
+        defines += "#define OPTION_RR_DEPTH " + std::to_string(RRDepth) + "\n";
+    }
+
+    if (enableUniformLight)
+    {
+        defines += "#define OPTION_UNIFORM_LIGHT\n";
+    }
+
+    if (openglNormalMap)
+    {
+        defines += "#define OPTION_OPENGL_NORMALMAP\n";
+    }
+
+    if (hideEmitters)
+    {
+        defines += "#define OPTION_HIDE_EMITTERS\n";
+    }
+
+    if (enableBackground)
+    {
+        defines += "#define OPTION_BACKGROUND\n";
+    }
+
+    if (transparentBackground)
+    {
+        defines += "#define OPTION_TRANSPARENT_BACKGROUND\n";
+    }
+
+    // TODO: Loop through each materials to see if one alpha is not in OPAQUE
+    // OPTION_ALPHA_TEST
+
+    if (enableRoughnessMollification)
+    {
+        defines += "#define OPTION_ROUGHNESS_MOLLIFICATION\n";
+    }
+
+    // TODO: Loop through each materials to see if one as a medium type
+    // OPTION_MEDIUM
+
+    if (enableVolumeMIS)
+    {
+        defines += "#define OPTION_VOL_MIS\n";
+    }
+
+    return (defines);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+String Renderer::Options::GetTonemapShaderDefinitions(void) const
+{
+    String defines;
+
+    if (enableBackground)
+    {
+        defines += "#define OPTION_BACKGROUND\n";
+    }
+
+    if (transparentBackground)
+    {
+        defines += "#define OPTION_TRANSPARENT_BACKGROUND\n";
+    }
+
+    return (defines);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 Renderer::Renderer(void)
 {
     InitGPUDataBuffers();
@@ -96,7 +176,36 @@ void Renderer::InitFBOs(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 void Renderer::InitShaders(void)
-{}
+{
+    static const String vertexShaderPath = "Raytracer/Shaders/Vertex.glsl";
+
+    String shaderDefinitions = mOptions.GetPathTraceShaderDefinitions(mScene);
+
+    mPathTraceShader.reset(new Shader(
+        vertexShaderPath,
+        "Raytracer/Shaders/Tile.glsl",
+        shaderDefinitions
+    ));
+
+    mPathTraceShaderLowRes.reset(new Shader(
+        vertexShaderPath,
+        "Raytracer/Shaders/Preview.glsl",
+        shaderDefinitions
+    ));
+
+    mOutputShader.reset(new Shader(
+        vertexShaderPath,
+        "Raytracer/Shaders/Output.glsl"
+    ));
+
+    mTonemapShader.reset(new Shader(
+        vertexShaderPath,
+        "Raytracer/Shaders/Tonemap.glsl",
+        mOptions.GetTonemapShaderDefinitions()
+    ));
+
+    // TODO: Setup the uniforms
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 void Renderer::Render(void)
@@ -106,6 +215,12 @@ void Renderer::Render(void)
 void Renderer::Update(float deltaSeconds)
 {
     RAY_UNUSED(deltaSeconds);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::ReloadShaders(void)
+{
+    InitShaders();
 }
 
 } // namespace Ray
