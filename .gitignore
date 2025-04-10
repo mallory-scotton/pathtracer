@@ -1,0 +1,9 @@
+*.o
+*.d
+*.ini
+*.log
+*.config
+.vscode/
+.idea/
+build/
+raytracer
