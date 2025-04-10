@@ -12,6 +12,40 @@ namespace Ray
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+bool Scene::IsUsingLights(void) const
+{
+    return (mLights.size() > 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+bool Scene::IsUsingAlphaTest(void) const
+{
+    for (const auto& material : mMaterials)
+    {
+        if (material.GetAlphaMode() != Material::AlphaMode::OPAQUE)
+        {
+            return (true);
+        }
+    }
+
+    return (false);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+bool Scene::IsUsingMedium(void) const
+{
+    for (const auto& material : mMaterials)
+    {
+        if (material.GetMediumType() != Material::MediumType::NONE)
+        {
+            return (true);
+        }
+    }
+
+    return (false);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void Scene::CreateMaterialTexture(GLuint* materialTexture) const
 {
     glGenTextures(1, materialTexture);
