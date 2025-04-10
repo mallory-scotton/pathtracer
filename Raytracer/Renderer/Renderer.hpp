@@ -24,6 +24,43 @@ namespace Ray
 ///////////////////////////////////////////////////////////////////////////////
 class Renderer
 {
+public:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    struct Options
+    {
+        Vec2i renderResolution{1280, 720};          //<!
+        Vec2i windowResolution{1280, 720};          //<!
+        Color uniformLightColor{.3f, .3f, .3f};     //<!
+        Color backgroundColor{1.f, 1.f, 1.f};       //<!
+        int tileWidth{100};                         //<!
+        int tileHeight{100};                        //<!
+        int maxDepth{2};                            //<!
+        int maxSPP{-1};                             //<!
+        int RRDepth{2};                             //<!
+        int textureArrayWidth{2048};                //<!
+        int textureArrayHeight{2048};               //<!
+        int denoiserFrameCount{20};                 //<!
+        bool enableRR{true};                        //<!
+        bool enableDenoiser{false};                 //<!
+        bool enableTonemap{true};                   //<!
+        bool enableAces{false};                     //<!
+        bool openglNormalMap{true};                 //<!
+        bool enableEnvMap{false};                   //<!
+        bool enableUniformLight{false};             //<!
+        bool hideEmitters{false};                   //<!
+        bool enableBackground{false};               //<!
+        bool transparentBackground{false};          //<!
+        bool independantRenderSize{false};          //<!
+        bool enableRoughnessMollification{false};   //<!
+        bool enableVolumeMIS{false};                //<!
+        float envMapIntensity{1.f};                 //<!
+        float envMapRot{0.f};                       //<!
+        float roughnessMollificationAmount{0.f};    //<!
+    };
+
 private:
     ///////////////////////////////////////////////////////////////////////////
     //
