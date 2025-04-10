@@ -29,6 +29,7 @@
 
 #define RAY_ERROR_SCENE_LOAD "Error: Failed to load scene: "
 #define RAY_ERROR_MISSING_TEXTURE "Error: Texture not found: "
+#define RAY_ERROR_FAILED_TEXTURE "Error: Failed to load texture"
 #define RAY_ERROR_MISSING_MODEL "Error: Model not found: "
 #define RAY_ERROR_MISSING_SHADER "Error: Shader not found: "
 #define RAY_ERROR_FAILED_OPEN_SHADER "Failed to open shader file: "
