@@ -139,7 +139,9 @@ void Renderer::InitGPUDataBuffers(void)
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
     // TODO: Load BVH into the GPU buffers
-    mScene->CreateVertexIndicesBuffer(&mVertexIndicesBuffer, &mVertexIndicesTexture);
+    mScene->CreateVertexIndicesBuffer(
+        &mVertexIndicesBuffer, &mVertexIndicesTexture
+    );
     mScene->CreateVerticesBuffer(&mVerticesBuffer, &mVerticesTexture);
     mScene->CreateNormalsBuffer(&mNormalsBuffer, &mNormalsTexture);
     mScene->CreateMaterialTexture(&mMaterialsTexture);
