@@ -22,6 +22,11 @@ String Renderer::Options::GetPathTraceShaderDefinitions(
         defines += "#define OPTION_ENVMAP\n";
     }
 
+    if (scene->IsUsingLights())
+    {
+        defines += "#define OPTION_LIGHTS\n";
+    }
+
     if (enableRR)
     {
         defines += "#define OPTION_RR\n";
@@ -53,16 +58,20 @@ String Renderer::Options::GetPathTraceShaderDefinitions(
         defines += "#define OPTION_TRANSPARENT_BACKGROUND\n";
     }
 
-    // TODO: Loop through each materials to see if one alpha is not in OPAQUE
-    // OPTION_ALPHA_TEST
+    if (scene->IsUsingAlphaTest())
+    {
+        defines += "#define OPTION_ALPHA_TEST\n";
+    }
 
     if (enableRoughnessMollification)
     {
         defines += "#define OPTION_ROUGHNESS_MOLLIFICATION\n";
     }
 
-    // TODO: Loop through each materials to see if one as a medium type
-    // OPTION_MEDIUM
+    if (scene->IsUsingMedium())
+    {
+        defines += "#define OPTION_MEDIUM\n";
+    }
 
     if (enableVolumeMIS)
     {
