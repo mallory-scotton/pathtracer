@@ -4,6 +4,7 @@
 #include "Config.hpp"
 #include "Core/Window.hpp"
 #include "Utils/Exception.hpp"
+#include "Utils/OpenGL.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #ifndef RAY_NO_IMGUI
