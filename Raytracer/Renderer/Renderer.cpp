@@ -353,7 +353,38 @@ void Renderer::InitShaders(void)
         mOptions.GetTonemapShaderDefinitions()
     ));
 
-    // TODO: Setup the uniforms
+    InitUniforms(mPathTraceShader);
+    InitUniforms(mPathTraceShaderLowRes);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::InitUniforms(UniquePtr<Shader>& shader)
+{
+    shader->Use();
+
+    if  (false) // TODO: Scene Env Map
+    {
+        // TODO: envMapRes
+        // TODO: envMapTotalSum
+    }
+
+    // TODO: Add BVH top index (topBVHIndex)
+    shader->Uniform("resolution", Vec2f(mRenderSize));
+    shader->Uniform("invNumTiles", mInvTileCount);
+    shader->Uniform("numOfLights", static_cast<int>(mScene->GetLightsCount()));
+    shader->Uniform("accumTexture", 0);
+    shader->Uniform("BVH", 1);
+    shader->Uniform("vertexIndicesTex", 2);
+    shader->Uniform("verticesTex", 3);
+    shader->Uniform("normalsTex", 4);
+    shader->Uniform("materialsTex", 5);
+    shader->Uniform("transformsTex", 6);
+    shader->Uniform("lightsTex", 7);
+    shader->Uniform("textureMapsArrayTex", 8);
+    shader->Uniform("envMapTex", 9);
+    shader->Uniform("envMapCDFTex", 10);
+
+    shader->StopUsing();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
