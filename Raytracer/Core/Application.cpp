@@ -27,6 +27,9 @@ Application::Application(const Vector<String>& args)
     {
         throw Exception("Failed to initialize GLEW");
     }
+
+    mScene.reset(new Scene());
+    mRenderer.reset(new Renderer(mScene));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,20 +41,12 @@ Application::~Application()
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Run(void)
 {
-    Shader shader(
-        "Raytracer/Shaders/Tests/Vertex.glsl",
-        "Raytracer/Shaders/Tests/Fragment.glsl"
-    );
-
-    Quad view;
-
     while (mWindow->IsOpen())
     {
         mWindow->Update();
 
-        shader.Use();
-        view.Draw();
-        shader.StopUsing();
+        mRenderer->Render();
+        mRenderer->DrawToScreen();
 
         mWindow->Display();
     }
