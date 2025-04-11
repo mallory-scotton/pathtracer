@@ -46,6 +46,12 @@ bool Scene::IsUsingMedium(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+Uint64 Scene::GetLightsCount(void) const
+{
+    return (mLights.size());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void Scene::CreateMaterialTexture(GLuint* materialTexture) const
 {
     glGenTextures(1, materialTexture);
