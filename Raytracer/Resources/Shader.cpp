@@ -282,4 +282,44 @@ GLuint Shader::GetProgram(void) const
     return (mProgram);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, int data)
+{
+    GLint location = glGetUniformLocation(mProgram, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform1i(location, data);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, float data)
+{
+    GLint location = glGetUniformLocation(mProgram, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform1f(location, data);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, const Vec2f& data)
+{
+    GLint location = glGetUniformLocation(mProgram, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform2f(location, data.x, data.y);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, const Vec2i& data)
+{
+    GLint location = glGetUniformLocation(mProgram, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform2i(location, data.x, data.y);
+    }
+}
+
 } // namespace Ray
