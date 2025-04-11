@@ -40,31 +40,31 @@
     #include <iostream>
     #define RAY_LOG(_MSG) std::cout \
         << "\033[90m ⛯ RAY \033[0m" \
-        << (_MSG) << std::endl
+        << _MSG << std::endl
     #define RAY_INFO(_MSG) std::cout \
         << "\033[90m ⛯ RAY \033[0m" \
         << "\033[46m 🛈 INFO     \033[0m \033[36m" \
-        << (_MSG) << "\033[0m" << std::endl
+        << _MSG << "\033[0m" << std::endl
     #define RAY_WARN(_MSG) std::cout \
         << "\033[90m ⛯ RAY \033[0m" \
         << "\033[43m ⚠ WARNING  \033[0m \033[33m" \
-        << (_MSG) << "\033[0m" << std::endl
+        << _MSG << "\033[0m" << std::endl
     #define RAY_ERROR(_MSG) std::cerr \
         << "\033[90m ⛯ RAY \033[0m" \
         << "\033[101m ✘ ERROR    \033[0m \033[91m" \
-        << (_MSG) << "\033[0m" << std::endl
+        << _MSG << "\033[0m" << std::endl
     #define RAY_FATAL(_MSG) std::cerr \
         << "\033[90m ⛯ RAY \033[0m" \
         << "\033[41m 🕱 FATAL    \033[0m \033[31m" \
-        << (_MSG) << "\033[0m" << std::endl
+        << _MSG << "\033[0m" << std::endl
     #define RAY_TRACE(_MSG) std::cout \
         << "\033[90m ⛯ RAY \033[0m" \
         << "\033[45m ᨀ TRACE    \033[0m \033[35m" \
-        << (_MSG) << "\033[0m" << std::endl
+        << _MSG << "\033[0m" << std::endl
     #define RAY_SUCCESS(_MSG) std::cout \
         << "\033[90m ⛯ RAY \033[0m" \
         << "\033[42m ✔ SUCCESS  \033[0m \033[32m" \
-        << (_MSG) << "\033[0m" << std::endl
+        << _MSG << "\033[0m" << std::endl
 #else
     #define RAY_LOG(_MSG)
     #define RAY_INFO(_MSG)
