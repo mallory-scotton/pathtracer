@@ -1,0 +1,14 @@
+Renderer
+{
+  resolution: 1280 720;
+  maxDepth: 3;
+  tileWidth: 256;
+  tileHeight: 144;
+}
+
+Camera
+{
+  position: -15.0 15.0 0.0;
+  lookAt: 0 0 0;
+  fov: 60;
+}
