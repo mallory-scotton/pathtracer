@@ -7,6 +7,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Maths/Vec3.hpp"
+#include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -37,5 +38,34 @@ Vec3<T>::Vec3(const T& x, const T& y, const T& z)
     , y(y)
     , z(z)
 {}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T> Vec3<T>::Cross(const Vec3<T>& a, const Vec3<T>& b)
+{
+    return (Vec3<T>(
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+T Vec3<T>::Length(const Vec3<T>& vec)
+{
+    return (std::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T> operator-(const Vec3<T>& lhs, const Vec3<T>& rhs)
+{
+    return (Vec3<T>(
+        lhs.x - rhs.x,
+        lhs.y - rhs.y,
+        lhs.z - rhs.z
+    ));
+}
 
 } // namespace Ray
