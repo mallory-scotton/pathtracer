@@ -59,12 +59,63 @@ T Vec3<T>::Length(const Vec3<T>& vec)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+Vec3<T> Vec3<T>::Normalize(const Vec3<T>& vec)
+{
+    float length = Vec3<T>::Length(vec);
+    return (Vec3<T>(
+        a.x / length,
+        a.y / length,
+        a.z / length
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+T Vec3<T>::Distance(const Vec3<T>& a, const Vec3<T>& b)
+{
+    return (Vec3<T>::Length(a - b));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 Vec3<T> operator-(const Vec3<T>& lhs, const Vec3<T>& rhs)
 {
     return (Vec3<T>(
         lhs.x - rhs.x,
         lhs.y - rhs.y,
         lhs.z - rhs.z
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T> operator+(const Vec3<T>& lhs, const Vec3<T>& rhs)
+{
+    return (Vec3<T>(
+        lhs.x + rhs.x,
+        lhs.y + rhs.y,
+        lhs.z + rhs.z
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T>& operator+=(Vec3<T>& lhs, const Vec3<T>& rhs)
+{
+    lhs.x += rhs.x;
+    lhs.y += rhs.y;
+    lhs.z += rhs.z;
+    return (lhs);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T> operator*(const Vec3<T>& lhs, T rhs)
+{
+    return (Vec3<T>(
+        lhs.x * rhs,
+        lhs.y * rhs,
+        lhs.z * rhs
     ));
 }
 
