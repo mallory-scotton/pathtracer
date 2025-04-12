@@ -31,10 +31,14 @@ String Scene::ReadFile(const Path& filePath) const
         throw Exception(RAY_ERROR_SCENE_LOAD + filePath.string());
     }
 
-    return (String(
+    String content = String(
         std::istreambuf_iterator<char>(file),
         std::istreambuf_iterator<char>()
-    ));
+    );
+
+    file.close();
+
+    return (content);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
