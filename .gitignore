@@ -8,3 +8,6 @@
 build/
 raytracer
 *.temp
+
+# TEMPORARY
+Shaders/
