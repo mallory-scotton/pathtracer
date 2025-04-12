@@ -41,6 +41,42 @@ Vec3<T>::Vec3(const T& x, const T& y, const T& z)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+Vec3<T> Vec3<T>::Min(const Vec3<T>& a, const Vec3<T>& b)
+{
+    return (Vec3<T>(
+        std::min(a.x, b.x),
+        std::min(a.y, b.y),
+        std::min(a.z, b.z)
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T> Vec3<T>::Min(const Vec3<T>& a, const Vec3<T>& b, const Vec3<T>& c)
+{
+    return (Min(Min(a, b), c));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T> Vec3<T>::Max(const Vec3<T>& a, const Vec3<T>& b)
+{
+    return (Vec3<T>(
+        std::max(a.x, b.x),
+        std::max(a.y, b.y),
+        std::max(a.z, b.z)
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T> Vec3<T>::Max(const Vec3<T>& a, const Vec3<T>& b, const Vec3<T>& c)
+{
+    return (Max(Max(a, b), c));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 Vec3<T> Vec3<T>::Cross(const Vec3<T>& a, const Vec3<T>& b)
 {
     return (Vec3<T>(
@@ -63,9 +99,9 @@ Vec3<T> Vec3<T>::Normalize(const Vec3<T>& vec)
 {
     float length = Vec3<T>::Length(vec);
     return (Vec3<T>(
-        a.x / length,
-        a.y / length,
-        a.z / length
+        vec.x / length,
+        vec.y / length,
+        vec.z / length
     ));
 }
 
