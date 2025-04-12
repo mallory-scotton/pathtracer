@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
-#include "Rays/BoundingBox.hpp"
+#include "Rays/BBox.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -10,55 +10,55 @@ namespace Ray
 {
 
 ///////////////////////////////////////////////////////////////////////////////
-BoundingBox::BoundingBox(void)
+BBox::BBox(void)
     : mMin(std::numeric_limits<float>::max())
     , mMax(std::numeric_limits<float>::max())
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
-BoundingBox::BoundingBox(const Vec3f& point)
+BBox::BBox(const Vec3f& point)
     : mMin(point)
     , mMax(point)
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
-BoundingBox::BoundingBox(const Vec3f& point1, const Vec3f& point2)
+BBox::BBox(const Vec3f& point1, const Vec3f& point2)
     : mMin(Vec3f::Min(point1, point2))
     , mMax(Vec3f::Max(point1, point2))
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
-const Vec3f& BoundingBox::operator[](Uint64 index) const
+const Vec3f& BBox::operator[](Uint64 index) const
 {
     return (*(&mMin + index));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-BoundingBox BoundingBox::Union(const BoundingBox& a, const BoundingBox& b)
+BBox BBox::Union(const BBox& a, const BBox& b)
 {
-    return (BoundingBox(
+    return (BBox(
         Vec3f::Min(a.mMin, b.mMin),
         Vec3f::Max(a.mMax, b.mMax)
     ));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-BoundingBox BoundingBox::Intersection(
-    const BoundingBox& a,
-    const BoundingBox& b
+BBox BBox::Intersection(
+    const BBox& a,
+    const BBox& b
 )
 {
-    return (BoundingBox(
+    return (BBox(
         Vec3f::Max(a.mMin, b.mMin),
         Vec3f::Min(a.mMax, b.mMax)
     ));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void BoundingBox::Intersection(
-    const BoundingBox& a,
-    const BoundingBox& b,
-    BoundingBox& destination
+void BBox::Intersection(
+    const BBox& a,
+    const BBox& b,
+    BBox& destination
 )
 {
     destination.mMin = Vec3f::Max(a.mMin, b.mMin);
@@ -66,7 +66,7 @@ void BoundingBox::Intersection(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-bool BoundingBox::Intersects(const BoundingBox& a, const BoundingBox& b)
+bool BBox::Intersects(const BBox& a, const BBox& b)
 {
     static const float BOUNDING_BOX_INTERSECTION_EPS = 0.f;
 
@@ -86,25 +86,25 @@ bool BoundingBox::Intersects(const BoundingBox& a, const BoundingBox& b)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-bool BoundingBox::Contains(const BoundingBox& a, const BoundingBox& b)
+bool BBox::Contains(const BBox& a, const BBox& b)
 {
     return (a.Contains(b));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-Vec3f BoundingBox::Center(void) const
+Vec3f BBox::Center(void) const
 {
     return ((mMax + mMin) * 0.5f);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-Vec3f BoundingBox::Extents(void) const
+Vec3f BBox::Extents(void) const
 {
     return (mMax - mMin);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-bool BoundingBox::Contains(const Vec3f& point) const
+bool BBox::Contains(const Vec3f& point) const
 {
     Vec3f radius = Extents() * .5f;
     Vec3f center = Center();
@@ -117,13 +117,13 @@ bool BoundingBox::Contains(const Vec3f& point) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-bool BoundingBox::Contains(const BoundingBox& box) const
+bool BBox::Contains(const BBox& box) const
 {
     return (Contains(box.mMin) && Contains(box.mMax));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int BoundingBox::MaxDimension(void) const
+int BBox::MaxDimension(void) const
 {
     Vec3f extents = Extents();
 
@@ -146,7 +146,7 @@ int BoundingBox::MaxDimension(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-float BoundingBox::SurfaceArea(void) const
+float BBox::SurfaceArea(void) const
 {
     Vec3f extents = Extents();
 
@@ -158,14 +158,14 @@ float BoundingBox::SurfaceArea(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void BoundingBox::Grow(const Vec3f& point)
+void BBox::Grow(const Vec3f& point)
 {
     mMin = Vec3f::Min(mMin, point);
     mMax = Vec3f::Max(mMax, point);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void BoundingBox::Grow(const BoundingBox& box)
+void BBox::Grow(const BBox& box)
 {
     mMin = Vec3f::Min(mMin, box.mMin);
     mMax = Vec3f::Max(mMax, box.mMax);
