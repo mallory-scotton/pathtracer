@@ -28,7 +28,7 @@ Application::Application(const Vector<String>& args)
         throw Exception("Failed to initialize GLEW");
     }
 
-    mScene.reset(new Scene());
+    mScene.reset(new Scene("Scenes/Hyperion.scene"));
     mRenderer.reset(new Renderer(mScene));
 }
 
