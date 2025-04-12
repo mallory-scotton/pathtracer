@@ -4,12 +4,152 @@
 #include "Renderer/Scene.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Maths/Vec4.hpp"
+#include "Utils/Exception.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
 ///////////////////////////////////////////////////////////////////////////////
 namespace Ray
 {
+
+///////////////////////////////////////////////////////////////////////////////
+Scene::Scene(const Path& filePath)
+{
+    if (!ParseSceneFile(filePath))
+    {
+        throw Exception(RAY_ERROR_SCENE_PARSE);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+String Scene::ReadFile(const Path& filePath) const
+{
+    IfStream file(filePath);
+
+    if (!file.is_open())
+    {
+        throw Exception(RAY_ERROR_SCENE_LOAD + filePath.string());
+    }
+
+    return (String(
+        std::istreambuf_iterator<char>(file),
+        std::istreambuf_iterator<char>()
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Vector<Scene::Object> Scene::ParseObjectsFromFile(const Path& filePath) const
+{
+    static const Regex objectExp(R"((\w+)\s*\{([^}]*)\})");
+    static const Regex propExp(R"((\w+)\s*:\s*([^;]+);)");
+    static const Map<String, Scene::Object::Type> objectTypes =
+    {
+        {"Renderer", Scene::Object::Type::RENDERER},
+        {"Camera", Scene::Object::Type::CAMERA},
+        {"Mesh", Scene::Object::Type::MESH},
+        {"Light", Scene::Object::Type::LIGHT},
+        {"Material", Scene::Object::Type::MATERIAL}
+    };
+
+    Vector<Scene::Object> objects;
+    String content = ReadFile(filePath);
+
+    auto objectBegin = std::sregex_iterator(
+        content.begin(), content.end(), objectExp
+    );
+    auto objectEnd = std::sregex_iterator();
+
+    for (std::sregex_iterator i = objectBegin; i != objectEnd; i++)
+    {
+        std::smatch match = *i;
+        Scene::Object object;
+
+        String type = match[1].str();
+        String body = match[2].str();
+
+        if (!objectTypes.count(type))
+        {
+            RAY_WARN("Unknown object types: \"" + type + "\"");
+            continue;
+        }
+
+        object.type = objectTypes.at(type);
+
+        auto propBegin = std::sregex_iterator(
+            body.begin(), body.end(), propExp
+        );
+        auto propEnd = std::sregex_iterator();
+
+        for (std::sregex_iterator j = propBegin; j != propEnd; j++)
+        {
+            std::smatch prop = *j;
+
+            String key = prop[1].str();
+            String valueStr = prop[2].str();
+
+            Vector<String> values;
+            std::istringstream iss(valueStr);
+            String value;
+
+            while (iss >> value)
+            {
+                values.push_back(value);
+            }
+
+            object.properties[key] = values;
+        }
+
+        objects.push_back(object);
+    }
+
+    return (objects);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+bool Scene::ParseSceneFile(const Path& filePath)
+{
+    Vector<Scene::Object> objects = ParseObjectsFromFile(filePath);
+
+    for (const auto& object : objects)
+    {
+        switch (object.type)
+        {
+            case Object::Type::CAMERA:
+                break; // TODO: Add Camera settings
+            case Object::Type::LIGHT:
+                mLights.push_back(Light(object.properties));
+                break;
+            case Object::Type::MATERIAL:
+                mMaterials.push_back(Material(object.properties, this));
+                break;
+            case Object::Type::MESH:
+                break; // TODO: Add mesh loading
+            case Object::Type::RENDERER:
+                break; // TODO: Add renderer settings
+            default:
+                break;
+        }
+    }
+
+    return (true);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Uint64 Scene::AddTexture(const Path& filePath)
+{
+    for (Uint64 i = 0; i < mTextures.size(); i++)
+    {
+        if (mTextures[i]->GetName() == filePath)
+        {
+            return (i);
+        }
+    }
+
+    RAY_TRACE("Loading texture " << filePath);
+    mTextures.push_back(std::make_unique<Texture>(filePath));
+
+    return (mTextures.size() - 1);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 bool Scene::IsUsingLights(void) const
