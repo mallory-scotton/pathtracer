@@ -80,4 +80,10 @@ bool Texture::LoadFromFile(const Path& filePath)
     return (true);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+String Texture::GetName(void) const
+{
+    return (mName);
+}
+
 } // namespace Ray
