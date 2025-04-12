@@ -98,8 +98,8 @@ Camera& Camera::operator=(const Camera& other)
     ptrdiff_t length =
         (unsigned char*)&mIsMoving -
         (unsigned char*)&mPosition.x;
-    mIsMoving = memcmp(&mPosition.x, &other.mPosition.x, 1) != 0;
-    memcpy(&mPosition.x, &other.mPosition.x, 1);
+    mIsMoving = memcmp(&mPosition.x, &other.mPosition.x, length) != 0;
+    memcpy(&mPosition.x, &other.mPosition.x, length);
     return (*this);
 }
 
