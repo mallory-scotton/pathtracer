@@ -13,6 +13,7 @@
 #include "Resources/Texture.hpp"
 #include "Utils/OpenGL.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Renderer/Camera.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -67,6 +68,7 @@ private:
     Vector<Mat4x4f> mTransforms;                //<!
     Vector<UniquePtr<Texture>> mTextures;       //<!
     Vector<Byte> mTextureMapsArray;             //<!
+    UniquePtr<Camera> mCamera;                  //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////

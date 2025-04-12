@@ -119,7 +119,7 @@ bool Scene::ParseSceneFile(const Path& filePath)
         switch (object.type)
         {
             case Object::Type::CAMERA:
-                break; // TODO: Add Camera settings
+                mCamera.reset(new Camera(object.properties)); break;
             case Object::Type::LIGHT:
                 mLights.push_back(Light(object.properties));
                 break;
