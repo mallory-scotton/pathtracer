@@ -12,6 +12,7 @@
 #include <map>
 #include <unordered_map>
 #include <set>
+#include <atomic>
 #include <unordered_set>
 #include <vector>
 #include <array>
