@@ -129,7 +129,8 @@ bool Scene::ParseSceneFile(const Path& filePath)
             case Object::Type::MESH:
                 break; // TODO: Add mesh loading
             case Object::Type::RENDERER:
-                break; // TODO: Add renderer settings
+                mOptions = Renderer::Options(object.properties);
+                break;
             default:
                 break;
         }

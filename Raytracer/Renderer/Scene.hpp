@@ -11,10 +11,11 @@
 #include "Scene/Material.hpp"
 #include "Scene/Light.hpp"
 #include "Resources/Texture.hpp"
+#include "Resources/Shader.hpp"
+#include "Resources/EnvMap.hpp"
 #include "Utils/OpenGL.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Camera.hpp"
-#include "Resources/Shader.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -70,6 +71,8 @@ private:
     Vector<UniquePtr<Texture>> mTextures;       //<!
     Vector<Byte> mTextureMapsArray;             //<!
     UniquePtr<Camera> mCamera;                  //<!
+    UniquePtr<EnvMap> mEnvMap;                  //<!
+    Renderer::Options mOptions;                 //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////
