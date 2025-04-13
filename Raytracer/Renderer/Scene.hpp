@@ -14,6 +14,7 @@
 #include "Utils/OpenGL.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Camera.hpp"
+#include "Resources/Shader.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -219,6 +220,14 @@ public:
         GLuint* textureMapsArrayTexture,
         const Renderer::Options& options
     ) const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    /// \param shader
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void UpdateUniforms(UniquePtr<Shader>& shader) const;
 };
 
 } // namespace Ray

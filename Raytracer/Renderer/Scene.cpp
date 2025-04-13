@@ -320,4 +320,13 @@ void Scene::CreateTextureMapsArrayTexture(
     glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+void Scene::UpdateUniforms(UniquePtr<Shader>& shader) const
+{
+    if (mCamera)
+    {
+        mCamera->UpdateUniforms(shader);
+    }
+}
+
 } // namespace Ray
