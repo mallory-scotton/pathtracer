@@ -171,4 +171,16 @@ void BBox::Grow(const BBox& box)
     mMax = Vec3f::Max(mMax, box.mMax);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+Vec3f BBox::GetMin(void) const
+{
+    return (mMin);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Vec3f BBox::GetMax(void) const
+{
+    return (mMax);
+}
+
 } // namespace Ray
