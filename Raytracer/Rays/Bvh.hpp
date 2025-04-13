@@ -26,7 +26,7 @@ private:
     /// \brief
     ///
     ///////////////////////////////////////////////////////////////////////////
-    class Node
+    struct Node
     {
     public:
         ///////////////////////////////////////////////////////////////////////
@@ -39,27 +39,54 @@ private:
             LEAF
         };
 
-    private:
+    public:
         ///////////////////////////////////////////////////////////////////////
         //
         ///////////////////////////////////////////////////////////////////////
-        BBox mBounds;               //<!
-        Type mType;                 //<!
-        int mIndex;                 //<!
+        BBox bounds;                //<!
+        Type type;                  //<!
+        int index;                  //<!
         union
         {
             struct
             {
-                Node* mLeft;        //<!
-                Node* mRight;       //<!
+                Node* left;         //<!
+                Node* right;        //<!
             };
 
             struct
             {
-                int mStartIndex;    //<!
-                int mNumPrims;      //<!
+                int startIndex;     //<!
+                int numPrims;       //<!
             };
         };
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    struct SplitRequest
+    {
+        int startIdx;               //<!
+        int numPrims;               //<!
+        Node** ptr;                 //<!
+        BBox bounds;                //<!
+        BBox centroidBounds;        //<!
+        int level;                  //<!
+        int index;                  //<!
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    struct SahSplit
+    {
+        int dimension;              //<!
+        float split;                //<!
+        float sah;                  //<!
+        float overlap;              //<!
     };
 
 private:
@@ -106,6 +133,57 @@ public:
     ///
     ///////////////////////////////////////////////////////////////////////////
     Bvh& operator=(const Bvh&) = delete;
+
+private:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    /// \return
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    Node* AllocateNode(void);
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    /// \param maxNum
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void InitNodeAllocator(Uint64 maxNum);
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    /// \param request
+    /// \param bounds
+    /// \param centroids
+    /// \param primIndices
+    ///
+    /// \return
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    SahSplit FindSahSplit(
+        const SplitRequest& request,
+        const Vector<BBox>& bounds,
+        const Vector<Vec3f>& centroids,
+        Vector<int>& primIndices
+    ) const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    /// \param request
+    /// \param bounds
+    /// \param centroids
+    /// \param primIndices
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void BuildNode(
+        const SplitRequest& request,
+        const Vector<BBox>& bounds,
+        const Vector<Vec3f>& centroids,
+        Vector<int>& primIndices
+    );
 
 public:
     ///////////////////////////////////////////////////////////////////////////
