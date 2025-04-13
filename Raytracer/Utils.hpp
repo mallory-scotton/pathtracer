@@ -7,3 +7,5 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Utils/Exception.hpp"
+#include "Utils/OpenGL.hpp"
+#include "Utils/Utils.hpp"
