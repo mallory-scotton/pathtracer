@@ -12,6 +12,128 @@ namespace Ray
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+Renderer::Options::Options(const Map<String, Vector<String>>& props)
+{
+    for (const auto& [key, values] : props)
+    {
+        Uint64 n = values.size();
+
+        // TODO: Do the entire function
+
+        if (key == "envMap" && n == 1)
+        {
+
+        }
+        else if (key == "resolution" && n == 2)
+        {
+
+        }
+        else if (key == "windowResolution" && n == 2)
+        {
+
+        }
+        else if (key == "envMapIntensity" && n == 1)
+        {
+
+        }
+        else if (key == "maxDepth" && n == 1)
+        {
+
+        }
+        else if (key == "maxSSP" && n == 1)
+        {
+
+        }
+        else if (key == "tileWidth" && n == 1)
+        {
+
+        }
+        else if (key == "tileHeight" && n == 1)
+        {
+
+        }
+        else if (key == "enableRR" && n == 1)
+        {
+
+        }
+        else if (key == "RRDepth" && n == 1)
+        {
+
+        }
+        else if (key == "enableTonemap" && n == 1)
+        {
+
+        }
+        else if (key == "EnableAces" && n == 1)
+        {
+
+        }
+        else if (key == "textureArrayWidth" && n == 1)
+        {
+
+        }
+        else if (key == "textureArrayHeight" && n == 1)
+        {
+
+        }
+        else if (key == "openglNormalMap" && n == 1)
+        {
+
+        }
+        else if (key == "hideEmitters" && n == 1)
+        {
+
+        }
+        else if (key == "enableBackground" && n == 1)
+        {
+
+        }
+        else if (key == "transparentBackground" && n == 1)
+        {
+
+        }
+        else if (key == "backgroundColor" && n == 3)
+        {
+
+        }
+        else if (key == "independentRenderSize" && n == 1)
+        {
+
+        }
+        else if (key == "envMapRotation" && n == 1)
+        {
+
+        }
+        else if (key == "enableRoughnessMollification" && n == 1)
+        {
+
+        }
+        else if (key == "roughnessMollificationAmount" && n == 1)
+        {
+
+        }
+        else if (key == "enableVolumeMIS" && n == 1)
+        {
+
+        }
+        else if (key == "enableUniformLight" && n == 1)
+        {
+
+        }
+        else if (key == "uniformLightColor" && n == 3)
+        {
+
+        }
+        else
+        {
+            RAY_WARN(
+                "\"" + key + "\" is not a valid Renderer Options attributes"
+            );
+        }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 String Renderer::Options::GetPathTraceShaderDefinitions(
     const SharedPtr<Scene>& scene
 ) const
