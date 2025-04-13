@@ -65,7 +65,7 @@ bool Mesh::LoadFromFile(const Path& filePath)
     {
         Uint64 indexOffset = 0;
 
-        for (const auto& face : shape.mesh.num_face_vertices)
+        for (Uint64 f = 0; f < shape.mesh.num_face_vertices.size(); f++)
         {
             for (Uint64 v = 0; v < 3; v++)
             {
@@ -117,7 +117,6 @@ void Mesh::Build(void)
     const int numTris = mVertices.size() / 3;
     Vector<BBox> bounds(numTris);
 
-#pragma omp parallel for
     for (int i = 0; i < numTris; i++)
     {
         const Vec3f v1 = Vec3f(mVertices[i * 3 + 0]);
