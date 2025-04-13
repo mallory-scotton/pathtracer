@@ -455,6 +455,14 @@ void Renderer::DrawToScreen(void)
 void Renderer::Update(float deltaSeconds)
 {
     RAY_UNUSED(deltaSeconds);
+
+    mPathTraceShader->Use();
+    mScene->UpdateUniforms(mPathTraceShader);
+    mPathTraceShader->StopUsing();
+
+    mPathTraceShaderLowRes->Use();
+    mScene->UpdateUniforms(mPathTraceShaderLowRes);
+    mPathTraceShaderLowRes->StopUsing();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
