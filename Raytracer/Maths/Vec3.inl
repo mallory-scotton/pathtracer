@@ -41,6 +41,22 @@ Vec3<T>::Vec3(const T& x, const T& y, const T& z)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+T& Vec3<T>::operator[](Uint64 index)
+{
+    RAY_ASSERT(index < 3, "Index Out of Range");
+    return (data[index]);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+const T& Vec3<T>::operator[](Uint64 index) const
+{
+    RAY_ASSERT(index < 3, "Index Out of Range");
+    return (data[index]);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 Vec3<T> Vec3<T>::Min(const Vec3<T>& a, const Vec3<T>& b)
 {
     return (Vec3<T>(
@@ -110,6 +126,13 @@ template <typename T>
 T Vec3<T>::Distance(const Vec3<T>& a, const Vec3<T>& b)
 {
     return (Vec3<T>::Length(a - b));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+T Vec3<T>::Dot(const Vec3<T>& a, const Vec3<T>& b)
+{
+    return (a.x * b.x + a.y * b.y + a.z * b.z);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
