@@ -64,4 +64,11 @@ T Math::Radians(const T& degrees)
     return (degrees * (static_cast<T>(PI) / static_cast<T>(180)));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+T Math::IsNaN(T value)
+{
+    return (value != value);
+}
+
 } // namespace Ray
