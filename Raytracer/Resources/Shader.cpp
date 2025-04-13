@@ -322,4 +322,24 @@ void Shader::Uniform(const String& uniform, const Vec2i& data)
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, const Vec3f& data)
+{
+    GLint location = glGetUniformLocation(mProgram, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform3f(location, data.x, data.y, data.z);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, const Vec3i& data)
+{
+    GLint location = glGetUniformLocation(mProgram, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform3i(location, data.x, data.y, data.z);
+    }
+}
+
 } // namespace Ray
