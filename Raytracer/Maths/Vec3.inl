@@ -41,6 +41,14 @@ Vec3<T>::Vec3(const T& x, const T& y, const T& z)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+Vec3<T>::Vec3(const Vec4<T>& other)
+    : x(other.x)
+    , y(other.y)
+    , z(other.z)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 T& Vec3<T>::operator[](Uint64 index)
 {
     RAY_ASSERT(index < 3, "Index Out of Range");
