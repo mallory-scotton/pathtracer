@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Scene/Light.hpp"
 #include "Maths/Constants.hpp"
+#include "Utils/Utils.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -19,43 +20,43 @@ Light::Light(const Map<String, Vector<String>>& props)
     {
         Uint64 n = values.size();
 
-        if (key == "position" && n == 3)
+        if (Utils::Equals(key, "position") && n == 3)
         {
             mPosition = Vec3f(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "emission" && n == 3)
+        else if (Utils::Equals(key, "emission") && n == 3)
         {
             mEmission = Vec3f(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "radius" && n == 1)
+        else if (Utils::Equals(key, "radius") && n == 1)
         {
-            mRadius = std::stof(values[0]);
+            mRadius = Utils::ToFloat(values[0]);
         }
-        else if (key == "v1" && n == 3)
+        else if (Utils::Equals(key, "v1") && n == 3)
         {
             v1 = Vec3f(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "v2" && n == 3)
+        else if (Utils::Equals(key, "v2") && n == 3)
         {
             v2 = Vec3f(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "type" && n == 1)
+        else if (Utils::Equals(key, "type") && n == 1)
         {
             if (values[0] == "quad")
             {

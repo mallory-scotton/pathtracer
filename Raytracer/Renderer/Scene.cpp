@@ -5,6 +5,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Maths/Vec4.hpp"
 #include "Utils/Exception.hpp"
+#include "Utils/Utils.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -48,11 +49,11 @@ Vector<Scene::Object> Scene::ParseObjectsFromFile(const Path& filePath) const
     static const Regex propExp(R"((\w+)\s*:\s*([^;]+);)");
     static const Map<String, Scene::Object::Type> objectTypes =
     {
-        {"Renderer", Scene::Object::Type::RENDERER},
-        {"Camera", Scene::Object::Type::CAMERA},
-        {"Mesh", Scene::Object::Type::MESH},
-        {"Light", Scene::Object::Type::LIGHT},
-        {"Material", Scene::Object::Type::MATERIAL}
+        {"renderer", Scene::Object::Type::RENDERER},
+        {"camera", Scene::Object::Type::CAMERA},
+        {"mesh", Scene::Object::Type::MESH},
+        {"light", Scene::Object::Type::LIGHT},
+        {"material", Scene::Object::Type::MATERIAL}
     };
 
     Vector<Scene::Object> objects;
@@ -68,7 +69,7 @@ Vector<Scene::Object> Scene::ParseObjectsFromFile(const Path& filePath) const
         std::smatch match = *i;
         Scene::Object object;
 
-        String type = match[1].str();
+        String type = Utils::ToLower(match[1].str());
         String body = match[2].str();
 
         if (!objectTypes.count(type))

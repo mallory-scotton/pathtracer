@@ -4,6 +4,7 @@
 #include "Renderer/Camera.hpp"
 #include "Maths/Utils.hpp"
 #include "Utils/OpenGL.hpp"
+#include "Utils/Utils.hpp"
 #include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,35 +41,35 @@ Camera::Camera(const Map<String, Vector<String>>& props)
     {
         Uint64 n = values.size();
 
-        if (key == "position" && n == 3)
+        if (Utils::Equals(key, "position") && n == 3)
         {
             mPosition = Vec3f(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "lookAt" && n == 3)
+        else if (Utils::Equals(key, "lookAt") && n == 3)
         {
             mPivot = Vec3f(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "aperture" && n == 1)
+        else if (Utils::Equals(key, "aperture") && n == 1)
         {
-            mAperture = std::stof(values[0]);
+            mAperture = Utils::ToFloat(values[0]);
         }
-        else if (key == "focalDistance" && n == 1)
+        else if (Utils::Equals(key, "focalDistance") && n == 1)
         {
-            mFocalDistance = std::stof(values[0]);
+            mFocalDistance = Utils::ToFloat(values[0]);
         }
-        else if (key == "fov" && n == 1)
+        else if (Utils::Equals(key, "fov") && n == 1)
         {
-            mFOV = Math::Radians(std::stof(values[0]));
+            mFOV = Math::Radians(Utils::ToFloat(values[0]));
         }
-        else if (key == "matrix" && n == 16)
+        else if (Utils::Equals(key, "matrix") && n == 16)
         {
             // TODO: Add matrix calculation
         }

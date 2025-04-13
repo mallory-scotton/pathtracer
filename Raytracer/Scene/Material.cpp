@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Scene/Material.hpp"
 #include "Renderer/Scene.hpp"
+#include "Utils/Utils.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -17,143 +18,143 @@ Material::Material(const Map<String, Vector<String>>& props, Scene* scene)
     {
         Uint64 n = values.size();
 
-        if (key == "color" && n == 3)
+        if (Utils::Equals(key, "color") && n == 3)
         {
             mBaseColor = Color(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "opacity" && n == 1)
+        else if (Utils::Equals(key, "opacity") && n == 1)
         {
-            mOpacity = std::stof(values[0]);
+            mOpacity = Utils::ToFloat(values[0]);
         }
-        else if (key == "alphaMode" && n == 1)
+        else if (Utils::Equals(key, "alphaMode") && n == 1)
         {
-            if (values[0] == "opaque")
+            if (Utils::Equals(values[0], "opaque"))
             {
                 mAlphaMode = static_cast<float>(AlphaMode::OPAQUE);
             }
-            else if (values[0] == "blend")
+            else if (Utils::Equals(values[0], "blend"))
             {
                 mAlphaMode = static_cast<float>(AlphaMode::BLEND);
             }
-            else if (values[0] == "mask")
+            else if (Utils::Equals(values[0], "mask"))
             {
                 mAlphaMode = static_cast<float>(AlphaMode::MASK);
             }
         }
-        else if (key == "alphaCutOff" && n == 1)
+        else if (Utils::Equals(key, "alphaCutOff") && n == 1)
         {
-            mAlphaCutOff = std::stof(values[0]);
+            mAlphaCutOff = Utils::ToFloat(values[0]);
         }
-        else if (key == "emission" && n == 3)
+        else if (Utils::Equals(key, "emission") && n == 3)
         {
             mEmission = Color(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "metallic" && n == 1)
+        else if (Utils::Equals(key, "metallic") && n == 1)
         {
-            mMetallic = std::stof(values[0]);
+            mMetallic = Utils::ToFloat(values[0]);
         }
-        else if (key == "roughness" && n == 1)
+        else if (Utils::Equals(key, "roughness") && n == 1)
         {
-            mRoughness = std::stof(values[0]);
+            mRoughness = Utils::ToFloat(values[0]);
         }
-        else if (key == "subSurface" && n == 1)
+        else if (Utils::Equals(key, "subSurface") && n == 1)
         {
-            mSubSurface = std::stof(values[0]);
+            mSubSurface = Utils::ToFloat(values[0]);
         }
-        else if (key == "specularTint" && n == 1)
+        else if (Utils::Equals(key, "specularTint") && n == 1)
         {
-            mSpecularTint = std::stof(values[0]);
+            mSpecularTint = Utils::ToFloat(values[0]);
         }
-        else if (key == "anisotropic" && n == 1)
+        else if (Utils::Equals(key, "anisotropic") && n == 1)
         {
-            mAnisotropic = std::stof(values[0]);
+            mAnisotropic = Utils::ToFloat(values[0]);
         }
-        else if (key == "sheen" && n == 1)
+        else if (Utils::Equals(key, "sheen") && n == 1)
         {
-            mSheen = std::stof(values[0]);
+            mSheen = Utils::ToFloat(values[0]);
         }
-        else if (key == "sheenTint" && n == 1)
+        else if (Utils::Equals(key, "sheenTint") && n == 1)
         {
-            mSheenTint = std::stof(values[0]);
+            mSheenTint = Utils::ToFloat(values[0]);
         }
-        else if (key == "clearCoat" && n == 1)
+        else if (Utils::Equals(key, "clearCoat") && n == 1)
         {
-            mClearCoat = std::stof(values[0]);
+            mClearCoat = Utils::ToFloat(values[0]);
         }
-        else if (key == "clearCoatGloss" && n == 1)
+        else if (Utils::Equals(key, "clearCoatGloss") && n == 1)
         {
-            mClearCoatGloss = std::stof(values[0]);
+            mClearCoatGloss = Utils::ToFloat(values[0]);
         }
-        else if (key == "specTrans" && n == 1)
+        else if (Utils::Equals(key, "specTrans") && n == 1)
         {
-            mSpecTrans = std::stof(values[0]);
+            mSpecTrans = Utils::ToFloat(values[0]);
         }
-        else if (key == "ior" && n == 1)
+        else if (Utils::Equals(key, "ior") && n == 1)
         {
-            mIor = std::stof(values[0]);
+            mIor = Utils::ToFloat(values[0]);
         }
-        else if (key == "albedoTexture" && n == 1)
+        else if (Utils::Equals(key, "albedoTexture") && n == 1)
         {
             mbaseColorTextureID = static_cast<float>(
                 scene->AddTexture(values[0])
             );
         }
-        else if (key == "metallicRoughnessTexture" && n == 1)
+        else if (Utils::Equals(key, "metallicRoughnessTexture") && n == 1)
         {
             mMetallicRoughnessTextureID = static_cast<float>(
                 scene->AddTexture(values[0])
             );
         }
-        else if (key == "normalTexture" && n == 1)
+        else if (Utils::Equals(key, "normalTexture") && n == 1)
         {
             mNormalMapTextureID = static_cast<float>(
                 scene->AddTexture(values[0])
             );
         }
-        else if (key == "emissionTexture" && n == 1)
+        else if (Utils::Equals(key, "emissionTexture") && n == 1)
         {
             mEmissionMapTextureID = static_cast<float>(
                 scene->AddTexture(values[0])
             );
         }
-        else if (key == "mediumType" && n == 1)
+        else if (Utils::Equals(key, "mediumType") && n == 1)
         {
-            if (values[0] == "absorb")
+            if (Utils::Equals(values[0], "absorb"))
             {
                 mMediumType = static_cast<float>(MediumType::ABSORB);
             }
-            else if (values[0] == "scatter")
+            else if (Utils::Equals(values[0], "scatter"))
             {
                 mMediumType = static_cast<float>(MediumType::SCATTER);
             }
-            else if (values[0] == "emissive")
+            else if (Utils::Equals(values[0], "emissive"))
             {
                 mMediumType = static_cast<float>(MediumType::EMISSIVE);
             }
         }
-        else if (key == "mediumDensity" && n == 1)
+        else if (Utils::Equals(key, "mediumDensity") && n == 1)
         {
-            mMediumDensity = std::stof(values[0]);
+            mMediumDensity = Utils::ToFloat(values[0]);
         }
-        else if (key == "mediumColor" && n == 3)
+        else if (Utils::Equals(key, "mediumColor") && n == 3)
         {
             mMediumColor = Color(
-                std::stof(values[0]),
-                std::stof(values[1]),
-                std::stof(values[2])
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
             );
         }
-        else if (key == "mediumAnisotropy" && n == 1)
+        else if (Utils::Equals(key, "mediumAnisotropy") && n == 1)
         {
-            mMediumAnisotropy = std::stof(values[0]);
+            mMediumAnisotropy = Utils::ToFloat(values[0]);
         }
         else
         {

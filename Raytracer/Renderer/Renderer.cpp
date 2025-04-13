@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Scene.hpp"
+#include "Utils/Utils.hpp"
 #include <cmath>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -20,107 +21,107 @@ Renderer::Options::Options(const Map<String, Vector<String>>& props)
 
         // TODO: Do the entire function
 
-        if (key == "envMap" && n == 1)
+        if (Utils::Equals(key, "envMap") && n == 1)
         {
 
         }
-        else if (key == "resolution" && n == 2)
+        else if (Utils::Equals(key, "resolution") && n == 2)
         {
 
         }
-        else if (key == "windowResolution" && n == 2)
+        else if (Utils::Equals(key, "windowResolution") && n == 2)
         {
 
         }
-        else if (key == "envMapIntensity" && n == 1)
+        else if (Utils::Equals(key, "envMapIntensity") && n == 1)
         {
 
         }
-        else if (key == "maxDepth" && n == 1)
+        else if (Utils::Equals(key, "maxDepth") && n == 1)
         {
 
         }
-        else if (key == "maxSSP" && n == 1)
+        else if (Utils::Equals(key, "maxSSP") && n == 1)
         {
 
         }
-        else if (key == "tileWidth" && n == 1)
+        else if (Utils::Equals(key, "tileWidth") && n == 1)
         {
 
         }
-        else if (key == "tileHeight" && n == 1)
+        else if (Utils::Equals(key, "tileHeight") && n == 1)
         {
 
         }
-        else if (key == "enableRR" && n == 1)
+        else if (Utils::Equals(key, "enableRR") && n == 1)
         {
 
         }
-        else if (key == "RRDepth" && n == 1)
+        else if (Utils::Equals(key, "RRDepth") && n == 1)
         {
 
         }
-        else if (key == "enableTonemap" && n == 1)
+        else if (Utils::Equals(key, "enableTonemap") && n == 1)
         {
 
         }
-        else if (key == "EnableAces" && n == 1)
+        else if (Utils::Equals(key, "EnableAces") && n == 1)
         {
 
         }
-        else if (key == "textureArrayWidth" && n == 1)
+        else if (Utils::Equals(key, "textureArrayWidth") && n == 1)
         {
 
         }
-        else if (key == "textureArrayHeight" && n == 1)
+        else if (Utils::Equals(key, "textureArrayHeight") && n == 1)
         {
 
         }
-        else if (key == "openglNormalMap" && n == 1)
+        else if (Utils::Equals(key, "openglNormalMap") && n == 1)
         {
 
         }
-        else if (key == "hideEmitters" && n == 1)
+        else if (Utils::Equals(key, "hideEmitters") && n == 1)
         {
 
         }
-        else if (key == "enableBackground" && n == 1)
+        else if (Utils::Equals(key, "enableBackground") && n == 1)
         {
 
         }
-        else if (key == "transparentBackground" && n == 1)
+        else if (Utils::Equals(key, "transparentBackground") && n == 1)
         {
 
         }
-        else if (key == "backgroundColor" && n == 3)
+        else if (Utils::Equals(key, "backgroundColor") && n == 3)
         {
 
         }
-        else if (key == "independentRenderSize" && n == 1)
+        else if (Utils::Equals(key, "independentRenderSize") && n == 1)
         {
 
         }
-        else if (key == "envMapRotation" && n == 1)
+        else if (Utils::Equals(key, "envMapRotation") && n == 1)
         {
 
         }
-        else if (key == "enableRoughnessMollification" && n == 1)
+        else if (Utils::Equals(key, "enableRoughnessMollification") && n == 1)
         {
 
         }
-        else if (key == "roughnessMollificationAmount" && n == 1)
+        else if (Utils::Equals(key, "roughnessMollificationAmount") && n == 1)
         {
 
         }
-        else if (key == "enableVolumeMIS" && n == 1)
+        else if (Utils::Equals(key, "enableVolumeMIS") && n == 1)
         {
 
         }
-        else if (key == "enableUniformLight" && n == 1)
+        else if (Utils::Equals(key, "enableUniformLight") && n == 1)
         {
 
         }
-        else if (key == "uniformLightColor" && n == 3)
+        else if (Utils::Equals(key, "uniformLightColor") && n == 3)
         {
 
         }
