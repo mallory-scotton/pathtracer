@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Renderer/Camera.hpp"
 #include "Maths/Utils.hpp"
+#include "Utils/OpenGL.hpp"
 #include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,6 +148,18 @@ void Camera::OffsetOrientation(const Vec2f& direction)
     mPitch -= direction.y;
     mYaw += direction.x;
     Update();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Camera::UpdateUniforms(UniquePtr<Shader>& shader) const
+{
+    shader->Uniform("camera.position", mPosition);
+    shader->Uniform("camera.right", mRight);
+    shader->Uniform("camera.up", mUp);
+    shader->Uniform("camera.forward", mForward);
+    shader->Uniform("camera.fov", mFOV);
+    shader->Uniform("camera.focalDist", mFocalDistance);
+    shader->Uniform("camera.aperture", mAperture);
 }
 
 } // namespace Ray
