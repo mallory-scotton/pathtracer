@@ -5,6 +5,7 @@
 #include "Utils/Exception.hpp"
 #include "Resources/Shader.hpp"
 #include "Renderer/Quad.hpp"
+#include "Utils/OpenGL.hpp"
 #include <random>
 #include <GL/glew.h>
 
@@ -45,6 +46,7 @@ void Application::Run(void)
     {
         mWindow->Update();
 
+        glDisable(GL_DEPTH_TEST);
         mRenderer->Render();
         mRenderer->DrawToScreen();
 

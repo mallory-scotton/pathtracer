@@ -563,15 +563,40 @@ void Renderer::Render(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void Renderer::Present(void)
+{
+    glActiveTexture(GL_TEXTURE0);
+
+    if (false) // TODO: If the scene is dirty
+    {
+        glBindTexture(GL_TEXTURE_2D, mPathTraceTextureLowRes);
+        mTonemapShader->Use();
+        mQuad.Draw();
+        mTonemapShader->StopUsing();
+    }
+    else
+    {
+        if (false) // TODO: Bind denoised texture
+        {
+
+        }
+        else
+        {
+            glBindTexture(GL_TEXTURE_2D, mTileOutputTexture[1 - mCurrentBuffer]);
+        }
+
+        mOutputShader->Use();
+        mQuad.Draw();
+        mOutputShader->StopUsing();
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void Renderer::DrawToScreen(void)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, mWindowSize.x, mWindowSize.y);
-    glBindTexture(GL_TEXTURE_2D, mTileOutputTexture[mCurrentBuffer]);
-
-    mTonemapShader->Use();
-    mQuad.Draw();
-    mTonemapShader->StopUsing();
+    glViewport(0, 0, mOptions.windowResolution.x, mOptions.windowResolution.y);
+    Present();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
