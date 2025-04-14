@@ -19,111 +19,131 @@ Renderer::Options::Options(const Map<String, Vector<String>>& props)
     {
         Uint64 n = values.size();
 
-        // TODO: Do the entire function
-
         if (Utils::Equals(key, "envMap") && n == 1)
         {
-
+            if (Utils::Equals(values[0], "none"))
+            {
+                enableEnvMap = false;
+            }
+            else
+            {
+                // TODO: Add the envMap
+                enableEnvMap = true;
+            }
         }
         else if (Utils::Equals(key, "resolution") && n == 2)
         {
-
+            renderResolution = Vec2i(
+                Utils::ToInteger(values[0]),
+                Utils::ToInteger(values[1])
+            );
         }
         else if (Utils::Equals(key, "windowResolution") && n == 2)
         {
-
+            windowResolution = Vec2i(
+                Utils::ToInteger(values[0]),
+                Utils::ToInteger(values[1])
+            );
         }
         else if (Utils::Equals(key, "envMapIntensity") && n == 1)
         {
-
+            envMapIntensity = Utils::ToFloat(values[0]);
         }
         else if (Utils::Equals(key, "maxDepth") && n == 1)
         {
-
+            maxDepth = Utils::ToInteger(values[0]);
         }
         else if (Utils::Equals(key, "maxSSP") && n == 1)
         {
-
+            maxSPP = Utils::ToInteger(values[0]);
         }
         else if (Utils::Equals(key, "tileWidth") && n == 1)
         {
-
+            tileWidth = Utils::ToInteger(values[0]);
         }
         else if (Utils::Equals(key, "tileHeight") && n == 1)
         {
-
+            tileHeight = Utils::ToInteger(values[0]);
         }
         else if (Utils::Equals(key, "enableRR") && n == 1)
         {
-
+            enableRR = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "RRDepth") && n == 1)
         {
-
+            RRDepth = Utils::ToInteger(values[0]);
         }
         else if (Utils::Equals(key, "enableTonemap") && n == 1)
         {
-
+            enableTonemap = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "EnableAces") && n == 1)
         {
-
+            enableAces = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "textureArrayWidth") && n == 1)
         {
-
+            textureArrayWidth = Utils::ToInteger(values[0]);
         }
         else if (Utils::Equals(key, "textureArrayHeight") && n == 1)
         {
-
+            textureArrayHeight = Utils::ToInteger(values[0]);
         }
         else if (Utils::Equals(key, "openglNormalMap") && n == 1)
         {
-
+            openglNormalMap = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "hideEmitters") && n == 1)
         {
-
+            hideEmitters = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "enableBackground") && n == 1)
         {
-
+            enableBackground = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "transparentBackground") && n == 1)
         {
-
+            transparentBackground = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "backgroundColor") && n == 3)
         {
-
+            backgroundColor = Color(
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
+            );
         }
         else if (Utils::Equals(key, "independentRenderSize") && n == 1)
         {
-
+            independantRenderSize = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "envMapRotation") && n == 1)
         {
-
+            envMapRot = Utils::ToFloat(values[0]);
         }
         else if (Utils::Equals(key, "enableRoughnessMollification") && n == 1)
         {
-
+            enableRoughnessMollification = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "roughnessMollificationAmount") && n == 1)
         {
-
+            roughnessMollificationAmount = Utils::ToFloat(values[0]);
         }
         else if (Utils::Equals(key, "enableVolumeMIS") && n == 1)
         {
-
+            enableVolumeMIS = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "enableUniformLight") && n == 1)
         {
-
+            enableUniformLight = Utils::ToBoolean(values[0]);
         }
         else if (Utils::Equals(key, "uniformLightColor") && n == 3)
         {
-
+            uniformLightColor = Color(
+                Utils::ToFloat(values[0]),
+                Utils::ToFloat(values[1]),
+                Utils::ToFloat(values[2])
+            );
         }
         else
         {
@@ -131,6 +151,11 @@ Renderer::Options::Options(const Map<String, Vector<String>>& props)
                 "\"" + key + "\" is not a valid Renderer Options attributes"
             );
         }
+    }
+
+    if (!independantRenderSize)
+    {
+        windowResolution = renderResolution;
     }
 }
 
@@ -141,7 +166,7 @@ String Renderer::Options::GetPathTraceShaderDefinitions(
 {
     String defines;
 
-    if (enableEnvMap) // TODO: Check if the scene got env map
+    if (enableEnvMap && scene->HasAnEnvironmentMap())
     {
         defines += "#define OPTION_ENVMAP\n";
     }

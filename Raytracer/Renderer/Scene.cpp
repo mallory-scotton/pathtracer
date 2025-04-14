@@ -239,6 +239,12 @@ Uint64 Scene::GetLightsCount(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+bool Scene::HasAnEnvironmentMap(void) const
+{
+    return (mEnvMap.get() != nullptr);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void Scene::CreateMaterialTexture(GLuint* materialTexture) const
 {
     glGenTextures(1, materialTexture);
