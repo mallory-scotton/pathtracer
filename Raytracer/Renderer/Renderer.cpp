@@ -226,6 +226,7 @@ String Renderer::Options::GetTonemapShaderDefinitions(void) const
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::Renderer(SharedPtr<Scene> scene)
     : mScene(scene)
+    , mOptions(scene->GetRendererOptions())
 {
     InitGPUDataBuffers();
     InitFBOs();

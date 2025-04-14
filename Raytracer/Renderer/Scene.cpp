@@ -372,4 +372,10 @@ void Scene::UpdateUniforms(UniquePtr<Shader>& shader) const
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+Renderer::Options Scene::GetRendererOptions(void) const
+{
+    return (mOptions);
+}
+
 } // namespace Ray
