@@ -155,6 +155,9 @@ Material::Material(const Map<String, Vector<String>>& props, Scene* scene)
         else if (Utils::Equals(key, "mediumAnisotropy") && n == 1)
         {
             mMediumAnisotropy = Utils::ToFloat(values[0]);
+        } else if (Utils::Equals(key, "name") && n == 1)
+        {
+            // Do nothing, already handled in Scene
         }
         else
         {
