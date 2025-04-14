@@ -120,20 +120,56 @@ bool Scene::ParseSceneFile(const Path& filePath)
         switch (object.type)
         {
             case Object::Type::CAMERA:
-                mCamera.reset(new Camera(object.properties)); break;
+            {
+                mCamera.reset(new Camera(object.properties));
+                break;
+            }
             case Object::Type::LIGHT:
+            {
                 mLights.push_back(Light(object.properties));
                 break;
+            }
             case Object::Type::MATERIAL:
+            {
+                String name = "";
+
+                for (const auto& [key, values] : object.properties)
+                {
+                    if (Utils::Equals(key, "name") && values.size() == 1)
+                    {
+                        name = values[0];
+                    }
+                }
+
+                if (name.empty())
+                {
+                    RAY_WARN("No name defined for Material");
+                    break;
+                }
+
+                if (mMaterialMap.count(name) != 0)
+                {
+                    RAY_WARN("Material \"" << name << "\" is already defined");
+                    break;
+                }
+
                 mMaterials.push_back(Material(object.properties, this));
+                mMaterialMap[name] = mMaterials.size() - 1;
                 break;
+            }
             case Object::Type::MESH:
+            {
                 break; // TODO: Add mesh loading
+            }
             case Object::Type::RENDERER:
+            {
                 mOptions = Renderer::Options(object.properties);
                 break;
+            }
             default:
+            {
                 break;
+            }
         }
     }
 

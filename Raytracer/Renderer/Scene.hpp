@@ -63,6 +63,7 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
     Vector<Material> mMaterials;                //<!
+    Map<String, Uint64> mMaterialMap;           //<!
     Vector<Light> mLights;                      //<!
     Vector<Index> mVertexIndices;               //<!
     Vector<Vec4f> mVerticesUVX;                 //<!
