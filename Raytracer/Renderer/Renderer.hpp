@@ -56,6 +56,7 @@ public:
         bool enableDenoiser{false};                 //<!
         bool enableTonemap{true};                   //<!
         bool enableAces{false};                     //<!
+        bool simpleAcesFit{false};                  //<!
         bool openglNormalMap{true};                 //<!
         bool enableEnvMap{false};                   //<!
         bool enableUniformLight{false};             //<!

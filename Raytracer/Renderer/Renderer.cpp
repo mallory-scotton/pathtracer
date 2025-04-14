@@ -586,6 +586,14 @@ void Renderer::Update(float deltaSeconds)
     mPathTraceShaderLowRes->Use();
     mScene->UpdateUniforms(mPathTraceShaderLowRes);
     mPathTraceShaderLowRes->StopUsing();
+
+    mTonemapShader->Use();
+    mTonemapShader->Uniform("invSampleCounter", 1.f / mSampleCounter);
+    mTonemapShader->Uniform("enableTonemap", mOptions.enableTonemap);
+    mTonemapShader->Uniform("enableAces", mOptions.enableAces);
+    mTonemapShader->Uniform("simpleAcesFit", mOptions.simpleAcesFit);
+    mTonemapShader->Uniform("backgroundCol", mOptions.backgroundColor);
+    mTonemapShader->StopUsing();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
