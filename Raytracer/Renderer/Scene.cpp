@@ -113,6 +113,8 @@ Vector<Scene::Object> Scene::ParseObjectsFromFile(const Path& filePath) const
 ///////////////////////////////////////////////////////////////////////////////
 bool Scene::ParseSceneFile(const Path& filePath)
 {
+    RAY_TRACE("Parsing Scene file...");
+
     Vector<Scene::Object> objects = ParseObjectsFromFile(filePath);
 
     for (const auto& object : objects)
@@ -172,6 +174,9 @@ bool Scene::ParseSceneFile(const Path& filePath)
             }
         }
     }
+
+    RAY_INFO("Lights count: " << mLights.size());
+    RAY_INFO("Materials count: " << mMaterials.size());
 
     return (true);
 }
