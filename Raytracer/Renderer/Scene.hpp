@@ -17,6 +17,8 @@
 #include "Utils/OpenGL.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Camera.hpp"
+#include "Rays/Bvh.hpp"
+#include "Rays/BvhTranslator.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -77,6 +79,9 @@ private:
     UniquePtr<Camera> mCamera;                  //<!
     UniquePtr<EnvMap> mEnvMap;                  //<!
     Renderer::Options mOptions;                 //<!
+    BvhTranslator mBvhTranslator;               //<!
+    BBox mSceneBounds;                          //<!
+    UniquePtr<Bvh> mSceneBvh;                   //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////
@@ -172,6 +177,15 @@ public:
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
+    /// \param bvhBuffer
+    /// \param bvhTexture
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void CreateBVHBuffer(GLuint* bvhBuffer, GLuint* bvhTexture) const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
     /// \param materialTexture
     ///
     ///////////////////////////////////////////////////////////////////////////
@@ -235,6 +249,14 @@ public:
         GLuint* textureMapsArrayTexture,
         const Renderer::Options& options
     ) const;
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    /// \param shader
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    void InitUniforms(UniquePtr<Shader>& shader) const;
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief

@@ -299,7 +299,7 @@ void Renderer::InitGPUDataBuffers(void)
 {
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
-    // TODO: Load BVH into the GPU buffers
+    mScene->CreateBVHBuffer(&mBVHBuffer, &mBVHTexture);
     mScene->CreateVertexIndicesBuffer(
         &mVertexIndicesBuffer, &mVertexIndicesTexture
     );
@@ -517,7 +517,7 @@ void Renderer::InitUniforms(UniquePtr<Shader>& shader)
         // TODO: envMapTotalSum
     }
 
-    // TODO: Add BVH top index (topBVHIndex)
+    mScene->InitUniforms(shader);
     shader->Uniform("resolution", Vec2f(mRenderSize));
     shader->Uniform("invNumTiles", mInvTileCount);
     shader->Uniform("numOfLights", static_cast<int>(mScene->GetLightsCount()));

@@ -6,6 +6,7 @@
 #include "Maths/Vec4.hpp"
 #include "Utils/Exception.hpp"
 #include "Utils/Utils.hpp"
+#include "Rays/BvhTranslator.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -307,6 +308,21 @@ bool Scene::HasAnEnvironmentMap(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void Scene::CreateBVHBuffer(GLuint* bvhBuffer, GLuint* bvhTexture) const
+{
+    glGenBuffers(1, bvhBuffer);
+    glBindBuffer(GL_TEXTURE_BUFFER, *bvhBuffer);
+    glBufferData(
+        GL_TEXTURE_BUFFER,
+        sizeof(BvhTranslator::Node) * mBvhTranslator.GetNodeCount(),
+        &mBvhTranslator.GetNodes()[0], GL_STATIC_DRAW
+    );
+    glGenTextures(1, bvhTexture);
+    glBindTexture(GL_TEXTURE_BUFFER, *bvhTexture);
+    glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, *bvhBuffer);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void Scene::CreateMaterialTexture(GLuint* materialTexture) const
 {
     glGenTextures(1, materialTexture);
@@ -429,6 +445,12 @@ void Scene::CreateTextureMapsArrayTexture(
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Scene::InitUniforms(UniquePtr<Shader>& shader) const
+{
+    shader->Uniform("topBVHIndex", mBvhTranslator.GetTopLevelIndex());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
