@@ -116,6 +116,7 @@ bool Scene::ParseSceneFile(const Path& filePath)
     RAY_TRACE("Parsing Scene file...");
 
     Vector<Scene::Object> objects = ParseObjectsFromFile(filePath);
+    Map<Uint64, String> instanceMaterials;
 
     for (const auto& object : objects)
     {
@@ -161,7 +162,55 @@ bool Scene::ParseSceneFile(const Path& filePath)
             }
             case Object::Type::MESH:
             {
-                break; // TODO: Add mesh loading
+                String filename = "";
+                String material = "";
+
+                for (const auto& [key, values] : object.properties)
+                {
+                    Uint64 n = values.size();
+
+                    if (Utils::Equals(key, "file") && n == 1)
+                    {
+                        filename = values[0];
+                    }
+                    else if (Utils::Equals(key, "material") && n == 1)
+                    {
+                        material = values[0];
+                    }
+                }
+
+                if (filename.empty())
+                {
+                    RAY_WARN("No file defined for Mesh");
+                    break;
+                }
+
+                int meshID = -1;
+
+                for (Uint64 i = 0; i < mMeshes.size(); i++)
+                {
+                    if (mMeshes[i]->GetName() == filename)
+                    {
+                        meshID = i;
+                        break;
+                    }
+                }
+
+                if (meshID == -1)
+                {
+                    mMeshes.push_back(std::make_shared<Mesh>(filename));
+                    meshID = mMeshes.size() - 1;
+                }
+
+                if (!material.empty())
+                {
+                    instanceMaterials[mMeshInstances.size()] = material;
+                }
+
+                mMeshInstances.push_back(Mesh::Instance(object.properties));
+                mMeshInstances.back().meshID = meshID;
+
+                break;
             }
             case Object::Type::RENDERER:
             {
@@ -175,8 +224,21 @@ bool Scene::ParseSceneFile(const Path& filePath)
         }
     }
 
+    for (const auto& [instanceID, materialName] : instanceMaterials)
+    {
+        if (mMaterialMap.count(materialName) == 0)
+        {
+            RAY_WARN("Material \"" << materialName << "\" not found");
+            continue;
+        }
+
+        mMeshInstances[instanceID].materialID = mMaterialMap.at(materialName);
+    }
+
     RAY_INFO("Lights count: " << mLights.size());
     RAY_INFO("Materials count: " << mMaterials.size());
+    RAY_INFO("Meshes count: " << mMeshes.size());
+    RAY_INFO("Instances count: " << mMeshInstances.size());
 
     return (true);
 }

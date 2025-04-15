@@ -13,6 +13,7 @@
 #include "Resources/Texture.hpp"
 #include "Resources/Shader.hpp"
 #include "Resources/EnvMap.hpp"
+#include "Resources/Mesh.hpp"
 #include "Utils/OpenGL.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Camera.hpp"
@@ -64,6 +65,8 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     Vector<Material> mMaterials;                //<!
     Map<String, Uint64> mMaterialMap;           //<!
+    Vector<Mesh::Instance> mMeshInstances;      //<!
+    Vector<SharedPtr<Mesh>> mMeshes;            //<!
     Vector<Light> mLights;                      //<!
     Vector<Index> mVertexIndices;               //<!
     Vector<Vec4f> mVerticesUVX;                 //<!
