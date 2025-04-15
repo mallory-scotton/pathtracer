@@ -4,6 +4,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "Resources/Mesh.hpp"
 #include "Utils/Exception.hpp"
+#include "Utils/Utils.hpp"
 #include <tiny_obj_loader.h>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,6 +25,76 @@ Mesh::Instance::Instance(
     , materialID(materialID)
     , meshID(meshID)
 {}
+
+///////////////////////////////////////////////////////////////////////////////
+Mesh::Instance::Instance(const Map<String, Vector<String>>& props)
+    : materialID(-1)
+    , meshID(-1)
+{
+    Quaternionf rotation;
+
+    bool hasProvidedAMatrix = false;
+    Mat4x4f providedMatrix;
+    Mat4x4f translate;
+    Mat4x4f scale;
+    Mat4x4f rotate;
+
+    for (const auto& [key, values] : props)
+    {
+        Uint64 n = values.size();
+
+        if (Utils::Equals(key, "name") && n == 1)
+        {
+            name = values[0];
+        }
+        else if (Utils::Equals(key, "position") && n == 3)
+        {
+            translate[3][0] = Utils::ToFloat(values[0]);
+            translate[3][1] = Utils::ToFloat(values[1]);
+            translate[3][2] = Utils::ToFloat(values[2]);
+        }
+        else if (Utils::Equals(key, "scale") && n == 3)
+        {
+            scale[0][0] = Utils::ToFloat(values[0]);
+            scale[1][1] = Utils::ToFloat(values[1]);
+            scale[2][2] = Utils::ToFloat(values[2]);
+        }
+        else if (Utils::Equals(key, "rotation") && n == 4)
+        {
+            rotation.x = Utils::ToFloat(values[0]);
+            rotation.y = Utils::ToFloat(values[1]);
+            rotation.z = Utils::ToFloat(values[2]);
+            rotation.w = Utils::ToFloat(values[3]);
+
+            rotate = Mat4x4f::QuaternionToMatrix(rotation);
+        }
+        else if (
+            (Utils::Equals(key, "material") || Utils::Equals(key, "file")) &&
+            n == 1
+        )
+        {
+            // Nothing to do because this is handled by the Scene loader
+        }
+        else if (Utils::Equals(key, "matrix") && n == 16)
+        {
+            hasProvidedAMatrix = true;
+            // TODO: Parse the matrix
+        }
+        else
+        {
+            RAY_WARN("\"" + key + "\" is not a valid Mesh attributes");
+        }
+    }
+
+    if (hasProvidedAMatrix)
+    {
+        transform = providedMatrix;
+    }
+    else
+    {
+        transform = translate * rotate * scale;
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 Mesh::Mesh(void)
@@ -138,5 +209,10 @@ void Mesh::Build(void)
     mBvh->Build(bounds);
 }
 
-} // namespace Ray
+///////////////////////////////////////////////////////////////////////////////
+String Mesh::GetName(void) const
+{
+    return (mName);
+}
 
+} // namespace Ray
