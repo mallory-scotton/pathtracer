@@ -131,4 +131,22 @@ void BvhTranslator::Process(
     ProcessTLAS();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+Uint64 BvhTranslator::GetNodeCount(void) const
+{
+    return (mNodes.size());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+const Vector<BvhTranslator::Node>& BvhTranslator::GetNodes(void) const
+{
+    return (mNodes);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+int BvhTranslator::GetTopLevelIndex(void) const
+{
+    return (mTopLevelIndex);
+}
+
 } // namespace Ray
