@@ -425,4 +425,16 @@ void Bvh::Build(const Vector<BBox>& bounds)
     mRoot = &mNodes[0];
 }
 
+///////////////////////////////////////////////////////////////////////////////
+int Bvh::GetNodeCount(void) const
+{
+    return (mNodeCount);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Bvh::Node* Bvh::GetRoot(void) const
+{
+    return (mRoot);
+}
+
 } // namespace Ray
