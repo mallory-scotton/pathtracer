@@ -215,4 +215,16 @@ String Mesh::GetName(void) const
     return (mName);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+const Vector<Vec4f>& Mesh::GetVertices(void) const
+{
+    return (mVertices);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+const Vector<Vec4f>& Mesh::GetNormals(void) const
+{
+    return (mNormals);
+}
+
 } // namespace Ray
