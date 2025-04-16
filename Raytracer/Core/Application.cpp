@@ -42,9 +42,15 @@ Application::~Application()
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Run(void)
 {
+    sf::Clock clock;
+    float deltaSeconds;
+
     while (mWindow->IsOpen())
     {
+        deltaSeconds = clock.restart().asSeconds();
+
         mWindow->Update();
+        mRenderer->Update(deltaSeconds);
 
         glDisable(GL_DEPTH_TEST);
         mRenderer->Render();
