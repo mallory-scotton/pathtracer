@@ -253,6 +253,11 @@ Renderer::Renderer(SharedPtr<Scene> scene)
     : mScene(scene)
     , mOptions(scene->GetRendererOptions())
 {
+    if (!mScene->IsInitialized())
+    {
+        mScene->Process();
+    }
+
     InitGPUDataBuffers();
     InitFBOs();
     InitShaders();
@@ -539,7 +544,18 @@ void Renderer::InitUniforms(UniquePtr<Shader>& shader)
 ///////////////////////////////////////////////////////////////////////////////
 void Renderer::Render(void)
 {
-    if (mDirty)
+    if (
+        !mScene->IsDirty() &&
+        mOptions.maxSPP != -1 &&
+        mSampleCounter >= mOptions.maxSPP
+    )
+    {
+        return;
+    }
+
+    glActiveTexture(GL_TEXTURE0);
+
+    if (mScene->IsDirty())
     {
         glBindFramebuffer(GL_FRAMEBUFFER, mPathTraceFBOLowRes);
         glViewport(
@@ -550,7 +566,7 @@ void Renderer::Render(void)
         mQuad.Draw();
         mPathTraceShaderLowRes->StopUsing();
 
-        mDirty = false;
+        mScene->SetDirty(false);
     }
     else
     {
@@ -593,7 +609,7 @@ void Renderer::Present(void)
 {
     glActiveTexture(GL_TEXTURE0);
 
-    if (false) // TODO: If the scene is dirty
+    if (mScene->IsDirty() || mSampleCounter == 1)
     {
         glBindTexture(GL_TEXTURE_2D, mPathTraceTextureLowRes);
         mTonemapShader->Use();
@@ -630,12 +646,74 @@ void Renderer::Update(float deltaSeconds)
 {
     RAY_UNUSED(deltaSeconds);
 
+    if (
+        !mScene->IsDirty() &&
+        mOptions.maxSPP != -1 &&
+        mSampleCounter >= mOptions.maxSPP
+    )
+    {
+        return;
+    }
+
+    if (false) // TODO: Update if instance has been modified
+    {
+
+    }
+
+    if (false) // TODO: Update when env map has been modified
+    {
+
+    }
+
+    if (false) // TODO: Update when denoiser request is ask
+    {
+
+    }
+
+    if (mScene->IsDirty())
+    {
+        mTile.x = -1.f;
+        mTile.y = mTileCount.y - 1.f;
+        mSampleCounter = 1;
+        mFrameCounter = 1;
+
+        glBindFramebuffer(GL_FRAMEBUFFER, mAccumulationFBO);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+    else
+    {
+        mFrameCounter++;
+        mTile.x++;
+        if (mTile.x >= mTileCount.x)
+        {
+            mTile.x = 0.f;
+            mTile.y--;
+            if (mTile.y < 0.f)
+            {
+                mTile.x = 0.f;
+                mTile.y = mTileCount.y - 1.f;
+                mSampleCounter++;
+                mCurrentBuffer = 1 - mCurrentBuffer;
+            }
+        }
+    }
+
     mPathTraceShader->Use();
     mScene->UpdateUniforms(mPathTraceShader);
+    mPathTraceShader->Uniform("tileOffset", Vec2f(
+        static_cast<float>(mTile.x) * mInvTileCount.x,
+        static_cast<float>(mTile.y) * mInvTileCount.y
+    ));
+    mPathTraceShader->Uniform("frameNum", mFrameCounter);
     mPathTraceShader->StopUsing();
 
     mPathTraceShaderLowRes->Use();
     mScene->UpdateUniforms(mPathTraceShaderLowRes);
+    mPathTraceShaderLowRes->Uniform("tileOffset", Vec2f(
+        static_cast<float>(mTile.x) * mInvTileCount.x,
+        static_cast<float>(mTile.y) * mInvTileCount.y
+    ));
+    mPathTraceShaderLowRes->Uniform("frameNum", mFrameCounter);
     mPathTraceShaderLowRes->StopUsing();
 
     mTonemapShader->Use();

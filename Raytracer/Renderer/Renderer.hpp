@@ -157,7 +157,6 @@ private:
     int mFrameCounter;                              //<!
     int mSampleCounter;                             //<!
     float mPixelRatio{.25f};                        //<!
-    bool mDirty{false};                             //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////
