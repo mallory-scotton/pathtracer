@@ -8,6 +8,9 @@
 #include "Utils/Utils.hpp"
 #include "Rays/BvhTranslator.hpp"
 
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include <imstb_image_resize.h>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
 ///////////////////////////////////////////////////////////////////////////////
@@ -16,11 +19,16 @@ namespace Ray
 
 ///////////////////////////////////////////////////////////////////////////////
 Scene::Scene(const Path& filePath)
+    : mInstanceModified(false)
+    , mDirty(true)
+    , mInitialized(false)
 {
     if (!ParseSceneFile(filePath))
     {
         throw Exception(RAY_ERROR_SCENE_PARSE);
     }
+
+    mSceneBvh = std::make_unique<Bvh>(10.f, 64, false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -460,12 +468,213 @@ void Scene::UpdateUniforms(UniquePtr<Shader>& shader) const
     {
         mCamera->UpdateUniforms(shader);
     }
+
+    shader->Uniform("enableEnvMap", mOptions.enableEnvMap);
+    shader->Uniform("envMapIntensity", mOptions.envMapIntensity);
+    shader->Uniform("envMapRot", mOptions.envMapRot);
+    shader->Uniform("maxDepth", mOptions.maxDepth);
+    shader->Uniform("uniformLightCol", mOptions.uniformLightColor);
+    shader->Uniform("roughnessMollificationAmt",
+            mOptions.roughnessMollificationAmount);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::Options Scene::GetRendererOptions(void) const
 {
     return (mOptions);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Scene::CreateTLAS(void)
+{
+    Vector<BBox> bounds(mMeshInstances.size());
+
+    for (Uint64 i = 0; i < mMeshInstances.size(); i++)
+    {
+        BBox bbox = mMeshes[mMeshInstances[i].meshID]->GetBVH()->GetBounds();
+        Mat4x4f matrix = mMeshInstances[i].transform;
+
+        Vec3f minBound = bbox.GetMin();
+        Vec3f maxBound = bbox.GetMax();
+
+        Vec3f right       = Vec3f(matrix[0][0], matrix[0][1], matrix[0][2]);
+        Vec3f up          = Vec3f(matrix[1][0], matrix[1][1], matrix[1][2]);
+        Vec3f forward     = Vec3f(matrix[2][0], matrix[2][1], matrix[2][2]);
+        Vec3f translation = Vec3f(matrix[3][0], matrix[3][1], matrix[3][2]);
+
+        Vec3f xa = right * minBound.x;
+        Vec3f xb = right * maxBound.x;
+
+        Vec3f ya = up * minBound.y;
+        Vec3f yb = up * maxBound.y;
+
+        Vec3f za = forward * minBound.z;
+        Vec3f zb = forward * maxBound.z;
+
+        minBound = Vec3f::Min(xa, xb) + Vec3f::Min(ya, yb) + Vec3f::Min(za, zb)
+            + translation;
+        maxBound = Vec3f::Max(xa, xb) + Vec3f::Max(ya, yb) + Vec3f::Max(za, zb)
+            + translation;
+
+        bounds[i] = BBox(minBound, maxBound);
+    }
+
+    mSceneBvh->Build(bounds);
+    mSceneBounds = mSceneBvh->GetBounds();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Scene::CreateBLAS(void)
+{
+    for (Uint64 i = 0; i < mMeshes.size(); i++)
+    {
+        RAY_TRACE("Building BVH for " << mMeshes[i]->GetName());
+        mMeshes[i]->Build();
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Scene::RebuildInstances(void)
+{
+    mSceneBvh.reset();
+    mSceneBvh = std::make_unique<Bvh>(10.f, 64, false);
+
+    CreateTLAS();
+    mBvhTranslator.UpdateTLAS(mSceneBvh.get(), mMeshInstances);
+
+    for (Uint64 i = 0; i < mMeshInstances.size(); i++)
+    {
+        mTransforms[i] = mMeshInstances[i].transform;
+    }
+
+    mInstanceModified = true;
+    mDirty = true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Scene::Process(void)
+{
+    RAY_TRACE("Processing Scene Data");
+    CreateBLAS();
+
+    RAY_TRACE("Building Scene BVH");
+    CreateTLAS();
+
+    RAY_TRACE("Flattening BVH");
+    mBvhTranslator.Process(mSceneBvh.get(), mMeshes, mMeshInstances);
+
+    int verticesCount = 0;
+    RAY_TRACE("Copying Mesh Data");
+    for (Uint64 i = 0; i < mMeshes.size(); i++)
+    {
+        Uint64 numIndices = mMeshes[i]->GetBVH()->GetIndicesCount();
+        Vector<int> indices = mMeshes[i]->GetBVH()->GetIndices();
+
+        for (Uint64 j = 0; j < numIndices; j++)
+        {
+            int index = indices[j];
+
+            int v1 = (index * 3 + 0) + verticesCount;
+            int v2 = (index * 3 + 1) + verticesCount;
+            int v3 = (index * 3 + 2) + verticesCount;
+
+            mVertexIndices.push_back(Index{v1, v2, v3});
+        }
+
+        mVerticesUVX.insert(
+            mVerticesUVX.end(),
+            mMeshes[i]->GetVertices().begin(),
+            mMeshes[i]->GetVertices().end()
+        );
+        mNormalsUVY.insert(
+            mNormalsUVY.end(),
+            mMeshes[i]->GetNormals().begin(),
+            mMeshes[i]->GetNormals().end()
+        );
+
+        verticesCount += static_cast<int>(mMeshes[i]->GetVertices().size());
+    }
+
+    RAY_TRACE("Copying Transforms");
+    mTransforms.resize(mMeshInstances.size());
+    for (Uint64 i = 0; i < mMeshInstances.size(); i++)
+    {
+        mTransforms[i] = mMeshInstances[i].transform;
+    }
+
+    if (!mTextures.empty())
+    {
+        RAY_TRACE("Copying and Resizing Textures");
+    }
+
+    int reqWidth = mOptions.textureArrayWidth;
+    int reqHeight = mOptions.textureArrayHeight;
+    int texBytes = reqWidth * reqHeight * 4;
+    mTextureMapsArray.resize(texBytes * mTextures.size());
+
+    for (Uint64 i = 0; i < mTextures.size(); i++)
+    {
+        int texWidth = mTextures[i]->GetWidth();
+        int texHeight = mTextures[i]->GetHeight();
+
+        if (texWidth != reqWidth || texHeight != reqHeight)
+        {
+            unsigned char* resizedTex = new unsigned char[texBytes];
+            stbir_resize_uint8(
+                &mTextures[i]->GetData()[0],
+                texWidth, texHeight,
+                0, resizedTex, reqWidth, reqHeight,
+                0, 4
+            );
+            std::copy(
+                resizedTex, resizedTex + texBytes,
+                &mTextureMapsArray[i * texBytes]
+            );
+        }
+        else
+        {
+            std::copy(
+                mTextures[i]->GetData().begin(),
+                mTextures[i]->GetData().end(),
+                &mTextureMapsArray[i * texBytes]
+            );
+        }
+    }
+
+    if (!mCamera)
+    {
+        BBox bounds = mSceneBvh->GetBounds();
+        Vec3f extents = bounds.Extents();
+        Vec3f center = bounds.Center();
+
+        Vec3f eye = Vec3f(
+            center.x,
+            center.y,
+            center.z + Vec3f::Length(extents) * 2.f
+        );
+
+        mCamera = std::make_unique<Camera>(eye, center, 45.f);
+    }
+
+    mInitialized = true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+bool Scene::IsInitialized(void) const
+{
+    return (mInitialized);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+bool Scene::IsDirty(void) const
+{
+    return (mDirty);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Scene::SetDirty(bool dirty)
+{
+    mDirty = dirty;
 }
 
 } // namespace Ray
