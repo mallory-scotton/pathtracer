@@ -3,7 +3,7 @@ TARGET				=	raytracer
 CXX					=	g++
 LDFLAGS				=	-lSDL2 -lGL -lGLEW -LExternal/OpenImageDenoise/lib -lOpenImageDenoise -ldl -lm -lpthread
 INCLUDES			=	-I. -IRaytracer -IExternal -IExternal/ImGui -IExternal/GL -IExternal/OpenImageDenoise/include
-CXXFLAGS			=	-std=c++20 -Wall -Wextra -DRAY_DEBUG
+CXXFLAGS			=	-std=c++20 -DRAY_DEBUG
 DFLAGS				=
 
 FLAGS				=	$(LDFLAGS) $(INCLUDES) $(CXXFLAGS) $(DFLAGS)
