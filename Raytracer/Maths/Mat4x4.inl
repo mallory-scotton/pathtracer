@@ -22,7 +22,14 @@ Mat4x4<T>::Mat4x4(void)
     {
         for (Uint64 j = 0; j < 4; j++)
         {
-            data[i][j] = T(0);
+            if (i == j)
+            {
+                data[i][j] = T(1);
+            }
+            else
+            {
+                data[i][j] = T(0);
+            }
         }
     }
 }
