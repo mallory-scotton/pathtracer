@@ -9,7 +9,7 @@
 #include <cmath>
 #include <algorithm>
 #include <limits>
-#include "Core/Config.h"
+#include "Config.hpp"
 #include "Maths/Mat4x4.hpp"
 #include "Maths/Vec2.hpp"
 #include "Maths/Vec3.hpp"
