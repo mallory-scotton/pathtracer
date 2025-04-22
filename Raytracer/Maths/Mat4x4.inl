@@ -95,6 +95,28 @@ Mat4x4<T> Mat4x4<T>::QuaternionToMatrix(const Quaternion<T>& quaternion)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+Mat4x4<T> Mat4x4<T>::Translate(const Vec3<T>& translation)
+{
+    Mat4x4<T> out;
+    out[3][0] = translation.x;
+    out[3][1] = translation.y;
+    out[3][2] = translation.z;
+    return (out);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Mat4x4<T> Mat4x4<T>::Scale(const Vec3<T>& scale)
+{
+    Mat4x4<T> out;
+    out[0][0] = scale.x;
+    out[1][1] = scale.y;
+    out[2][2] = scale.z;
+    return (out);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 Mat4x4<T> operator*(const Mat4x4<T>& lhs, const Mat4x4<T>& rhs)
 {
     Mat4x4<T> result;
