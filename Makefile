@@ -19,6 +19,7 @@ all: $(TARGET)
 	$(CXX) -c $< -o $@ $(FLAGS)
 
 $(TARGET): $(OBJECTS)
+	@export LD_LIBRARY_PATH=$(pwd)/External/OpenImageDenoise/lib:$LD_LIBRARY_PATH
 	$(CXX) -o $(TARGET) $(OBJECTS) $(FLAGS)
 
 clean:
