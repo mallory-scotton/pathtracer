@@ -51,7 +51,7 @@ Vec3<T>::Vec3(const Vec4<T>& other)
 template <typename T>
 T& Vec3<T>::operator[](Uint64 index)
 {
-    RAY_ASSERT(index < 3, "Index Out of Range");
+    RAY_ASSERT(index < 3, RAY_ERROR_OVERFLOW);
     return (data[index]);
 }
 
@@ -59,7 +59,7 @@ T& Vec3<T>::operator[](Uint64 index)
 template <typename T>
 const T& Vec3<T>::operator[](Uint64 index) const
 {
-    RAY_ASSERT(index < 3, "Index Out of Range");
+    RAY_ASSERT(index < 3, RAY_ERROR_OVERFLOW);
     return (data[index]);
 }
 
@@ -138,6 +138,17 @@ T Vec3<T>::Distance(const Vec3<T>& a, const Vec3<T>& b)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+Vec3<T> Vec3<T>::Pow(const Vec3<T>& vec, const T& exp)
+{
+    return (Vec3<T>(
+        std::pow(vec.x, exp),
+        std::pow(vec.y, exp),
+        std::pow(vec.z, exp)
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 T Vec3<T>::Dot(const Vec3<T>& a, const Vec3<T>& b)
 {
     return (a.x * b.x + a.y * b.y + a.z * b.z);
@@ -198,6 +209,17 @@ Vec3<T> operator*(const Vec3<T>& lhs, T rhs)
         lhs.x * rhs,
         lhs.y * rhs,
         lhs.z * rhs
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec3<T> operator*(const Vec3<T>& lhs, const Vec3<T>& rhs)
+{
+    return (Vec3<T>(
+        lhs.x * rhs.x,
+        lhs.y * rhs.y,
+        lhs.z * rhs.z
     ));
 }
 
