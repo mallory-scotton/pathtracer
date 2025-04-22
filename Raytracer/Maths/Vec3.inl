@@ -145,6 +145,21 @@ T Vec3<T>::Dot(const Vec3<T>& a, const Vec3<T>& b)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+Vec3<T> Vec3<T>::Clamp(
+    const Vec3<T>& vec,
+    const Vec3<T>& min,
+    const Vec3<T>& max
+)
+{
+    return (Vec3<T>(
+        std::max(min.x, std::min(vec.x, max.x)),
+        std::max(min.y, std::min(vec.y, max.y)),
+        std::max(min.z, std::min(vec.z, max.z))
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 Vec3<T> operator-(const Vec3<T>& lhs, const Vec3<T>& rhs)
 {
     return (Vec3<T>(
