@@ -4,7 +4,7 @@ renderer
 	maxdepth 3
 	tilewidth 200
 	tileheight 200
-	#envmap HDR/sunset.hdr
+	#envmapfile HDR/sunset.hdr
 	#envmapintensity 2.0
 }
 

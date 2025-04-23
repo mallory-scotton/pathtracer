@@ -9,7 +9,7 @@ renderer
 
 camera
 {
-	position 5 5 5
+	position 6 6 6
 	lookat 0 1 0
 	fov 45
 }
@@ -21,19 +21,7 @@ material volume
 	roughness 0.0
 	mediumtype scatter
 	mediumdensity 2.0
-	mediumcolor 0.9 0.4 0.1
-	alphamode blend
-	opacity 0.0
-}
-
-material volume2
-{
-	color 1.0 1.0 1.0
-	spectrans 1.0
-	roughness 0.0
-	mediumtype scatter
-	mediumdensity 2.0
-	mediumcolor 0.1 0.1 0.9
+	mediumcolor .8 1.0 1.2
 	alphamode blend
 	opacity 0.0
 }
