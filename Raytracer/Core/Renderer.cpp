@@ -269,7 +269,7 @@ namespace Ray
         tile.x = -1;
         tile.y = numTiles.y - 1;
 
-        // Create FBOs for path trace shader 
+        // Create FBOs for path trace shader
         glGenFramebuffers(1, &pathTraceFBO);
         glBindFramebuffer(GL_FRAMEBUFFER, pathTraceFBO);
 
@@ -282,7 +282,7 @@ namespace Ray
         glBindTexture(GL_TEXTURE_2D, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTexture, 0);
 
-        // Create FBOs for low res preview shader 
+        // Create FBOs for low res preview shader
         glGenFramebuffers(1, &pathTraceFBOLowRes);
         glBindFramebuffer(GL_FRAMEBUFFER, pathTraceFBOLowRes);
 
@@ -496,7 +496,7 @@ namespace Ray
 
     void Renderer::Render()
     {
-        // If maxSpp was reached then stop rendering. 
+        // If maxSpp was reached then stop rendering.
         // TODO: Tonemapping and denosing still need to be able to run on final image
         if (!scene->dirty && scene->renderOptions.maxSpp != -1 && sampleCounter >= scene->renderOptions.maxSpp)
             return;
@@ -517,7 +517,7 @@ namespace Ray
         else
         {
             // Renders to pathTraceTexture while using previously accumulated samples from accumTexture
-            // Rendering is done a tile per frame, so if a 500x500 image is rendered with a tileWidth and tileHeight of 250 then, all tiles (for a single sample) 
+            // Rendering is done a tile per frame, so if a 500x500 image is rendered with a tileWidth and tileHeight of 250 then, all tiles (for a single sample)
             // get rendered after 4 frames
             glBindFramebuffer(GL_FRAMEBUFFER, pathTraceFBO);
             glViewport(0, 0, tileWidth, tileHeight);
@@ -556,6 +556,43 @@ namespace Ray
                 glBindTexture(GL_TEXTURE_2D, denoisedTexture);
             else
                 glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
+
+            // FIXME: RETURN AN IMAGE INSTEAD OF DRAWING IT DIRECTLY
+            // THE CODE BELOW EXPORT THE TEXTURE BUFFER AS A PPM FILE AFTER 200
+            // SAMPLES
+
+            // if (sampleCounter == 200)
+            // {
+            //     int width = scene->renderOptions.renderResolution.x;
+            //     int height = scene->renderOptions.renderResolution.y;
+            //     std::vector<GLubyte> rgba_pixels(width * height * 4);
+            //     glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
+            //     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba_pixels.data());
+
+            //     std::vector<GLubyte> rgb_pixels(width * height * 3);
+            //     for (int y = 0; y < height; ++y) {
+            //         for (int x = 0; x < width; ++x) {
+            //             int rgba_idx = ((height - 1 - y) * width + x) * 4;
+            //             int rgb_idx = (y * width + x) * 3;
+            //             rgb_pixels[rgb_idx + 0] = rgba_pixels[rgba_idx + 0]; // R
+            //             rgb_pixels[rgb_idx + 1] = rgba_pixels[rgba_idx + 1]; // G
+            //             rgb_pixels[rgb_idx + 2] = rgba_pixels[rgba_idx + 2]; // B
+            //         }
+            //     }
+
+            //     std::ofstream file("out.ppm", std::ios::binary);
+            //     if (!file) {
+            //         throw std::runtime_error("Could not open file for writing");
+            //     }
+
+            //     file << "P6\n" << width << " " << height << "\n255\n";
+
+            //     // Write the RGB pixel data
+            //     file.write(reinterpret_cast<char*>(rgb_pixels.data()), rgb_pixels.size());
+
+            //     // Close the file
+            //     file.close();
+            // }
 
             quad->Draw(outputShader);
         }
@@ -726,7 +763,7 @@ namespace Ray
         glUniform2f(glGetUniformLocation(shaderObject, "tileOffset"), (float)tile.x * invNumTiles.x, (float)tile.y * invNumTiles.y);
         glUniform3f(glGetUniformLocation(shaderObject, "uniformLightCol"), scene->renderOptions.uniformLightCol.x, scene->renderOptions.uniformLightCol.y, scene->renderOptions.uniformLightCol.z);
         glUniform1f(glGetUniformLocation(shaderObject, "roughnessMollificationAmt"), scene->renderOptions.roughnessMollificationAmt);
-        glUniform1i(glGetUniformLocation(shaderObject, "frameNum"), frameCounter);   
+        glUniform1i(glGetUniformLocation(shaderObject, "frameNum"), frameCounter);
         pathTraceShader->StopUsing();
 
         pathTraceShaderLowRes->Use();
@@ -744,12 +781,17 @@ namespace Ray
         pathTraceShaderLowRes->StopUsing();
 
         tonemapShader->Use();
-        shaderObject = tonemapShader->GetObject();
-        glUniform1f(glGetUniformLocation(shaderObject, "invSampleCounter"), 1.0f / (sampleCounter));
-        glUniform1i(glGetUniformLocation(shaderObject, "enableTonemap"), scene->renderOptions.enableTonemap);
-        glUniform1i(glGetUniformLocation(shaderObject, "enableAces"), scene->renderOptions.enableAces);
-        glUniform1i(glGetUniformLocation(shaderObject, "simpleAcesFit"), scene->renderOptions.simpleAcesFit);
-        glUniform3f(glGetUniformLocation(shaderObject, "backgroundCol"), scene->renderOptions.backgroundCol.x, scene->renderOptions.backgroundCol.y, scene->renderOptions.backgroundCol.z);
+
+        tonemapShader->Uniform("invSampleCounter", 1.f / sampleCounter);
+        tonemapShader->Uniform("enableTonemap", static_cast<int>(
+            scene->renderOptions.enableTonemap));
+        tonemapShader->Uniform("enableAces", static_cast<int>(
+            scene->renderOptions.enableAces));
+        tonemapShader->Uniform("simpleAcesFit", static_cast<int>(
+            scene->renderOptions.simpleAcesFit));
+        tonemapShader->Uniform("backgroundCol",
+            scene->renderOptions.backgroundCol);
+
         tonemapShader->StopUsing();
     }
 }
