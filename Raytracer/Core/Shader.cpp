@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Core/Shader.hpp"
 #include "Errors/ShaderException.hpp"
+#include "Utils/OpenGL.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -41,10 +42,7 @@ Shader::Shader(const String& vertexSource, const String& fragmentSource)
 ///////////////////////////////////////////////////////////////////////////////
 Shader::~Shader()
 {
-    if (m_object != 0)
-    {
-        glDeleteProgram(m_object);
-    }
+    OpenGL::DeleteProgram(m_object);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,86 +54,42 @@ GLuint Shader::GetObject() const
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::Use(void)
 {
-    glUseProgram(m_object);
+    OpenGL::UseProgram(m_object);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::StopUsing(void)
 {
-    glUseProgram(0);
+    OpenGL::StopUsingProgram();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::CompileProgram(const Vector<GLuint>& objects)
 {
-    if (m_object != 0)
+    OpenGL::DeleteProgram(m_object);
+
+    m_object = OpenGL::CreateProgram(objects);
+
+    OpenGL::DeleteShaders(objects);
+
+    if (OpenGL::GetProgramLinkStatus(m_object) == GL_FALSE)
     {
-        glDeleteProgram(m_object);
-    }
-
-    m_object = glCreateProgram();
-
-    for (const auto& object : objects)
-    {
-        glAttachShader(m_object, object);
-    }
-
-    glLinkProgram(m_object);
-
-    for (const auto& object : objects)
-    {
-        glDetachShader(m_object, object);
-    }
-
-    for (const auto& object : objects)
-    {
-        glDeleteShader(object);
-    }
-
-    GLint success = 0;
-    glGetProgramiv(m_object, GL_LINK_STATUS, &success);
-    if (success == GL_FALSE)
-    {
-        std::string msg("Error while linking program\n");
-        GLint logSize = 0;
-        glGetProgramiv(m_object, GL_INFO_LOG_LENGTH, &logSize);
-        char* info = new char[logSize + 1];
-        glGetShaderInfoLog(m_object, logSize, NULL, info);
-        msg += info;
-        delete[] info;
-        glDeleteProgram(m_object);
-        m_object = 0;
-        RAY_ERROR(RAY_ERROR_SHADER_PROGRAM << "\n" << msg);
-        throw ShaderException(msg.c_str());
+        String information = OpenGL::GetProgramInfoLog(m_object);
+        OpenGL::DeleteProgram(m_object);
+        throw ShaderException(RAY_ERROR_SHADER_PROGRAM + information);
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 GLuint Shader::CompileShader(const String& source, GLuint shaderType)
 {
-    GLuint object = glCreateShader(shaderType);
+    GLuint object = OpenGL::CreateShader(source, shaderType);
 
-    const GLchar* src = (const GLchar*)source.c_str();
-    glShaderSource(object, 1, &src, 0);
-    glCompileShader(object);
-
-    GLint success = 0;
-    glGetShaderiv(object, GL_COMPILE_STATUS, &success);
-
-    if (success == GL_FALSE)
+    if (OpenGL::CompileShader(object) == GL_FALSE)
     {
-        std::string msg;
-        GLint logSize = 0;
-        glGetShaderiv(object, GL_INFO_LOG_LENGTH, &logSize);
-        char* info = new char[logSize + 1];
-        glGetShaderInfoLog(object, logSize, NULL, info);
-        msg += "\n";
-        msg += info;
-        delete[] info;
-        glDeleteShader(object);
-        object = 0;
-        RAY_ERROR(RAY_ERROR_SHADER_COMPILATION << msg);
-        throw ShaderException(RAY_ERROR_SHADER_COMPILATION + msg);
+        String information = OpenGL::GetShaderInfoLog(object);
+        OpenGL::DeleteShader(object);
+        throw ShaderException(RAY_ERROR_SHADER_COMPILATION + information);
     }
 
     return (object);
@@ -258,61 +212,43 @@ String Shader::Source(const Path& filePath)
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::Uniform(const String& uniform, int data)
 {
-    GLint location = glGetUniformLocation(m_object, uniform.c_str());
-    if (location != -1)
-    {
-        glUniform1i(location, data);
-    }
+    GLint location = OpenGL::GetUniformLocation(m_object, uniform);
+    OpenGL::Uniform(location, data);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::Uniform(const String& uniform, float data)
 {
-    GLint location = glGetUniformLocation(m_object, uniform.c_str());
-    if (location != -1)
-    {
-        glUniform1f(location, data);
-    }
+    GLint location = OpenGL::GetUniformLocation(m_object, uniform);
+    OpenGL::Uniform(location, data);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::Uniform(const String& uniform, const Vec2f& data)
 {
-    GLint location = glGetUniformLocation(m_object, uniform.c_str());
-    if (location != -1)
-    {
-        glUniform2f(location, data.x, data.y);
-    }
+    GLint location = OpenGL::GetUniformLocation(m_object, uniform);
+    OpenGL::Uniform(location, data.x, data.y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::Uniform(const String& uniform, const Vec2i& data)
 {
-    GLint location = glGetUniformLocation(m_object, uniform.c_str());
-    if (location != -1)
-    {
-        glUniform2i(location, data.x, data.y);
-    }
+    GLint location = OpenGL::GetUniformLocation(m_object, uniform);
+    OpenGL::Uniform(location, data.x, data.y);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::Uniform(const String& uniform, const Vec3f& data)
 {
-    GLint location = glGetUniformLocation(m_object, uniform.c_str());
-    if (location != -1)
-    {
-        glUniform3f(location, data.x, data.y, data.z);
-    }
+    GLint location = OpenGL::GetUniformLocation(m_object, uniform);
+    OpenGL::Uniform(location, data.x, data.y, data.z);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Shader::Uniform(const String& uniform, const Vec3i& data)
 {
-    GLint location = glGetUniformLocation(m_object, uniform.c_str());
-    if (location != -1)
-    {
-        glUniform3i(location, data.x, data.y, data.z);
-    }
+    GLint location = OpenGL::GetUniformLocation(m_object, uniform);
+    OpenGL::Uniform(location, data.x, data.y, data.z);
 }
 
 } // namespace Ray
