@@ -2,7 +2,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Core/Shader.hpp"
-#include "Errors/Exception.hpp"
+#include "Errors/ShaderException.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -106,7 +106,7 @@ void Shader::CompileProgram(const Vector<GLuint>& objects)
         glDeleteProgram(m_object);
         m_object = 0;
         RAY_ERROR(RAY_ERROR_SHADER_PROGRAM << "\n" << msg);
-        throw std::runtime_error(msg.c_str());
+        throw ShaderException(msg.c_str());
     }
 }
 
@@ -135,7 +135,7 @@ GLuint Shader::CompileShader(const String& source, GLuint shaderType)
         glDeleteShader(object);
         object = 0;
         RAY_ERROR(RAY_ERROR_SHADER_COMPILATION << msg);
-        throw Exception(RAY_ERROR_SHADER_COMPILATION + msg);
+        throw ShaderException(RAY_ERROR_SHADER_COMPILATION + msg);
     }
 
     return (object);
@@ -148,7 +148,7 @@ String Shader::ReadFile(const Path& filePath)
 
     if (!file.is_open())
     {
-        throw Exception(RAY_ERROR_FAILED_OPEN_SHADER + filePath.string());
+        throw ShaderException(RAY_ERROR_FAILED_OPEN_SHADER + filePath.string());
     }
 
     StringStream buffer;
