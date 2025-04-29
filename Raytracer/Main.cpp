@@ -94,6 +94,8 @@ void LoadScene(std::string sceneName) {
     bool success = false;
     Mat4x4f xform;
 
+    Loader::LoadScene("Scenes/CornellBoxOriginal.scene", scene, renderOptions);
+
     if (ext == "scene")
         success = LoadSceneFromFile(sceneName, scene, renderOptions);
     else if (ext == "gltf")
