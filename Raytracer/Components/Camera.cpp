@@ -185,6 +185,18 @@ void Camera::SetFov(float val)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void Camera::SetUniforms(UniquePtr<Shader>& shader) const
+{
+    shader->Uniform("camera.position", position);
+    shader->Uniform("camera.right", right);
+    shader->Uniform("camera.up", up);
+    shader->Uniform("camera.forward", forward);
+    shader->Uniform("camera.fov", fov);
+    shader->Uniform("camera.focalDist", focalDist);
+    shader->Uniform("camera.aperture", aperture);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void Camera::UpdateCamera(void)
 {
     Vec3f forward_temp;
