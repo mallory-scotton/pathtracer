@@ -280,4 +280,16 @@ bool LibConfig::Setting::Value(const String& path, Vec3f& data) const
     return (false);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+int LibConfig::Setting::Length(void) const
+{
+    return (m_native.getLength());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+const LibConfig::Setting& LibConfig::Setting::At(int index) const
+{
+    return (m_native[index]);
+}
+
 } // namespace Ray
