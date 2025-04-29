@@ -11,7 +11,7 @@
 namespace Ray
 {
 
-// FIXME: C FUNCTION
+// FIXME: C FUNCTION + MATRIX 4x4 AS C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
 void Frustum(
     float left,
@@ -45,7 +45,7 @@ void Frustum(
     m16[15] = 0.0;
 }
 
-// FIXME: C FUNCTION
+// FIXME: C FUNCTION + MATRIX 4x4 AS C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
 void Perspective(
     float fovyInDegrees,
@@ -60,7 +60,7 @@ void Perspective(
     Frustum(-xmax, xmax, -ymax, ymax, znear, zfar, m16);
 }
 
-// FIXME: C FUNCTION
+// FIXME: C FUNCTION + VEC3F AS C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
 void Cross(const float* a, const float* b, float* r)
 {
@@ -69,14 +69,14 @@ void Cross(const float* a, const float* b, float* r)
     r[2] = a[0] * b[1] - a[1] * b[0];
 }
 
-// FIXME: C FUNCTION
+// FIXME: C FUNCTION + VEC3F AS C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
 float Dot(const float* a, const float* b)
 {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 }
 
-// FIXME: C FUNCTION
+// FIXME: C FUNCTION + VEC3F AS C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
 void Normalize(const float* a, float* r)
 {
@@ -86,7 +86,7 @@ void Normalize(const float* a, float* r)
     r[2] = a[2] * il;
 }
 
-// FIXME: C FUNCTION
+// FIXME: C FUNCTION + VEC3F AS C POINTERS + MATRIX 4x4 AS C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
 void LookAt(const float* eye, const float* at, const float* up, float* m16)
 {
@@ -199,6 +199,7 @@ void Camera::UpdateCamera(void)
     up = Vec3f::Normalize(Vec3f::Cross(right, forward));
 }
 
+// FIXME: MATRIX 4x4 AS C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
 void Camera::ComputeViewProjectionMatrix(
     float* view,
