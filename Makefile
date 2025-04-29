@@ -1,7 +1,7 @@
 TARGET				=	raytracer
 
 CXX					=	g++
-LDFLAGS				=	-lSDL2 -lGL -lGLEW -LExternal/OpenImageDenoise/lib -lOpenImageDenoise -ldl -lm -lpthread -lSDL2main
+LDFLAGS				=	-lSDL2 -lGL -lGLEW -LExternal/OpenImageDenoise/lib -lOpenImageDenoise -ldl -lm -lpthread -lSDL2main -lconfig++
 INCLUDES			=	-I. -IRaytracer -IExternal -IExternal/ImGui -IExternal/GL -IExternal/OpenImageDenoise/include
 CXXFLAGS			=	-std=gnu++20 -DRAY_DEBUG
 DFLAGS				=	-Wall -Wextra
