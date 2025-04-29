@@ -255,4 +255,64 @@ String Shader::Source(const Path& filePath)
     return (RemoveComments(processedContent));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, int data)
+{
+    GLint location = glGetUniformLocation(m_object, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform1i(location, data);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, float data)
+{
+    GLint location = glGetUniformLocation(m_object, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform1f(location, data);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, const Vec2f& data)
+{
+    GLint location = glGetUniformLocation(m_object, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform2f(location, data.x, data.y);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, const Vec2i& data)
+{
+    GLint location = glGetUniformLocation(m_object, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform2i(location, data.x, data.y);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, const Vec3f& data)
+{
+    GLint location = glGetUniformLocation(m_object, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform3f(location, data.x, data.y, data.z);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Shader::Uniform(const String& uniform, const Vec3i& data)
+{
+    GLint location = glGetUniformLocation(m_object, uniform.c_str());
+    if (location != -1)
+    {
+        glUniform3i(location, data.x, data.y, data.z);
+    }
+}
+
 } // namespace Ray
