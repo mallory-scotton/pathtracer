@@ -1,14 +1,27 @@
 // FIXME: THE WHOLE FILE
+///////////////////////////////////////////////////////////////////////////////
+// Dependencies
+///////////////////////////////////////////////////////////////////////////////
 #include <cstring>
-
 #include "Loaders/GLTFLoader.h"
 #include "Loaders/Loader.h"
+#include "Utils/LibConfig.hpp"
 
-namespace Ray {
+///////////////////////////////////////////////////////////////////////////////
+// Namespace Ray
+///////////////////////////////////////////////////////////////////////////////
+namespace Ray
+{
+
 static const int kMaxLineLength = 2048;
 
-bool LoadSceneFromFile(const std::string& filename, Scene* scene,
-                       RenderOptions& renderOptions) {
+///////////////////////////////////////////////////////////////////////////////
+bool LoadSceneFromFile(
+    const std::string& filename,
+    Scene* scene,
+    RenderOptions& renderOptions
+) {
+
     FILE* file;
     file = fopen(filename.c_str(), "r");
 
@@ -501,4 +514,100 @@ bool LoadSceneFromFile(const std::string& filename, Scene* scene,
 
     return true;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+void Loader::ParseSceneMaterial(const LibConfig::Setting& cfg)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+void Loader::ParseSceneRendererOptions(const LibConfig::Setting& cfg)
+{}
+
+// FIXME: C POINTERS
+///////////////////////////////////////////////////////////////////////////////
+void Loader::ParseSceneCamera(const LibConfig::Setting& cfg, Scene* scene)
+{
+    Vec3f position, lookAt;
+    float fov, aperture = 0.f, focalDist = 1.f;
+
+    cfg.Value("position", position);
+    cfg.Value("lookat", lookAt);
+    cfg.Value("fov", fov);
+    cfg.Value("aperture", aperture);
+    cfg.Value("focalDist", focalDist);
+
+    delete scene->camera;
+
+    scene->AddCamera(position, lookAt, fov);
+    scene->camera->aperture = aperture;
+    scene->camera->focalDist = focalDist;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Loader::ParseSceneLight(const LibConfig::Setting& cfg)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+void Loader::ParseSceneMesh(const LibConfig::Setting& cfg)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+void Loader::ParseSceneGLTF(const LibConfig::Setting& cfg)
+{}
+
+// FIXME: C POINTERS
+///////////////////////////////////////////////////////////////////////////////
+bool Loader::LoadScene(
+    const Path& filename,
+    Scene* scene,
+    RenderOptions& options
+)
+{
+    LibConfig config(filename);
+
+    if (const auto& renderer = config.Lookup("renderer"))
+    {
+        ParseSceneRendererOptions(*renderer);
+    }
+
+    if (const auto& camera = config.Lookup("camera"))
+    {
+        ParseSceneCamera(*camera, scene);
+    }
+
+    if (const auto& materials = config.Lookup("materials"))
+    {
+        for (int i = 0; i < materials->Length(); i++)
+        {
+            ParseSceneMaterial(materials->At(i));
+        }
+    }
+
+    if (const auto& meshes = config.Lookup("meshes"))
+    {
+        for (int i = 0; i < meshes->Length(); i++)
+        {
+            ParseSceneMesh(meshes->At(i));
+        }
+    }
+
+    if (const auto& lights = config.Lookup("lights"))
+    {
+        for (int i = 0; i < lights->Length(); i++)
+        {
+            ParseSceneLight(lights->At(i));
+        }
+    }
+
+    if (const auto& gltfs = config.Lookup("gltfs"))
+    {
+        for (int i = 0; i < gltfs->Length(); i++)
+        {
+            ParseSceneGLTF(gltfs->At(i));
+        }
+    }
+
+    return (true);
+}
+
 }  // namespace Ray
