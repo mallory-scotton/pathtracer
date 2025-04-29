@@ -47,7 +47,7 @@ public:
     /// \param shader
     ///
     ///////////////////////////////////////////////////////////////////////////
-    void Draw(Shader* shader);
+    void Draw(UniquePtr<Shader>& shader);
 };
 
 } // namespace Ray

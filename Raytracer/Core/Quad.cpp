@@ -45,7 +45,7 @@ Quad::Quad(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Quad::Draw(Shader* shader)
+void Quad::Draw(UniquePtr<Shader>& shader)
 {
     shader->Use();
     glBindVertexArray(m_vao);
