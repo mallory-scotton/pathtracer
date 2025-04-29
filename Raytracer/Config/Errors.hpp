@@ -33,6 +33,7 @@
 #define RAY_ERROR_MISSING_MODEL "Error: Model not found: "
 #define RAY_ERROR_MISSING_SHADER "Error: Shader not found: "
 #define RAY_ERROR_FAILED_OPEN_SHADER "Failed to open shader file: "
+#define RAY_ERROR_SHADER_PROGRAM "Failed while linking shaders: "
 #define RAY_ERROR_SCENE_PARSE "Error: Failed to parse scene file: "
 #define RAY_ERROR_INVALID_GEOMETRY "Error: Invalid geometry definition: "
 
