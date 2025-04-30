@@ -29,31 +29,54 @@ bool LoadSceneFromFile(const std::string& filename, Scene* scene,
 ///////////////////////////////////////////////////////////////////////////////
 class Loader
 {
+private:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    struct MaterialData
+    {
+        Material material;
+        int id;
+    };
+
 public:
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
     /// \param cfg
+    /// \param materials
     ///
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneMaterial(const LibConfig::Setting& cfg);
+    static void ParseSceneMaterial(
+        const LibConfig::Setting& cfg,
+        Map<String, MaterialData>& materials,
+        Scene* scene
+    );
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
     /// \param cfg
+    /// \param options
+    /// \param scene
     ///
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneRendererOptions(const LibConfig::Setting& cfg);
+    static void ParseSceneRendererOptions(
+        const LibConfig::Setting& cfg,
+        RenderOptions& options,
+        Scene* scene
+    );
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
     /// \param cfg
+    /// \param scene
     ///
     /// \return
     ///
@@ -64,11 +87,12 @@ public:
     /// \brief
     ///
     /// \param cfg
+    /// \param scene
     ///
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneLight(const LibConfig::Setting& cfg);
+    static void ParseSceneLight(const LibConfig::Setting& cfg, Scene* scene);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -78,7 +102,11 @@ public:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneMesh(const LibConfig::Setting& cfg);
+    static void ParseSceneMesh(
+        const LibConfig::Setting& cfg,
+        Map<String, MaterialData>& materials,
+        Scene* scene
+    );
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
