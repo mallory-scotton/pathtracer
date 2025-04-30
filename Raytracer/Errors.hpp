@@ -7,3 +7,5 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Errors/Exception.hpp"
+#include "Errors/ParsingException.hpp"
+#include "Errors/ShaderException.hpp"
