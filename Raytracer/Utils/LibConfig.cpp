@@ -69,6 +69,12 @@ bool LibConfig::Value(const String& path, int& data) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+bool LibConfig::Value(const String& path, bool& data) const
+{
+    return (m_config.lookupValue(path, data));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 bool LibConfig::Value(const String& path, String& data) const
 {
     return (m_config.lookupValue(path, data));
@@ -193,6 +199,12 @@ bool LibConfig::Setting::Value(const String& path, int& data) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+bool LibConfig::Setting::Value(const String& path, bool& data) const
+{
+    return (m_native.lookupValue(path, data));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 bool LibConfig::Setting::Value(const String& path, String& data) const
 {
     return (m_native.lookupValue(path, data));
@@ -281,13 +293,63 @@ bool LibConfig::Setting::Value(const String& path, Vec3f& data) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+bool LibConfig::Setting::Value(const String& path, Vec4i& data) const
+{
+    if (m_native.exists(path))
+    {
+        const Setting& vector = m_native.lookup(path);
+
+        if (
+            !vector.Exists("x") || !vector.Exists("y") ||
+            !vector.Exists("z") || !vector.Exists("w")
+        )
+        {
+            return (false);
+        }
+
+        vector.Value("x", data.x);
+        vector.Value("y", data.y);
+        vector.Value("z", data.z);
+        vector.Value("w", data.w);
+
+        return (true);
+    }
+    return (false);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+bool LibConfig::Setting::Value(const String& path, Vec4f& data) const
+{
+    if (m_native.exists(path))
+    {
+        const Setting& vector = m_native.lookup(path);
+
+        if (
+            !vector.Exists("x") || !vector.Exists("y") ||
+            !vector.Exists("z") || !vector.Exists("w")
+        )
+        {
+            return (false);
+        }
+
+        vector.Value("x", data.x);
+        vector.Value("y", data.y);
+        vector.Value("z", data.z);
+        vector.Value("w", data.w);
+
+        return (true);
+    }
+    return (false);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 int LibConfig::Setting::Length(void) const
 {
     return (m_native.getLength());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-const LibConfig::Setting& LibConfig::Setting::At(int index) const
+LibConfig::Setting LibConfig::Setting::At(int index) const
 {
     return (m_native[index]);
 }
