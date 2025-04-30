@@ -7,31 +7,33 @@ renderer:
     maxdepth = 2;
     tilewidth = 320;
     tileheight = 180;
-    envmapfile = "HDR/sunset.hdr";
+    envmapfile = "Assets/HDR/sunset.hdr";
     envmapintensity = 5.0;
 }
 
 meshes = (
     {
-        file = "teapot/Mesh000.obj";
+        file = "Assets/teapot/Mesh000.obj";
         material = "white";
     },
     {
-        file = "teapot/Mesh001.obj";
+        file = "Assets/teapot/Mesh001.obj";
         material = "white";
     },
     {
-        file = "teapot/Mesh050.obj";
+        file = "Assets/teapot/Mesh050.obj";
         material = "checker";
     }
 )
 
 materials = (
     {
-        albedotexture = "teapot/checker.png";
+        name = "checker";
+        albedotexture = "Assets/teapot/checker.png";
         roughness = 0.5;
     },
     {
+        name = "white";
         color = {
             x: 0.0;
             y: 0.29;
