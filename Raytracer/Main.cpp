@@ -94,14 +94,14 @@ void LoadScene(std::string sceneName) {
     bool success = false;
     Mat4x4f xform;
 
-    Loader::LoadScene("Scenes/CornellBoxOriginal.scene", scene, renderOptions);
+    success = Loader::LoadScene("Scenes/Teapot.scene", scene, renderOptions);
 
-    if (ext == "scene")
-        success = LoadSceneFromFile(sceneName, scene, renderOptions);
-    else if (ext == "gltf")
-        success = LoadGLTF(sceneName, scene, renderOptions, xform, false);
-    else if (ext == "glb")
-        success = LoadGLTF(sceneName, scene, renderOptions, xform, true);
+    // if (ext == "scene")
+    //    success = LoadSceneFromFile(sceneName, scene, renderOptions);
+    // else if (ext == "gltf")
+    //    success = LoadGLTF(sceneName, scene, renderOptions, xform, false);
+    // else if (ext == "glb")
+    //    success = LoadGLTF(sceneName, scene, renderOptions, xform, true);
 
     if (!success) {
         printf("Unable to load scene\n");
