@@ -4,6 +4,11 @@
 #include "Core/Raytracer.hpp"
 #include "Errors.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "ImGui/stb_image.h"
+#include "ImGui/stb_image_write.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
