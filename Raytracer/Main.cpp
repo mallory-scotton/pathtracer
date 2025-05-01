@@ -14,7 +14,7 @@
 #include "ImGui/imgui_impl_sdl.h"
 #include "ImGui/tinydir.h"
 #include "Loaders/GLTFLoader.h"
-#include "Loaders/Loader.h"
+#include "Loaders/Loader.hpp"
 #include "Core/Context.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
