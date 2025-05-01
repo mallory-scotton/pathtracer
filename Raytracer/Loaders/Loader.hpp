@@ -22,10 +22,8 @@ namespace Ray
 class Scene;
 
 ///////////////////////////////////////////////////////////////////////////////
-// FIXME: TO REMOVE
-bool LoadSceneFromFile(const std::string& filename, Scene* scene,
-                       RenderOptions& renderOptions);
-
+/// \brief
+///
 ///////////////////////////////////////////////////////////////////////////////
 class Loader
 {
@@ -116,7 +114,11 @@ public:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneGLTF(const LibConfig::Setting& cfg);
+    static void ParseSceneGLTF(
+        const LibConfig::Setting& cfg,
+        Scene* scene,
+        RenderOptions& options
+    );
 
 public:
     ///////////////////////////////////////////////////////////////////////////
