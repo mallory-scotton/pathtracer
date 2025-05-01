@@ -1,0 +1,33 @@
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 2;
+    tilewidth = 256;
+    tileheight = 144;
+    envmapfile = "Assets/HDR/san_giuseppe_bridge_blurred.hdr";
+    envmapintensity = 2.0;
+}
+
+camera:
+{
+    position = {
+        x: -4.29;
+        y: 0.8;
+        z: -0.4;
+    };
+    lookat = {
+        x: 0.0;
+        y: 0.8;
+        z: -0.4;
+    };
+    fov = 45.0;
+}
+
+gltfs = (
+    {
+        file = "Assets/jinx.gltf";
+    }
+)
