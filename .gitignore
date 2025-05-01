@@ -5,3 +5,4 @@ raytracer
 .vscode/
 Assets/
 *.ppm
+Plugins/
