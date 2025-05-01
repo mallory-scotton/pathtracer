@@ -4,6 +4,7 @@
 #include "Core/Renderer.h"
 #include "Components/Scene.h"
 #include "OpenImageDenoise/oidn.hpp"
+#include "Utils/OpenGL.hpp"
 
 namespace Ray
 {
@@ -271,7 +272,7 @@ namespace Ray
 
         // Create FBOs for path trace shader
         glGenFramebuffers(1, &pathTraceFBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, pathTraceFBO);
+        OpenGL::BindFramebuffer(pathTraceFBO);
 
         // Create Texture for FBO
         glGenTextures(1, &pathTraceTexture);
@@ -284,7 +285,7 @@ namespace Ray
 
         // Create FBOs for low res preview shader
         glGenFramebuffers(1, &pathTraceFBOLowRes);
-        glBindFramebuffer(GL_FRAMEBUFFER, pathTraceFBOLowRes);
+        OpenGL::BindFramebuffer(pathTraceFBOLowRes);
 
         // Create Texture for FBO
         glGenTextures(1, &pathTraceTextureLowRes);
@@ -299,7 +300,7 @@ namespace Ray
 
         // Create FBOs for accum buffer
         glGenFramebuffers(1, &accumFBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, accumFBO);
+        OpenGL::BindFramebuffer(accumFBO);
 
         // Create Texture for FBO
         glGenTextures(1, &accumTexture);
@@ -312,7 +313,7 @@ namespace Ray
 
         // Create FBOs for tile output shader
         glGenFramebuffers(1, &outputFBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, outputFBO);
+        OpenGL::BindFramebuffer(outputFBO);
 
         // Create Texture for FBO
         glGenTextures(1, &tileOutputTexture[0]);
@@ -506,7 +507,7 @@ namespace Ray
         if (scene->dirty)
         {
             // Renders a low res preview if camera/instances are modified
-            glBindFramebuffer(GL_FRAMEBUFFER, pathTraceFBOLowRes);
+            OpenGL::BindFramebuffer(pathTraceFBOLowRes);
             glViewport(0, 0, windowSize.x * pixelRatio, windowSize.y * pixelRatio);
             quad->Draw(pathTraceShaderLowRes);
 
@@ -516,23 +517,17 @@ namespace Ray
         }
         else
         {
-            // Renders to pathTraceTexture while using previously accumulated samples from accumTexture
-            // Rendering is done a tile per frame, so if a 500x500 image is rendered with a tileWidth and tileHeight of 250 then, all tiles (for a single sample)
-            // get rendered after 4 frames
-            glBindFramebuffer(GL_FRAMEBUFFER, pathTraceFBO);
+            OpenGL::BindFramebuffer(pathTraceFBO);
             glViewport(0, 0, tileWidth, tileHeight);
             glBindTexture(GL_TEXTURE_2D, accumTexture);
             quad->Draw(pathTraceShader);
 
-            // pathTraceTexture is copied to accumTexture and re-used as input for the first step.
-            glBindFramebuffer(GL_FRAMEBUFFER, accumFBO);
+            OpenGL::BindFramebuffer(accumFBO);
             glViewport(tileWidth * tile.x, tileHeight * tile.y, tileWidth, tileHeight);
             glBindTexture(GL_TEXTURE_2D, pathTraceTexture);
             quad->Draw(outputShader);
 
-            // Here we render to tileOutputTexture[currentBuffer] but display tileOutputTexture[1-currentBuffer] until all tiles are done rendering
-            // When all tiles are rendered, we flip the bound texture and start rendering to the other one
-            glBindFramebuffer(GL_FRAMEBUFFER, outputFBO);
+            OpenGL::BindFramebuffer(outputFBO);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tileOutputTexture[currentBuffer], 0);
             glViewport(0, 0, renderSize.x, renderSize.y);
             glBindTexture(GL_TEXTURE_2D, accumTexture);
@@ -726,7 +721,7 @@ namespace Ray
             frameCounter = 1;
 
             // Clear out the accumulated texture for rendering a new image
-            glBindFramebuffer(GL_FRAMEBUFFER, accumFBO);
+            OpenGL::BindFramebuffer(accumFBO);
             glClear(GL_COLOR_BUFFER_BIT);
         }
         else // Update render state

@@ -269,4 +269,10 @@ String OpenGL::GetShaderInfoLog(GLuint shader)
     return (info);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::BindFramebuffer(GLuint fbo)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+}
+
 } // namespace Ray

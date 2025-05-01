@@ -4,6 +4,7 @@
 #include "Core/Raytracer.hpp"
 #include "Utils/FileSystem.hpp"
 #include "Core/Context.hpp"
+#include "Utils/OpenGL.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -64,7 +65,7 @@ void Raytracer::Run(void)
 
         ctx.renderer->Render();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        OpenGL::BindFramebuffer(0);
         glViewport(
             0, 0,
             ctx.scene->renderOptions.windowResolution.x,
