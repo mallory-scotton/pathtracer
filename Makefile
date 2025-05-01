@@ -20,7 +20,9 @@ INCLUDES			=	-I. \
 CXXFLAGS			=	-std=gnu++20 -DRAY_DEBUG
 DFLAGS				=	-Wall -Wextra
 
-FLAGS				=	$(LDFLAGS) $(INCLUDES) $(CXXFLAGS) $(DFLAGS)
+FLAGS				=	$(LDFLAGS) $(INCLUDES) $(CXXFLAGS) $(DFLAGS) -rdynamic
+
+PLUGIN_FLAGS		=	-fPIC -fno-gnu-unique
 
 SOURCES				=	$(shell find Raytracer -type f -iname "*.cpp" \
 							-not -path "Raytracer/Plugins/*") \
@@ -59,7 +61,7 @@ $(TARGET): $(OBJECTS)
 		$(patsubst %.cpp,%.o,$(filter %.cpp,$(PLUGIN_SOURCES))) \
 		$(patsubst %.c,%.o,$(filter %.c,$(PLUGIN_SOURCES))))
 	@for src in $(PLUGIN_SOURCES); do \
-		$(CXX) -fPIC -c $$src -o $${src%.*}.o $(FLAGS); \
+		$(CXX) $(PLUGIN_FLAGS) -c $$src -o $${src%.*}.o $(FLAGS); \
 	done
 	$(CXX) -shared -o Plugins/$@ $(PLUGIN_OBJECTS) $(FLAGS)
 
@@ -71,6 +73,7 @@ clean:
 
 fclean: clean
 	rm -rf $(TARGET)
+	rm -rf Plugins/
 
 re: fclean all
 
