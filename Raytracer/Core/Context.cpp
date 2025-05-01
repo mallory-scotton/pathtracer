@@ -3,6 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Core/Context.hpp"
 #include "Utils/FileSystem.hpp"
+#include "Loaders/Loader.hpp"
+#include "Errors/Exception.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -24,6 +26,8 @@ Context::Context(void)
     : m_shaderPath(DEFAULT_SHADER_PATH)
     , m_assetsPath(DEFAULT_ASSETS_PATH)
     , m_scenesPath(DEFAULT_SCENES_PATH)
+    , scene(std::make_unique<Scene>())
+    , shutdown(false)
 {
     if (!Fs::Exists(m_shaderPath))
     {
@@ -39,12 +43,28 @@ Context::Context(void)
     {
         RAY_WARN(m_scenesPath << " doesn't exists !");
     }
+
+    Loader::LoadScene(
+        "Scenes/Teapot.scene", scene.get(), scene->renderOptions
+    );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Context::Initialize(void)
 {
     RAY_TRACE("Initializing Context...");
+
+    renderer = std::make_unique<Renderer>(scene.get(), m_shaderPath);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Context::Shutdown(void)
+{
+    if (shutdown == false)
+    {
+        RAY_TRACE("Shuting down...");
+        shutdown = true;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
