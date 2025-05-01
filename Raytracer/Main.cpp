@@ -12,6 +12,8 @@
 #include "Loaders/GLTFLoader.h"
 #include "Loaders/Loader.hpp"
 #include "Core/Context.hpp"
+#include "Core/Raytracer.hpp"
+#include "Errors.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -190,116 +192,124 @@ void MainLoop(void* arg) {
     SDL_GL_SwapWindow(loopdata.mWindow);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char* argv[])
 {
-    srand((unsigned int)time(0));
-
-    std::string sceneFile;
-
-    for (int i = 1; i < argc; ++i) {
-        const std::string arg(argv[i]);
-        if (arg == "-s" || arg == "--scene") {
-            sceneFile = argv[++i];
-        } else if (arg[0] == '-') {
-            printf("Unknown option %s \n'", arg.c_str());
-            exit(0);
-        }
-    }
-
-    if (!sceneFile.empty()) {
-        scene = new Scene();
-        GetEnvMaps();
-        LoadScene(sceneFile);
-    } else {
-        GetSceneFiles();
-        GetEnvMaps();
-        LoadScene(sceneFiles[sampleSceneIdx]);
-    }
-
-    // Setup SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) !=
-        0) {
-        printf("Error: %s\n", SDL_GetError());
-        return -1;
-    }
-
-    LoopData loopdata;
-
-#ifdef __APPLE__
-    // GL 3.2 Core + GLSL 150
-    const char* glsl_version = "#version 150";
-    SDL_GL_SetAttribute(
-        SDL_GL_CONTEXT_FLAGS,
-        SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);  // Always required on Mac
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                        SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-#else
-    // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                        SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-#endif
-
-    // Create window with graphics context
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-    SDL_DisplayMode current;
-    SDL_GetCurrentDisplayMode(0, &current);
-    SDL_WindowFlags window_flags =
-        (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
-                          SDL_WINDOW_ALLOW_HIGHDPI);
-    loopdata.mWindow = SDL_CreateWindow(
-        "GLSL PathTracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        renderOptions.windowResolution.x, renderOptions.windowResolution.y,
-        window_flags);
-
-    // Query actual drawable window size
-    int w, h;
-    SDL_GL_GetDrawableSize(loopdata.mWindow, &w, &h);
-    renderOptions.windowResolution.x = w;
-    renderOptions.windowResolution.y = h;
-
-    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-
-    loopdata.mGLContext = SDL_GL_CreateContext(loopdata.mWindow);
-    if (!loopdata.mGLContext) {
-        fprintf(stderr, "Failed to initialize GL context!\n");
-        return 1;
-    }
-    SDL_GL_SetSwapInterval(0);  // Disable vsync
-
-    // Initialize OpenGL loader
-#if GL_VERSION_3_2
-    bool err = gl3wInit() != 0;
-
-    if (err) {
-        fprintf(stderr, "Failed to initialize OpenGL loader!\n");
-        return 1;
-    }
-#endif
-
-    if (!InitRenderer())
+    try
     {
-        return 1;
-    }
+        Raytracer application(argc, argv);
 
-    while (!done)
+        application.Run();
+    }
+    catch (const Ray::Exception& error)
     {
-        MainLoop(&loopdata);
+        RAY_ERROR(error.what());
+        return (RAY_EXIT_FAILURE);
+    }
+    catch (const std::exception& error)
+    {
+        RAY_FATAL(error.what());
+        return (RAY_EXIT_FAILURE);
     }
 
-    delete renderer;
-    delete scene;
+    return (RAY_EXIT_SUCCESS);
 
-    // Cleanup
-    SDL_GL_DeleteContext(loopdata.mGLContext);
-    SDL_DestroyWindow(loopdata.mWindow);
-    SDL_Quit();
-    return 0;
+//     srand((unsigned int)time(0));
+
+//     std::string sceneFile;
+
+//     for (int i = 1; i < argc; ++i) {
+//         const std::string arg(argv[i]);
+//         if (arg == "-s" || arg == "--scene") {
+//             sceneFile = argv[++i];
+//         } else if (arg[0] == '-') {
+//             printf("Unknown option %s \n'", arg.c_str());
+//             exit(0);
+//         }
+//     }
+
+//     if (!sceneFile.empty()) {
+//         scene = new Scene();
+//         GetEnvMaps();
+//         LoadScene(sceneFile);
+//     } else {
+//         GetSceneFiles();
+//         GetEnvMaps();
+//         LoadScene(sceneFiles[sampleSceneIdx]);
+//     }
+
+//     // Setup SDL
+//     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) !=
+//         0) {
+//         printf("Error: %s\n", SDL_GetError());
+//         return -1;
+//     }
+
+//     LoopData loopdata;
+
+
+//     // GL 3.0 + GLSL 130
+//     const char* glsl_version = "#version 130";
+//     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+//     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+//                         SDL_GL_CONTEXT_PROFILE_CORE);
+//     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+//     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+
+//     // Create window with graphics context
+//     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+//     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+//     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+//     SDL_DisplayMode current;
+//     SDL_GetCurrentDisplayMode(0, &current);
+//     SDL_WindowFlags window_flags =
+//         (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
+//                           SDL_WINDOW_ALLOW_HIGHDPI);
+//     loopdata.mWindow = SDL_CreateWindow(
+//         "GLSL PathTracer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+//         renderOptions.windowResolution.x, renderOptions.windowResolution.y,
+//         window_flags);
+
+//     // Query actual drawable window size
+//     int w, h;
+//     SDL_GL_GetDrawableSize(loopdata.mWindow, &w, &h);
+//     renderOptions.windowResolution.x = w;
+//     renderOptions.windowResolution.y = h;
+
+//     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+
+//     loopdata.mGLContext = SDL_GL_CreateContext(loopdata.mWindow);
+//     if (!loopdata.mGLContext) {
+//         fprintf(stderr, "Failed to initialize GL context!\n");
+//         return 1;
+//     }
+//     SDL_GL_SetSwapInterval(0);  // Disable vsync
+
+//     // Initialize OpenGL loader
+// #if GL_VERSION_3_2
+//     bool err = gl3wInit() != 0;
+
+//     if (err) {
+//         fprintf(stderr, "Failed to initialize OpenGL loader!\n");
+//         return 1;
+//     }
+// #endif
+
+//     if (!InitRenderer())
+//     {
+//         return 1;
+//     }
+
+//     while (!done)
+//     {
+//         MainLoop(&loopdata);
+//     }
+
+//     delete renderer;
+//     delete scene;
+
+//     // Cleanup
+//     SDL_GL_DeleteContext(loopdata.mGLContext);
+//     SDL_DestroyWindow(loopdata.mWindow);
+//     SDL_Quit();
+//     return 0;
 }
