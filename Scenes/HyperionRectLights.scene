@@ -1,0 +1,633 @@
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 3;
+    tilewidth = 256;
+    tileheight = 144;
+    envmapintensity = 1.0;
+}
+
+camera:
+{
+    position = {
+        x: -15.0;
+        y: 15.0;
+        z: 0.0;
+    };
+    lookat = {
+        x: 0.0;
+        y: 0.0;
+        z: 0.0;
+    };
+    fov = 60.0;
+}
+
+materials = (
+    {
+        name = "black";
+        color = {
+            x: 0.0;
+            y: 0.0;
+            z: 0.0;
+        };
+        roughness = 0.001;
+        metallic = 0.01;
+    },
+    {
+        name = "orange";
+        color = {
+            x: 1.0;
+            y: 0.186;
+            z: 0.0;
+        };
+        roughness = 0.001;
+        clearcoat = 1.0;
+        clearcoatgloss = 1.0;
+    },
+    {
+        name = "glass";
+        color = {
+            x: 1.0;
+            y: 1.0;
+            z: 1.0;
+        };
+        spectrans = 1.0;
+        roughness = 0.0;
+        ior = 1.45;
+    },
+    {
+        name = "silver";
+        color = {
+            x: 0.9;
+            y: 0.9;
+            z: 0.9;
+        };
+        roughness = 0.001;
+        metallic = 1.0;
+    },
+    {
+        name = "ring_silver";
+        color = {
+            x: 1.0;
+            y: 1.0;
+            z: 1.0;
+        };
+        roughness = 0.001;
+        metallic = 1.0;
+    },
+    {
+        name = "red";
+        color = {
+            x: 1.0;
+            y: 0.0;
+            z: 0.0;
+        };
+        metallic = 0.2;
+        roughness = 0.5;
+    },
+    {
+        name = "off_white";
+        color = {
+            x: 1.0;
+            y: 0.94;
+            z: 0.8;
+        };
+    },
+    {
+        name = "ping";
+        color = {
+            x: 0.93;
+            y: 0.89;
+            z: 0.85;
+        };
+        roughness = 1.0;
+        subsurface = 1.0;
+    },
+    {
+        name = "marb1";
+        color = {
+            x: 0.026;
+            y: 0.147;
+            z: 0.075;
+        };
+        roughness = 0.01;
+        clearcoat = 1.0;
+        clearcoatgloss = 1.0;
+    },
+    {
+        name = "marb2";
+        color = {
+            x: 0.099;
+            y: 0.24;
+            z: 0.134;
+        };
+        roughness = 0.01;
+        clearcoat = 1.0;
+        clearcoatgloss = 1.0;
+    }
+)
+
+meshes = (
+    {
+        name = "Glass Ball";
+        file = "Assets/hyperion/glass.obj";
+        material = "glass";
+        position = {
+            x: -0.57;
+            y: 1.87;
+            z: 6.55;
+        };
+    },
+    {
+        name = "Chrome Ball";
+        file = "Assets/hyperion/chrome.obj";
+        material = "silver";
+        position = {
+            x: 0.4;
+            y: 1.86;
+            z: -6.59;
+        };
+    },
+    {
+        name = "Platform";
+        file = "Assets/hyperion/plate.obj";
+        material = "red";
+        position = {
+            x: 0.0;
+            y: 0.36;
+            z: 0.0;
+        };
+    },
+    {
+        name = "Floor";
+        file = "Assets/hyperion/floor.obj";
+        material = "red";
+    },
+    {
+        name = "Orange Ball";
+        file = "Assets/hyperion/orange.obj";
+        material = "orange";
+        position = {
+            x: 1.646;
+            y: 1.6861;
+            z: 3.5662;
+        };
+    },
+    {
+        name = "Ring 1";
+        file = "Assets/hyperion/ring1.obj";
+        material = "ring_silver";
+        position = {
+            x: -0.308737;
+            y: 0.805763;
+            z: -1.42968;
+        };
+    },
+    {
+        name = "Ring 2";
+        file = "Assets/hyperion/ring2.obj";
+        material = "ring_silver";
+        position = {
+            x: -0.6706;
+            y: 0.808472;
+            z: 0.626798;
+        };
+    },
+    {
+        name = "Ring 3";
+        file = "Assets/hyperion/ring3.obj";
+        material = "ring_silver";
+        position = {
+            x: -1.44541;
+            y: 0.808472;
+            z: 1.72607;
+        };
+    },
+    {
+        name = "Marble 1";
+        file = "Assets/hyperion/marb1.obj";
+        material = "marb1";
+        position = {
+            x: -3.78;
+            y: 0.88;
+            z: -0.84;
+        };
+    },
+    {
+        name = "Marble 2";
+        file = "Assets/hyperion/marb2.obj";
+        material = "marb2";
+        position = {
+            x: -3.746;
+            y: 0.969453;
+            z: 0.974294;
+        };
+    },
+    {
+        name = "Ping Pong";
+        file = "Assets/hyperion/pingpong.obj";
+        material = "ping";
+        position = {
+            x: -3.14;
+            y: 1.51;
+            z: -4.12;
+        };
+    }
+)
+
+lights = (
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: -8.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: -8.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: -7.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: -7.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: -7.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: -6.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: -6.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: -6.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: -5.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: -5.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: -5.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: -4.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: -4.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: -4.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: -3.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: -3.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: -3.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: -2.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: -2.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: -2.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: -1.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: -1.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: -1.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: -0.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 0.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 0.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 0.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 1.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 1.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 1.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 2.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 2.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 2.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 3.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 3.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 3.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 4.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 4.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 4.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 5.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 5.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 5.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 6.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 6.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 6.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 7.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 7.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 7.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    },
+    {
+        type = "quad";
+        position = {
+            x: -2.04973;
+            y: 5.0;
+            z: 8.0;
+        };
+        v1 = {
+            x: 2.040;
+            y: 5.0;
+            z: 8.0;
+        };
+        v2 = {
+            x: -2.04973;
+            y: 5.0;
+            z: 8.5;
+        };
+        emission = {
+            x: 5.0;
+            y: 5.0;
+            z: 5.0;
+        };
+    }
+)
