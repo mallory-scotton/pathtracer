@@ -55,12 +55,23 @@ void Raytracer::Run(void)
             plugin->Update(0.f);
         }
 
+        ctx.renderer->Update(0.f);
+
         for (const auto& plugin : m_plugins)
         {
             plugin->PreRender();
         }
 
-        // Rendering
+        ctx.renderer->Render();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(
+            0, 0,
+            ctx.scene->renderOptions.windowResolution.x,
+            ctx.scene->renderOptions.windowResolution.y
+        );
+
+        ctx.renderer->Present();
 
         for (const auto& plugin : m_plugins)
         {
