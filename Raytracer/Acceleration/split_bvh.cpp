@@ -495,26 +495,5 @@ void SplitBvh::InitNodeAllocator(size_t maxnum) {
     m_root = &m_nodes[0];
 }
 
-void SplitBvh::PrintStatistics(std::ostream& os) const {
-    size_t num_triangles = (m_num_nodes_for_regular + 1) / 2;
-    size_t num_refs = m_packed_indices.size();
-    os << "Class name: " << "SplitBvh\n";
-    os << "SAH: " << "enabled (forced)\n";
-    os << "SAH bins: " << m_num_bins << "\n";
-    os << "Max split depth: " << m_max_split_depth << "\n";
-    os << "Min node overlap: " << m_min_overlap << "\n";
-    os << "Number of triangles: " << num_triangles << "\n";
-    os << "Number of triangle refs: " << num_refs << "\n";
-    os << "Ref duplication: "
-       << ((float)(num_refs - num_triangles) / num_triangles) * 100.f << "%\n";
-    os << "Number of nodes: " << m_nodecnt << "\n";
-    os << "Number of nodes in corresponding non-split BVH: "
-       << m_num_nodes_for_regular << "\n";
-    os << "Node overhead: "
-       << ((float)(m_nodecnt - m_num_nodes_for_regular) /
-           m_num_nodes_for_regular) *
-              100.f
-       << "%\n";
-    os << "Tree height: " << GetHeight() << "\n";
-}
+
 }  // namespace Ray

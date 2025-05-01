@@ -46,9 +46,6 @@ class Bvh {
     // some BVH implementations (like SBVH)
     virtual size_t GetNumIndices() const;
 
-    // Print BVH statistics
-    virtual void PrintStatistics(std::ostream& os) const;
-
    protected:
     // Build function
     virtual void BuildImpl(BoundingBox const* bounds, int numbounds);

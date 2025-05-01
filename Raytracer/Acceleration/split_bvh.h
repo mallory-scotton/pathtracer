@@ -38,9 +38,6 @@ class SplitBvh : public Bvh {
     bool SplitPrimRef(PrimRef const& ref, int axis, float split,
                       PrimRef& leftref, PrimRef& rightref) const;
 
-    // Print BVH statistics
-    void PrintStatistics(std::ostream& os) const override;
-
    protected:
     Node* AllocateNode() override;
     void InitNodeAllocator(size_t maxnum) override;
