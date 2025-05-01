@@ -14,4 +14,31 @@
 namespace Ray
 {
 
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Quaternion<T>::Quaternion(void)
+    : x(T(0))
+    , y(T(0))
+    , z(T(0))
+    , w(T(1))
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Quaternion<T>::Quaternion(const T& x, const T& y, const T& z, const T& w)
+    : x(x)
+    , y(y)
+    , z(z)
+    , w(w)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Quaternion<T>::Quaternion(const Vec4<T>& vector)
+    : x(vector.x)
+    , y(vector.y)
+    , z(vector.z)
+    , w(vector.w)
+{}
+
 } // namespace Ray
