@@ -18,7 +18,8 @@ INCLUDES			=	-I. \
 						-IExternal/GL \
 						-IExternal/OpenImageDenoise/include
 CXXFLAGS			=	-std=gnu++20 -DRAY_DEBUG
-DFLAGS				=	-Wall -Wextra
+DFLAGS				=
+WARNING_FLAGS		=	-Wall -Wextra
 
 FLAGS				=	$(LDFLAGS) $(INCLUDES) $(CXXFLAGS) $(DFLAGS) -rdynamic
 
@@ -44,10 +45,10 @@ SCENE_NAME			?=
 all: $(TARGET) plugins
 
 %.o: %.cpp
-	$(CXX) -c $< -o $@ $(FLAGS)
+	$(CXX) -c $< -o $@ $(FLAGS) $(if $(filter External/%,$<),,$(WARNING_FLAGS))
 
 %.o: %.c
-	$(CXX) -c $< -o $@ $(FLAGS)
+	$(CXX) -c $< -o $@ $(FLAGS) $(if $(filter External/%,$<),,$(WARNING_FLAGS))
 
 $(TARGET): $(OBJECTS)
 	$(CXX) -o $(TARGET) $(OBJECTS) $(FLAGS)
