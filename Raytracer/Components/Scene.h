@@ -27,7 +27,12 @@ namespace Ray
     class Scene
     {
     public:
-        Scene() : camera(nullptr), envMap(nullptr), initialized(false), dirty(true) {
+        Scene()
+            : envMap(nullptr)
+            , camera(nullptr)
+            , initialized(false)
+            , dirty(true)
+        {
             sceneBvh = new Ray::Bvh(10.0f, 64, false);
         }
         ~Scene();
