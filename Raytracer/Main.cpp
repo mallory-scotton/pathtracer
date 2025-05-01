@@ -15,6 +15,7 @@
 #include "ImGui/tinydir.h"
 #include "Loaders/GLTFLoader.h"
 #include "Loaders/Loader.h"
+#include "Core/Context.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -37,6 +38,8 @@ int selectedInstance = 0;
 double lastTime = SDL_GetTicks();
 int envMapIdx = 0;
 bool done = false;
+
+Context& ctx = Context::GetInstance();
 
 String shadersDir = "Shaders/";
 String assetsDir = "Assets/";
