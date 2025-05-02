@@ -179,6 +179,36 @@ void Camera::SetRadius(float dr)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void Camera::SetPosition(const Vec3f& position)
+{
+    this->position = position;
+
+    radius = Vec3f::Distance(position, pivot);
+
+    Vec3f dir = Vec3f::Normalize(pivot - position);
+    pitch = Math::Degrees(asin(dir.y));
+    yaw = Math::Degrees(atan2(dir.z, dir.x));
+
+    UpdateCamera();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Camera::SetLookAt(const Vec3f& lookAt)
+{
+    this->pivot = lookAt;
+    radius = Vec3f::Distance(position, pivot);
+
+    if (radius > FLT_EPSILON)
+    {
+        Vec3f dir = Vec3f::Normalize(pivot - position);
+        pitch = Math::Degrees(asin(dir.y));
+        yaw = Math::Degrees(atan2(dir.z, dir.x));
+    }
+
+    UpdateCamera();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void Camera::SetFov(float val)
 {
     fov = Math::Radians(val);
