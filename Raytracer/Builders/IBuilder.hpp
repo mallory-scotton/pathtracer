@@ -48,7 +48,7 @@ public:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    virtual IBuilder& FromConfiguration(const LibConfig::Setting& config);
+    virtual IBuilder& FromConfiguration(const LibConfig::Setting& config) = 0;
 };
 
 } // namespace Ray
