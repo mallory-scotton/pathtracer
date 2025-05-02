@@ -37,22 +37,6 @@ SFMLPlugin::SFMLPlugin(void)
         ctx.scene->renderOptions.windowResolution.x,
         ctx.scene->renderOptions.windowResolution.y
     ));
-
-    int initialization = gl3wInit();
-
-    if (initialization != 0)
-    {
-        throw Exception("Failed to initialize OpenGL loader");
-    }
-
-    // if (gl3wIsSupported(3, 0)) {
-    //     GLint status = GL_FALSE;
-    //     glGetIntegerv(GL_FRAMEBUFFER_SRGB, &status);
-    //     if (status == GL_TRUE || gl3wIsSupported(3,0))
-    //     {
-    //         glDisable(GL_FRAMEBUFFER_SRGB);
-    //     }
-    // }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
