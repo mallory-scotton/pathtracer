@@ -43,7 +43,6 @@ namespace Ray
         int AddMeshInstance(const MeshInstance& meshInstance);
         int AddLight(const Light& light);
 
-        void AddCamera(Vec3f eye, Vec3f lookat, float fov);
         void AddEnvMap(const std::string& filename);
 
         void ProcessScene();
@@ -74,7 +73,7 @@ namespace Ray
         EnvironmentMap* envMap;
 
         // Camera
-        Camera* camera;
+        UniquePtr<Camera> camera;
 
         // Bvh
         Ray::BvhTranslator bvhTranslator; // Produces a flat bvh array for GPU consumption

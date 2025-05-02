@@ -21,21 +21,12 @@ namespace Ray
             delete textures[i];
         textures.clear();
 
-        if (camera)
-            delete camera;
-
         if (sceneBvh)
             delete sceneBvh;
 
         if (envMap)
             delete envMap;
     };
-
-    void Scene::AddCamera(Vec3f pos, Vec3f lookAt, float fov)
-    {
-        delete camera;
-        camera = new Camera(pos, lookAt, fov);
-    }
 
     int Scene::AddMesh(const std::string& filename)
     {
@@ -268,7 +259,7 @@ namespace Ray
             Ray::BoundingBox bounds = sceneBvh->Bounds();
             Vec3f extents = bounds.Extents();
             Vec3f center = bounds.Center();
-            AddCamera(Vec3f(center.x, center.y, center.z + Vec3f::Length(extents) * 2.0f), center, 45.0f);
+            camera = std::make_unique<Camera>(Vec3f(center.x, center.y, center.z + Vec3f::Length(extents) * 2.0f), center, 45.0f);
         }
 
         initialized = true;
