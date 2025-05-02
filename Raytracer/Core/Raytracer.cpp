@@ -53,6 +53,11 @@ Raytracer::Raytracer(int argc, char *argv[])
         m_plugins.push_back(func());
     }
 
+    if (!hasWindowingPlugin)
+    {
+        throw Exception("Error: No windowing plugin loaded.");
+    }
+
     ctx.Initialize();
 }
 
