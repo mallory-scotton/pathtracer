@@ -18,20 +18,33 @@ const Path Raytracer::PLUGIN_DIRECTORY = "./Plugins/";
 ///////////////////////////////////////////////////////////////////////////////
 Raytracer::Raytracer(int argc, char *argv[])
 {
+    bool hasWindowingPlugin = false;
     RAY_UNUSED(argc);
     RAY_UNUSED(argv);
     Context& ctx = Context::GetInstance();
 
-    RAY_SUCCESS("File Discovery");
     Vector<Path> plugins = Fs::DiscoverFilesByExtensions(
         PLUGIN_DIRECTORY, {".rplugin"}
     );
 
-    RAY_SUCCESS("Loading");
     for (const auto& plugin : plugins)
     {
-    RAY_SUCCESS("Loads " << plugin);
         DynamicLibrary lib(plugin);
+
+        auto getType = lib.GetSymbol<IPlugin::Type>("GetPluginType");
+
+        if (getType() == IPlugin::Type::WINDOWING && hasWindowingPlugin)
+        {
+            RAY_WARN(
+                "Multiple Windowing Plugin detected, " << plugin << " ignored"
+            );
+            continue;
+        }
+        else if (getType() ==  IPlugin::Type::WINDOWING)
+        {
+            hasWindowingPlugin = true;
+        }
+
         IPlugin::Symbol func = lib.GetSymbol<UniquePtr<IPlugin>>(
             "CreatePlugin"
         );
@@ -40,7 +53,6 @@ Raytracer::Raytracer(int argc, char *argv[])
         m_plugins.push_back(func());
     }
 
-    RAY_SUCCESS("Initialize Context");
     ctx.Initialize();
 }
 
