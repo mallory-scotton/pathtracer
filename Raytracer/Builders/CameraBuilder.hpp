@@ -7,7 +7,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Config.hpp"
-#include "Builders/IBuilder.hpp"
+#include "Interfaces/IBuilder.hpp"
 #include "Components/Camera.hpp"
 #include "Maths/Mat4x4.hpp"
 #include "Utils/LibConfig.hpp"

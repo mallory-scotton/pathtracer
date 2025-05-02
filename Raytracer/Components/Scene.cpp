@@ -39,7 +39,7 @@ namespace Ray
         id = meshes.size();
         Mesh* mesh = new Mesh;
 
-        printf("Loading model %s\n", filename.c_str());
+        RAY_TRACE("Loading Model: \"" << filename << "\"");
         if (mesh->LoadFromFile(filename))
             meshes.push_back(mesh);
         else

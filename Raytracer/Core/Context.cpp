@@ -54,6 +54,13 @@ void Context::Initialize(void)
 {
     RAY_TRACE("Initializing Context...");
 
+    int initialization = gl3wInit();
+
+    if (initialization != 0)
+    {
+        throw Exception("Failed to initialize OpenGL loader");
+    }
+
     renderer = std::make_unique<Renderer>(scene.get(), m_shaderPath);
 }
 

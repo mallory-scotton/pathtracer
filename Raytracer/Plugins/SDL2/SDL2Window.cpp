@@ -62,13 +62,6 @@ SDL2Window::SDL2Window(const Vec2i& dimension)
     }
 
     SDL_GL_SetSwapInterval(0);
-
-    int initialization = gl3wInit();
-
-    if (initialization != 0)
-    {
-        throw Exception("Failed to initialize OpenGL loader");
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

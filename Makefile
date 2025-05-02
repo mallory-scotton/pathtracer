@@ -10,7 +10,10 @@ LDFLAGS				=	-lSDL2 \
 						-lm \
 						-lpthread \
 						-lSDL2main \
-						-lconfig++
+						-lconfig++ \
+						-lsfml-graphics \
+						-lsfml-window \
+						-lsfml-system
 INCLUDES			=	-I. \
 						-IRaytracer \
 						-IExternal \

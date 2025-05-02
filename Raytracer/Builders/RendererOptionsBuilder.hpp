@@ -7,7 +7,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Config.hpp"
-#include "Builders/IBuilder.hpp"
+#include "Interfaces/IBuilder.hpp"
 #include "Core/Renderer.h"
 #include "Utils/LibConfig.hpp"
 
