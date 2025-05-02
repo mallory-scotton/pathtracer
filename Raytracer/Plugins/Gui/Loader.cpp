@@ -10,3 +10,11 @@ extern "C" Ray::UniquePtr<Ray::GuiPlugin> CreatePlugin(void)
 {
     return (std::make_unique<Ray::GuiPlugin>());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+extern "C" Ray::IPlugin::Type GetPluginType(void)
+{
+    return (Ray::IPlugin::Type::GUI);
+}

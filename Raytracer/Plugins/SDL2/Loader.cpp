@@ -10,3 +10,11 @@ extern "C" Ray::UniquePtr<Ray::IPlugin> CreatePlugin(void)
 {
     return (std::make_unique<Ray::SDL2Plugin>());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+extern "C" Ray::IPlugin::Type GetPluginType(void)
+{
+    return (Ray::IPlugin::Type::WINDOWING);
+}
