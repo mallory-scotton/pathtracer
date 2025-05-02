@@ -6,6 +6,7 @@
 #include "Loaders/GLTFLoader.h"
 #include "Utils/LibConfig.hpp"
 #include "Utils/FileSystem.hpp"
+#include "Builders/CameraBuilder.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -156,20 +157,11 @@ void Loader::ParseSceneRendererOptions(
 ///////////////////////////////////////////////////////////////////////////////
 void Loader::ParseSceneCamera(const LibConfig::Setting& cfg, Scene* scene)
 {
-    Vec3f position, lookAt;
-    float fov, aperture = 0.f, focalDist = 1.f;
+    CameraBuilder builder;
 
-    cfg.Value("position", position);
-    cfg.Value("lookat", lookAt);
-    cfg.Value("fov", fov);
-    cfg.Value("aperture", aperture);
-    cfg.Value("focalDist", focalDist);
-
-    delete scene->camera;
-
-    scene->AddCamera(position, lookAt, fov);
-    scene->camera->aperture = aperture;
-    scene->camera->focalDist = focalDist;
+    scene->camera = std::make_unique<Camera>(
+        builder.FromConfiguration(cfg).Build()
+    );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
