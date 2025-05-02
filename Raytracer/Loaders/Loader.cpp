@@ -346,14 +346,11 @@ bool Loader::LoadScene(
 
     scene->AddMaterial(Material());
 
-    RAY_INFO("RENDERER");
-
     if (const auto& renderer = config.Lookup("renderer"))
     {
         ParseSceneRendererOptions(*renderer, options, scene);
     }
 
-    RAY_INFO("CAMERA");
     if (const auto& camera = config.Lookup("camera"))
     {
         ParseSceneCamera(*camera, scene);
@@ -367,7 +364,6 @@ bool Loader::LoadScene(
         }
     }
 
-    RAY_INFO("MESHES");
     if (const auto& meshes = config.Lookup("meshes"))
     {
         for (int i = 0; i < meshes->Length(); i++)
@@ -376,7 +372,6 @@ bool Loader::LoadScene(
         }
     }
 
-    RAY_INFO("LIGHTS");
     if (const auto& lights = config.Lookup("lights"))
     {
         for (int i = 0; i < lights->Length(); i++)
@@ -385,7 +380,6 @@ bool Loader::LoadScene(
         }
     }
 
-    RAY_INFO("GLTFS");
     if (const auto& gltfs = config.Lookup("gltfs"))
     {
         for (int i = 0; i < gltfs->Length(); i++)
