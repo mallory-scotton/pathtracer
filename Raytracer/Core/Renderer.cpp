@@ -502,6 +502,8 @@ namespace Ray
         if (!scene->dirty && scene->renderOptions.maxSpp != -1 && sampleCounter >= scene->renderOptions.maxSpp)
             return;
 
+        glDisable(GL_BLEND); 
+        glDisable(GL_DEPTH_TEST);
         glActiveTexture(GL_TEXTURE0);
 
         if (scene->dirty)
@@ -538,8 +540,9 @@ namespace Ray
     void Renderer::Present()
     {
         glActiveTexture(GL_TEXTURE0);
+        glDisable(GL_BLEND); 
+        glDisable(GL_DEPTH_TEST);
 
-        // For the first sample or if the camera is moving, we do not have an image ready with all the tiles rendered, so we display a low res preview.
         if (scene->dirty || sampleCounter == 1)
         {
             glBindTexture(GL_TEXTURE_2D, pathTraceTextureLowRes);
