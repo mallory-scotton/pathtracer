@@ -19,7 +19,12 @@ const float GuiPlugin::MOUSE_SENSITIVITY = 0.01f;
 GuiPlugin::GuiPlugin(void)
 {
     IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+
+    if (ImGui::GetCurrentContext() == nullptr)
+    {
+        ImGui::CreateContext();
+    }
+
     ImGui::StyleColorsDark();
 }
 
