@@ -43,6 +43,7 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     UniquePtr<SDL_Window, WindowDeleter> m_window;      //<!
     SDL_GLContext m_context;                            //<!
+    bool m_useImGui;                                    //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////

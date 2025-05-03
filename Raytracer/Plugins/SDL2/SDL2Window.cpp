@@ -24,12 +24,17 @@ void SDL2Window::WindowDeleter::operator()(SDL_Window* window) const
 SDL2Window::~SDL2Window(void)
 {
     SDL_GL_DeleteContext(m_context);
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
+
+    if (m_useImGui)
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 SDL2Window::SDL2Window(const Vec2i& dimension)
+    : m_useImGui(false)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER))
     {
@@ -66,11 +71,6 @@ SDL2Window::SDL2Window(const Vec2i& dimension)
     }
 
     SDL_GL_SetSwapInterval(0);
-
-    const char* glslVersion = "#version 130";
-
-    ImGui_ImplSDL2_InitForOpenGL(m_window.get(), m_context);
-    ImGui_ImplOpenGL3_Init(glslVersion);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -79,9 +79,34 @@ void SDL2Window::Update(void)
     Context& ctx = Context::GetInstance();
     SDL_Event event;
 
+    static bool noRetry = false;
+    if (ImGui::GetCurrentContext() != nullptr && !m_useImGui && !noRetry)
+    {
+        const char* glslVersion = "#version 130";
+
+        if (!ImGui_ImplSDL2_InitForOpenGL(m_window.get(), m_context))
+        {
+            m_useImGui = false;
+            noRetry = true;
+        }
+        else if (!ImGui_ImplOpenGL3_Init(glslVersion))
+        {
+            ImGui_ImplSDL2_Shutdown();
+            m_useImGui = false;
+            noRetry = true;
+        }
+        else
+        {
+            m_useImGui = true;
+        }
+    }
+
     while (SDL_PollEvent(&event))
     {
-        ImGui_ImplSDL2_ProcessEvent(&event);
+        if (m_useImGui)
+        {
+            ImGui_ImplSDL2_ProcessEvent(&event);
+        }
 
         if (event.type == SDL_QUIT)
         {
@@ -116,9 +141,12 @@ void SDL2Window::Update(void)
         }
     }
 
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
-    ImGui::NewFrame();
+    if (m_useImGui)
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -132,8 +160,12 @@ void SDL2Window::Clear(void)
 ///////////////////////////////////////////////////////////////////////////////
 void SDL2Window::SwapWindow(void)
 {
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    if (m_useImGui)
+    {
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
     SDL_GL_SwapWindow(m_window.get());
 }
 
