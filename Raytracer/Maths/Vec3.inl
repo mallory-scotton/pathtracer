@@ -8,6 +8,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Maths/Vec3.hpp"
 #include <cmath>
+#include <limits>
+#include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -121,11 +123,20 @@ T Vec3<T>::Length(const Vec3<T>& vec)
 template <typename T>
 Vec3<T> Vec3<T>::Normalize(const Vec3<T>& vec)
 {
-    float length = Vec3<T>::Length(vec);
+    T length = Vec3<T>::Length(vec);
+
+    constexpr T epsilon = std::numeric_limits<T>::epsilon();
+
+    if (std::abs(length) < epsilon)
+    {
+        return Vec3<T>(static_cast<T>(0));
+    }
+
+    T invLength = static_cast<T>(1) / length;
     return (Vec3<T>(
-        vec.x / length,
-        vec.y / length,
-        vec.z / length
+        vec.x * invLength,
+        vec.y * invLength,
+        vec.z * invLength
     ));
 }
 
@@ -221,6 +232,14 @@ Vec3<T> operator*(const Vec3<T>& lhs, const Vec3<T>& rhs)
         lhs.y * rhs.y,
         lhs.z * rhs.z
     ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Vec3<T>& vec)
+{
+    os << '(' << vec.x << ", " << vec.y << ", " << vec.z << ')';
+    return (os);
 }
 
 } // namespace Ray

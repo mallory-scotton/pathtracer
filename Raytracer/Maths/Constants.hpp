@@ -12,7 +12,7 @@
 // Single-precision constants.
 ///////////////////////////////////////////////////////////////////////////////
 
-#define PI                              (3.1415926535897932f)
+#define PI                              (3.14159265358979323846f)
 #define SMALL_NUMBER                    (1.e-8f)
 #define KINDA_SMALL_NUMBER              (1.e-4f)
 #define BIG_NUMBER                      (3.4e+38f)
