@@ -230,9 +230,11 @@ void Camera::SetUniforms(UniquePtr<Shader>& shader) const
 void Camera::UpdateCamera(void)
 {
     Vec3f forward_temp;
-    forward_temp.x = cos(Math::Radians(yaw)) * cos(Math::Radians(pitch));
-    forward_temp.y = sin(Math::Radians(pitch));
-    forward_temp.z = sin(Math::Radians(yaw)) * cos(Math::Radians(pitch));
+    forward_temp.x = std::cos(Math::Radians(yaw)) *
+        std::cos(Math::Radians(pitch));
+    forward_temp.y = std::sin(Math::Radians(pitch));
+    forward_temp.z = std::sin(Math::Radians(yaw)) *
+        std::cos(Math::Radians(pitch));
 
     forward = Vec3f::Normalize(forward_temp);
     position = pivot + (forward * -1.0f) * radius;
