@@ -4,6 +4,8 @@
 #include "Plugins/SDL2/SDL2Window.hpp"
 #include "Core/Context.hpp"
 #include "Errors/Exception.hpp"
+#include "ImGui/imgui_impl_sdl2.h"
+#include "ImGui/imgui_impl_opengl3.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -22,6 +24,8 @@ void SDL2Window::WindowDeleter::operator()(SDL_Window* window) const
 SDL2Window::~SDL2Window(void)
 {
     SDL_GL_DeleteContext(m_context);
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,6 +66,11 @@ SDL2Window::SDL2Window(const Vec2i& dimension)
     }
 
     SDL_GL_SetSwapInterval(0);
+
+    const char* glslVersion = "#version 130";
+
+    ImGui_ImplSDL2_InitForOpenGL(m_window.get(), m_context);
+    ImGui_ImplOpenGL3_Init(glslVersion);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,6 +81,8 @@ void SDL2Window::Update(void)
 
     while (SDL_PollEvent(&event))
     {
+        ImGui_ImplSDL2_ProcessEvent(&event);
+
         if (event.type == SDL_QUIT)
         {
             ctx.Shutdown();
@@ -104,6 +115,10 @@ void SDL2Window::Update(void)
             }
         }
     }
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -117,6 +132,8 @@ void SDL2Window::Clear(void)
 ///////////////////////////////////////////////////////////////////////////////
 void SDL2Window::SwapWindow(void)
 {
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     SDL_GL_SwapWindow(m_window.get());
 }
 

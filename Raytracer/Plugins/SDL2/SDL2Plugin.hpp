@@ -9,6 +9,8 @@
 #include "Interfaces/IPlugin.hpp"
 #include "Plugins/SDL2/SDL2Window.hpp"
 #include <SDL2/SDL.h>
+#include "ImGui/imgui_impl_sdl2.h"
+#include "ImGui/imgui_impl_opengl3.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
