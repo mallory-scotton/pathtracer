@@ -4,6 +4,8 @@
 #include "Plugins/SFML/SFMLPlugin.hpp"
 #include "Core/Context.hpp"
 #include "Errors/Exception.hpp"
+#include "ImGui/imgui.h"
+#include "ImGui/imgui-SFML.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -28,15 +30,22 @@ SFMLPlugin::SFMLPlugin(void)
         sf::VideoMode({1280, 720}), "Raytracer",
         sf::Style::Default, WINDOW_CONTEXT
     )
+    , m_useImGui(true)
 {
     Context& ctx = Context::GetInstance();
 
     m_window.setActive(true);
+    m_window.setFramerateLimit(60);
 
     m_window.setSize(sf::Vector2u(
         ctx.scene->renderOptions.windowResolution.x,
         ctx.scene->renderOptions.windowResolution.y
     ));
+
+    if (!ImGui::SFML::Init(m_window))
+    {
+        m_useImGui = false;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,6 +54,11 @@ SFMLPlugin::~SFMLPlugin()
     if (m_window.isOpen())
     {
         m_window.close();
+    }
+
+    if (m_useImGui)
+    {
+        ImGui::SFML::Shutdown();
     }
 }
 
@@ -57,10 +71,16 @@ void SFMLPlugin::Update(float deltaSeconds)
 
     while (m_window.pollEvent(event))
     {
+        if (m_useImGui)
+        {
+            ImGui::SFML::ProcessEvent(m_window, event);
+        }
+
         if (event.type == sf::Event::Closed)
         {
             m_window.close();
             ctx.Shutdown();
+            return;
         }
         else if (event.type == sf::Event::Resized)
         {
@@ -83,12 +103,16 @@ void SFMLPlugin::Update(float deltaSeconds)
 
             if (!options.independentRenderSize)
             {
-                options.renderResolution.x = options.windowResolution.x;
-                options.renderResolution.y = options.windowResolution.y;
+                options.renderResolution = options.windowResolution;
             }
 
             ctx.renderer->ResizeRenderer();
         }
+    }
+
+    if (m_useImGui)
+    {
+        ImGui::SFML::Update(m_window, m_clock.restart());
     }
 }
 
@@ -102,7 +126,12 @@ void SFMLPlugin::PreRender(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 void SFMLPlugin::Render(void)
-{}
+{
+    if (m_useImGui)
+    {
+        ImGui::SFML::Render(m_window);
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 void SFMLPlugin::PostRender(void)
