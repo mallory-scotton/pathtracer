@@ -15,6 +15,8 @@
 namespace Ray
 {
 
+static int constexpr kMaxPrimitivesPerLeaf = 1;
+
 ///////////////////////////////////////////////////////////////////////////////
 BoundingHierarchy::BoundingHierarchy(float traversal_cost, int num_bins, bool usesah)
     : m_root(nullptr)
@@ -271,7 +273,6 @@ void BoundingHierarchy::BuildNode(SplitRequest const& req, BoundingBox const* bo
     if (req.ptr) *req.ptr = &node;
 }
 
-static int constexpr kMaxPrimitivesPerLeaf = 1;
 
 ///////////////////////////////////////////////////////////////////////////////
 BoundingHierarchy::SahSplit BoundingHierarchy::FindSahSplit(SplitRequest const& req,

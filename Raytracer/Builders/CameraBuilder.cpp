@@ -86,6 +86,7 @@ CameraBuilder& CameraBuilder::SetTransformMatrix(const Mat4x4f& matrix)
    m_camera.forward = forward;
    SetPosition(position);
    SetLookAt(lookAt);
+   return (*this);
 }
 
 } // namespace Ray

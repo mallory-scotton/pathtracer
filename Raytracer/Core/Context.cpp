@@ -45,7 +45,7 @@ Context::Context(void)
     }
 
     Loader::LoadScene(
-        "Scenes/Teapot.scene", scene.get(), scene->renderOptions
+        "Scenes/HyperionRectLights.scene", scene.get(), scene->renderOptions
     );
 }
 
