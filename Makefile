@@ -13,7 +13,8 @@ LDFLAGS				=	-lSDL2 \
 						-lconfig++ \
 						-lsfml-graphics \
 						-lsfml-window \
-						-lsfml-system
+						-lsfml-system \
+						-Wl,-rpath,'$$ORIGIN/External/OpenImageDenoise/lib'
 INCLUDES			=	-I. \
 						-IRaytracer \
 						-IExternal \
