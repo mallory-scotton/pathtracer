@@ -26,6 +26,8 @@ GuiPlugin::GuiPlugin(void)
     }
 
     ImGui::StyleColorsDark();
+
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
