@@ -55,7 +55,36 @@ void main(void)
 
     Ray ray = Ray(camera.position + randomAperturePos, finalRayDir);
 
-    vec4 pixelColor = PathTrace(ray);
+    State state;
+    LightSampleRec lightSample; // Dummy variable for ClosestHit signature
+    vec3 finalColor = vec3(0.0);
+    float finalAlpha = 1.0;
 
-    color = pixelColor;
+    bool hit = ClosestHit(ray, state, lightSample);
+
+    if (hit)
+    {
+        GetMaterial(state, ray);
+
+        vec3 lightDirection = normalize(vec3(0.6, 0.8, 0.5));
+        float lambertFactor = max(0.0, dot(state.ffnormal, lightDirection));
+        float ambientTerm = 0.2;
+
+        finalColor = state.mat.baseColor * (ambientTerm + (1.0 - ambientTerm) * lambertFactor);
+        finalColor += state.mat.emission;
+    }
+    else
+    {
+    #if defined(OPT_BACKGROUND) || defined(OPT_TRANSPARENT_BACKGROUND)
+        finalAlpha = 0.0;
+    #endif
+    #ifdef OPT_ENVMAP
+        vec4 envColorPdf = EvalEnvMap(ray);
+        finalColor = envColorPdf.rgb * envMapIntensity;
+    #else
+        finalColor = vec3(0.1);
+    #endif
+    }
+
+    color = vec4(pow(clamp(finalColor, 0.0, 1.0), vec3(1.0/2.2)), finalAlpha);
 }

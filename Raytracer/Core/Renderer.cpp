@@ -51,7 +51,7 @@ namespace Ray
 
         InitGPUDataBuffers();
         quad = new Quad();
-        pixelRatio = 0.25f;
+        pixelRatio = 1.f;
 
         InitFBOs();
         InitShaders();

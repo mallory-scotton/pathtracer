@@ -67,6 +67,31 @@ void GuiPlugin::Update(float deltaSeconds)
         }
         ctx.scene->dirty = true;
     }
+
+    if (ImGui::IsKeyPressed(ImGuiKey_W))
+    {
+        ctx.scene->camera->SetRadius(-1.f);
+        ctx.scene->camera->isMoving = true;
+        ctx.scene->dirty = true;
+    }
+    else if (ImGui::IsKeyPressed(ImGuiKey_S))
+    {
+        ctx.scene->camera->SetRadius(1.f);
+        ctx.scene->camera->isMoving = true;
+        ctx.scene->dirty = true;
+    }
+    else if (ImGui::IsKeyPressed(ImGuiKey_A))
+    {
+        ctx.scene->camera->Strafe(1.f, 0.f);
+        ctx.scene->camera->isMoving = true;
+        ctx.scene->dirty = true;
+    }
+    else if (ImGui::IsKeyPressed(ImGuiKey_D))
+    {
+        ctx.scene->camera->Strafe(-1.f, 0.f);
+        ctx.scene->camera->isMoving = true;
+        ctx.scene->dirty = true;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,8 +137,6 @@ void GuiPlugin::PreRender(void)
     ImGui::Begin("Settings");
     ImGui::Text("Samples: %d ", ctx.renderer->GetSampleCount());
     ImGui::End();
-
-    ImGui::ShowDemoWindow();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
