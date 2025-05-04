@@ -134,8 +134,8 @@ Camera::Camera(Vec3f eye, Vec3f lookat, float fov)
     , radius(Vec3f::Distance(eye, lookat))
 {
     Vec3f dir = Vec3f::Normalize(pivot - position);
-    pitch = Math::Degrees(asin(dir.y));
-    yaw = Math::Degrees(atan2(dir.z, dir.x));
+    pitch = Math::Degrees(std::asin(dir.y));
+    yaw = Math::Degrees(std::atan2(dir.z, dir.x));
 
     UpdateCamera();
 }
@@ -149,9 +149,19 @@ Camera::Camera(const Camera& other)
 ///////////////////////////////////////////////////////////////////////////////
 Camera& Camera::operator=(const Camera& other)
 {
-    ptrdiff_t l = (unsigned char*)&isMoving - (unsigned char*)&position.x;
-    isMoving = memcmp(&position.x, &other.position.x, l) != 0;
-    memcpy(&position.x, &other.position.x, l);
+    this->position = other.position;
+    this->up = other.up;
+    this->right = other.right;
+    this->forward = other.forward;
+    this->focalDist = other.focalDist;
+    this->aperture = other.aperture;
+    this->fov = other.fov;
+    this->isMoving = other.isMoving;
+    this->worldUp = other.worldUp;
+    this->pivot = other.pivot;
+    this->pitch = other.pitch;
+    this->radius = other.radius;
+    this->yaw = other.yaw;
     return (*this);
 }
 
