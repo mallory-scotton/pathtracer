@@ -43,54 +43,44 @@ public:
     /// \brief
     ///
     /// \param cfg
-    /// \param materials
     ///
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
     static void ParseSceneMaterial(
         const LibConfig::Setting& cfg,
-        Map<String, MaterialData>& materials,
-        Scene* scene
+        Map<String, MaterialData>& materials
     );
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
     /// \param cfg
-    /// \param options
-    /// \param scene
     ///
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneRendererOptions(
-        const LibConfig::Setting& cfg,
-        RenderOptions& options,
-        Scene* scene
-    );
+    static void ParseSceneRendererOptions(const LibConfig::Setting& cfg);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
     /// \param cfg
-    /// \param scene
     ///
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneCamera(const LibConfig::Setting& cfg, Scene* scene);
+    static void ParseSceneCamera(const LibConfig::Setting& cfg);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
     /// \param cfg
-    /// \param scene
     ///
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneLight(const LibConfig::Setting& cfg, Scene* scene);
+    static void ParseSceneLight(const LibConfig::Setting& cfg);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -102,8 +92,7 @@ public:
     ///////////////////////////////////////////////////////////////////////////
     static void ParseSceneMesh(
         const LibConfig::Setting& cfg,
-        Map<String, MaterialData>& materials,
-        Scene* scene
+        Map<String, MaterialData>& materials
     );
 
     ///////////////////////////////////////////////////////////////////////////
@@ -114,26 +103,16 @@ public:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static void ParseSceneGLTF(
-        const LibConfig::Setting& cfg,
-        Scene* scene,
-        RenderOptions& options
-    );
+    static void ParseSceneGLTF(const LibConfig::Setting& cfg);
 
 public:
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
     /// \param filename
-    /// \param scene
-    /// \param options
     ///
     ///////////////////////////////////////////////////////////////////////////
-    static bool LoadScene(
-        const Path& filename,
-        Scene* scene,
-        RenderOptions& options
-    );
+    static bool LoadScene(const Path& filename);
 };
 
 }  // namespace Ray

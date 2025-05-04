@@ -19,8 +19,6 @@ const Path Raytracer::PLUGIN_DIRECTORY = "./Plugins/";
 Raytracer::Raytracer(int argc, char *argv[])
 {
     bool hasWindowingPlugin = false;
-    RAY_UNUSED(argc);
-    RAY_UNUSED(argv);
     Context& ctx = Context::GetInstance();
 
     Vector<Path> plugins = Fs::DiscoverFilesByExtensions(
@@ -58,7 +56,7 @@ Raytracer::Raytracer(int argc, char *argv[])
         throw Exception("Error: No windowing plugin loaded.");
     }
 
-    ctx.Initialize();
+    ctx.Initialize(argc, argv);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

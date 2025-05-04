@@ -7,6 +7,7 @@
 #include "Utils/LibConfig.hpp"
 #include "Utils/FileSystem.hpp"
 #include "Builders/CameraBuilder.hpp"
+#include "Core/Context.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -17,10 +18,10 @@ namespace Ray
 ///////////////////////////////////////////////////////////////////////////////
 void Loader::ParseSceneMaterial(
     const LibConfig::Setting& cfg,
-    Map<String, MaterialData>& materials,
-    Scene* scene
+    Map<String, MaterialData>& materials
 )
 {
+    Context& ctx = Context::GetInstance();
     String albedo, metallicRoughness, normal, emission, alpha, medium, name;
     Material material;
 
@@ -52,19 +53,19 @@ void Loader::ParseSceneMaterial(
 
     if (!albedo.empty() && albedo != "none")
     {
-        material.baseColorTexId = scene->AddTexture(albedo);
+        material.baseColorTexId = ctx.scene->AddTexture(albedo);
     }
     if (!metallicRoughness.empty() && metallicRoughness != "none")
     {
-        material.metallicRoughnessTexID = scene->AddTexture(metallicRoughness);
+        material.metallicRoughnessTexID = ctx.scene->AddTexture(metallicRoughness);
     }
     if (!normal.empty() && normal != "none")
     {
-        material.normalmapTexID = scene->AddTexture(normal);
+        material.normalmapTexID = ctx.scene->AddTexture(normal);
     }
     if (!emission.empty() && emission != "none")
     {
-        material.emissionmapTexID = scene->AddTexture(emission);
+        material.emissionmapTexID = ctx.scene->AddTexture(emission);
     }
 
     if (alpha == "opaque")
@@ -95,18 +96,16 @@ void Loader::ParseSceneMaterial(
 
     if (materials.find(name) == materials.end())
     {
-        int id = scene->AddMaterial(material);
+        int id = ctx.scene->AddMaterial(material);
         materials[name] = MaterialData{material, id};
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Loader::ParseSceneRendererOptions(
-    const LibConfig::Setting& cfg,
-    RenderOptions& options,
-    Scene* scene
-)
+void Loader::ParseSceneRendererOptions(const LibConfig::Setting& cfg)
 {
+    Context& ctx = Context::GetInstance();
+    RenderOptions& options = ctx.scene->renderOptions;
     String envMap;
 
     cfg.Value("envmapfile", envMap);
@@ -139,7 +138,7 @@ void Loader::ParseSceneRendererOptions(
 
     if (!envMap.empty() && envMap != "none")
     {
-        scene->AddEnvMap(envMap);
+        ctx.scene->AddEnvMap(envMap);
         options.enableEnvMap = true;
     }
     else
@@ -155,18 +154,20 @@ void Loader::ParseSceneRendererOptions(
 
 // FIXME: C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
-void Loader::ParseSceneCamera(const LibConfig::Setting& cfg, Scene* scene)
+void Loader::ParseSceneCamera(const LibConfig::Setting& cfg)
 {
     CameraBuilder builder;
+    Context& ctx = Context::GetInstance();
 
-    scene->camera = std::make_unique<Camera>(
+    ctx.scene->camera = std::make_unique<Camera>(
         builder.FromConfiguration(cfg).Build()
     );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Loader::ParseSceneLight(const LibConfig::Setting& cfg, Scene* scene)
+void Loader::ParseSceneLight(const LibConfig::Setting& cfg)
 {
+    Context& ctx = Context::GetInstance();
     Light light;
     Vec3f v1, v2;
     String lightType;
@@ -196,16 +197,16 @@ void Loader::ParseSceneLight(const LibConfig::Setting& cfg, Scene* scene)
         light.area = 0.f;
     }
 
-    scene->AddLight(light);
+    ctx.scene->AddLight(light);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Loader::ParseSceneMesh(
     const LibConfig::Setting& cfg,
-    Map<String, MaterialData>& materials,
-    Scene* scene
+    Map<String, MaterialData>& materials
 )
 {
+    Context& ctx = Context::GetInstance();
     String file, name, material;
     Vec3f position, scale;
     Quaternionf rotation;
@@ -248,7 +249,7 @@ void Loader::ParseSceneMesh(
 
     if (!file.empty())
     {
-        int id = scene->AddMesh(file);
+        int id = ctx.scene->AddMesh(file);
 
         if (id != -1)
         {
@@ -269,18 +270,15 @@ void Loader::ParseSceneMesh(
             transform = matRot * matScale * matTrans;
 
             MeshInstance instance(instanceName, id, transform, materialID);
-            scene->AddMeshInstance(instance);
+            ctx.scene->AddMeshInstance(instance);
         }
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Loader::ParseSceneGLTF(
-    const LibConfig::Setting& cfg,
-    Scene* scene,
-    RenderOptions& options
-)
+void Loader::ParseSceneGLTF(const LibConfig::Setting& cfg)
 {
+    Context& ctx = Context::GetInstance();
     String file;
     Vec3f position, scale;
     Quaternionf rotation;
@@ -317,11 +315,23 @@ void Loader::ParseSceneGLTF(
 
         if (extension == ".gltf")
         {
-            LoadGLTF(file, scene, options, transform, false);
+            LoadGLTF(
+                file,
+                ctx.scene.get(),
+                ctx.scene->renderOptions,
+                transform,
+                false
+            );
         }
         else if (extension == ".glb")
         {
-            LoadGLTF(file, scene, options, transform, true);
+            LoadGLTF(
+                file,
+                ctx.scene.get(),
+                ctx.scene->renderOptions,
+                transform,
+                true
+            );
         }
         else
         {
@@ -332,35 +342,32 @@ void Loader::ParseSceneGLTF(
 
 // FIXME: C POINTERS
 ///////////////////////////////////////////////////////////////////////////////
-bool Loader::LoadScene(
-    const Path& filename,
-    Scene* scene,
-    RenderOptions& options
-)
+bool Loader::LoadScene(const Path& filename)
 {
+    Context& ctx = Context::GetInstance();
     RAY_TRACE("Loading Scene: " << filename);
 
     LibConfig config(filename);
 
     Map<String, MaterialData> materialMap;
 
-    scene->AddMaterial(Material());
+    ctx.scene->AddMaterial(Material());
 
     if (const auto& renderer = config.Lookup("renderer"))
     {
-        ParseSceneRendererOptions(*renderer, options, scene);
+        ParseSceneRendererOptions(*renderer);
     }
 
     if (const auto& camera = config.Lookup("camera"))
     {
-        ParseSceneCamera(*camera, scene);
+        ParseSceneCamera(*camera);
     }
 
     if (const auto& materials = config.Lookup("materials"))
     {
         for (int i = 0; i < materials->Length(); i++)
         {
-            ParseSceneMaterial(materials->At(i), materialMap, scene);
+            ParseSceneMaterial(materials->At(i), materialMap);
         }
     }
 
@@ -368,7 +375,7 @@ bool Loader::LoadScene(
     {
         for (int i = 0; i < meshes->Length(); i++)
         {
-            ParseSceneMesh(meshes->At(i), materialMap, scene);
+            ParseSceneMesh(meshes->At(i), materialMap);
         }
     }
 
@@ -376,7 +383,7 @@ bool Loader::LoadScene(
     {
         for (int i = 0; i < lights->Length(); i++)
         {
-            ParseSceneLight(lights->At(i), scene);
+            ParseSceneLight(lights->At(i));
         }
     }
 
@@ -384,7 +391,7 @@ bool Loader::LoadScene(
     {
         for (int i = 0; i < gltfs->Length(); i++)
         {
-            ParseSceneGLTF(gltfs->At(i), scene, options);
+            ParseSceneGLTF(gltfs->At(i));
         }
     }
 

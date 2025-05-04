@@ -3,8 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Core/Context.hpp"
 #include "Utils/FileSystem.hpp"
-#include "Loaders/Loader.hpp"
 #include "Errors/Exception.hpp"
+#include "Loaders/Loader.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -43,16 +43,34 @@ Context::Context(void)
     {
         RAY_WARN(m_scenesPath << " doesn't exists !");
     }
-
-    Loader::LoadScene(
-        "Scenes/HyperionRectLights.scene", scene.get(), scene->renderOptions
-    );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Context::Initialize(void)
+void Context::Initialize(int argc, char* argv[])
 {
     RAY_TRACE("Initializing Context...");
+
+    Vector<Path> scenes = Fs::DiscoverFilesByExtensions(
+        m_scenesPath, {".scene"}
+    );
+    String sceneToLoad = "";
+
+    for (const auto& sceneFile : scenes)
+    {
+        availableScenes.push_back(sceneFile);
+
+        if (argc > 1 && sceneFile.filename() == argv[1])
+        {
+            sceneToLoad = sceneFile;
+        }
+    }
+
+    if (sceneToLoad.empty() && availableScenes.size() > 0)
+    {
+        sceneToLoad = availableScenes[0];
+    }
+
+    Loader::LoadScene(sceneToLoad);
 
     int initialization = gl3wInit();
 
