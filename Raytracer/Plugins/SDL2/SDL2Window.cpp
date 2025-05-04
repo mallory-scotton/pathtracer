@@ -3,7 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Plugins/SDL2/SDL2Window.hpp"
 #include "Core/Context.hpp"
-#include "Errors/Exception.hpp"
+#include "Errors/PluginException.hpp"
+#include "Errors/OpenGLException.hpp"
 #include "ImGui/imgui_impl_sdl2.h"
 #include "ImGui/imgui_impl_opengl3.h"
 
@@ -39,7 +40,7 @@ SDL2Window::SDL2Window(const Vec2i& dimension)
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER))
     {
         String message = "SDL2 initialization failed: ";
-        throw Exception(message + SDL_GetError());
+        throw PluginException(message + SDL_GetError());
     }
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -67,7 +68,7 @@ SDL2Window::SDL2Window(const Vec2i& dimension)
 
     if (!m_context)
     {
-        throw Exception("Failed to initialize GL context.");
+        throw OpenGLException("Failed to initialize GL context.");
     }
 
     SDL_GL_SetSwapInterval(0);

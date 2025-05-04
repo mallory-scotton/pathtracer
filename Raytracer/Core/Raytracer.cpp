@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Core/Raytracer.hpp"
 #include "Utils/FileSystem.hpp"
+#include "Errors/PluginException.hpp"
 #include "Core/Context.hpp"
 #include "Utils/OpenGL.hpp"
 
@@ -53,7 +54,7 @@ Raytracer::Raytracer(int argc, char *argv[])
 
     if (!hasWindowingPlugin)
     {
-        throw Exception("Error: No windowing plugin loaded.");
+        throw PluginException("No windowing plugin loaded.");
     }
 
     ctx.Initialize(argc, argv);
