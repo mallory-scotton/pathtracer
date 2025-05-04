@@ -46,6 +46,8 @@ SFMLPlugin::SFMLPlugin(void)
     {
         m_useImGui = false;
     }
+
+    m_previousSize = m_window.getSize();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -69,6 +71,27 @@ void SFMLPlugin::Update(float deltaSeconds)
     Context& ctx = Context::GetInstance();
     sf::Event event;
 
+    if (m_previousSize != m_window.getSize())
+    {
+        RenderOptions& options = ctx.scene->renderOptions;
+        sf::Vector2u size = m_window.getSize();
+
+        Vec2i newSize(
+            static_cast<int>(size.x), static_cast<int>(size.y)
+        );
+
+        options.windowResolution = newSize;
+
+        if (!options.independentRenderSize)
+        {
+            options.renderResolution = options.windowResolution;
+        }
+
+        ctx.renderer->ResizeRenderer();
+
+        m_previousSize = size;
+    }
+
     while (m_window.pollEvent(event))
     {
         if (m_useImGui)
@@ -81,32 +104,6 @@ void SFMLPlugin::Update(float deltaSeconds)
             m_window.close();
             ctx.Shutdown();
             return;
-        }
-        else if (event.type == sf::Event::Resized)
-        {
-            RenderOptions& options = ctx.scene->renderOptions;
-            sf::Vector2u size = m_window.getSize();
-
-            Vec2i newSize(
-                static_cast<int>(size.x), static_cast<int>(size.y)
-            );
-
-            if (
-                options.windowResolution.x == newSize.x &&
-                options.windowResolution.y == newSize.y
-            )
-            {
-                continue;
-            }
-
-            options.windowResolution = newSize;
-
-            if (!options.independentRenderSize)
-            {
-                options.renderResolution = options.windowResolution;
-            }
-
-            ctx.renderer->ResizeRenderer();
         }
     }
 

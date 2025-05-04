@@ -36,6 +36,7 @@ private:
     sf::RenderWindow m_window;      //<!
     sf::Clock m_clock;              //<!
     bool m_useImGui;                //<!
+    sf::Vector2u m_previousSize;    //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////
