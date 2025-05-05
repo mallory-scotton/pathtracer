@@ -84,7 +84,9 @@ TODO...
 
 Here are some example renders produced by the raytracer:
 
-TODO...
+![](./Screenshots/dream.png)
+
+![](./Screenshots/jinx.png)
 
 ## 📚 Dependencies
 
