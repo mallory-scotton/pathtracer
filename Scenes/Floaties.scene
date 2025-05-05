@@ -1,0 +1,45 @@
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 2;
+    tilewidth = 320;
+    tileheight = 180;
+    envmapfile = "Assets/HDR/sunset.hdr";
+    envmapintensity = 5.0;
+}
+
+gltfs = (
+    {
+        file = "Assets/floaties/scene.gltf";
+    }
+)
+
+materials = (
+    {
+        name = "white";
+        color = {
+            x: 0.0;
+            y: 0.29;
+            z: 0.88;
+        };
+        roughness = 0.0;
+    }
+)
+
+camera:
+{
+    position = {
+        x: 20.0;
+        y: 0.0;
+        z: 0.0;
+    };
+    lookat = {
+        x: 0.0;
+        y: 0.0;
+        z: 0.0;
+    };
+    fov = 60.0;
+}

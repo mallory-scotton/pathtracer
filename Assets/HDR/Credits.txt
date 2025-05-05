@@ -1,0 +1,23 @@
+white_cliff_top_1k.hdr
+Blurred version of https://polyhaven.com/a/white_cliff_top
+
+san_giuseppe_bridge_blurred.hdr
+Blurred version of https://polyhaven.com/a/san_giuseppe_bridge
+
+sunset.hdr
+http://illuminatedtools.com/library/int/int_sunset_hotelwindow/
+
+konzerthaus_4k.hdr.hdr
+https://polyhaven.com/a/konzerthaus
+
+peppermint_powerplant_4k.hdr
+https://polyhaven.com/a/peppermint_powerplant
+
+photo_studio_01_1k.hdr
+https://polyhaven.com/a/photo_studio_01
+
+syferfontein_18d_clear_1k.hdr
+https://polyhaven.com/a/syferfontein_18d_clear
+
+spiaggia_di_mondello_4k_new:
+Rotated version of https://polyhaven.com/a/spiaggia_di_mondello

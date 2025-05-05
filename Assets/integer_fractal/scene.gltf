@@ -1,0 +1,294 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 55343,
+      "max": [
+        10.251631736755371,
+        11.140231132507324,
+        22.44281005859375
+      ],
+      "min": [
+        -12.52863883972168,
+        -11.620095252990723,
+        -0.6355876922607422
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 664116,
+      "componentType": 5126,
+      "count": 55343,
+      "max": [
+        0.9999821782112122,
+        0.9999774098396301,
+        0.9999768733978271
+      ],
+      "min": [
+        -0.9999507665634155,
+        -0.9999970197677612,
+        -0.9999096393585205
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 55343,
+      "max": [
+        0.9999907612800598,
+        0.9999985098838806,
+        0.9999346137046814,
+        1.0
+      ],
+      "min": [
+        -0.9999873638153076,
+        -0.9999266266822815,
+        -0.9999468922615051,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 55343,
+      "max": [
+        0.9988463521003723,
+        0.9905118942260742
+      ],
+      "min": [
+        0.0010037337196990848,
+        0.0014442106476053596
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 300000,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "3dhdscan (https://sketchfab.com/3dhdscan)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/mdb3d-integer-power-fractal-photogrammetry-a29001d7c6324c98b4779af57fae7957",
+      "title": "MDB3D - Integer Power - fractal photogrammetry"
+    },
+    "generator": "Sketchfab-12.67.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 1200000,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 442744,
+      "byteOffset": 1200000,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1328232,
+      "byteOffset": 1642744,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 885488,
+      "byteOffset": 2970976,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 3856464,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/BPine03_baseColor.jpeg"
+    },
+    {
+      "uri": "textures/BPine03_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/BPine03_normal.jpeg"
+    }
+  ],
+  "materials": [
+    {
+      "name": "BPine03",
+      "normalTexture": {
+        "index": 2
+      },
+      "occlusionTexture": {
+        "index": 1
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "metallicRoughnessTexture": {
+          "index": 1
+        },
+        "roughnessFactor": 0.419016768292683
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "BPine03_BPine03_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3
+          },
+          "indices": 4,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        0.00021684536477550864,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        4.8149343351402117e-20,
+        -0.00021684536477550864,
+        0.0,
+        0.0,
+        0.00021684536477550864,
+        4.8149343351402117e-20,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "BPine03.FBX"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4
+      ],
+      "matrix": [
+        4.371138861980484e-06,
+        -5.551115123125783e-15,
+        99.99999999999991,
+        0.0,
+        99.99999999999991,
+        1.1102230246251565e-14,
+        -4.371138867531599e-06,
+        0.0,
+        -1.6653345369377348e-14,
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "BPine03"
+    },
+    {
+      "mesh": 0,
+      "name": "BPine03_BPine03_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 33071,
+      "wrapT": 33071
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 1,
+      "source": 1
+    },
+    {
+      "sampler": 1,
+      "source": 2
+    }
+  ]
+}
