@@ -1,0 +1,668 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        1.2127649784088135,
+        2.8211381435394287,
+        2.3128294944763184
+      ],
+      "min": [
+        -1.2257452011108398,
+        1.090094804763794,
+        -1.655985951423645
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 786384,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        1.0,
+        0.9999186992645264,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -0.9999963045120239,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9942144155502319,
+        0.9804889559745789
+      ],
+      "min": [
+        0.22620993852615356,
+        0.0028902660124003887
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 348477,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 1572768,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9756491780281067,
+        2.9184980392456055,
+        2.3205747604370117
+      ],
+      "min": [
+        -1.1874240636825562,
+        1.1113492250442505,
+        -1.6779325008392334
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 2359152,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9999691247940063,
+        0.9999567270278931,
+        0.9998749494552612
+      ],
+      "min": [
+        -0.9999707937240601,
+        -0.9999665021896362,
+        -0.9999866485595703
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 524256,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9977371096611023,
+        0.9959443211555481
+      ],
+      "min": [
+        0.02026095986366272,
+        0.004607707262039185
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 1393908,
+      "componentType": 5125,
+      "count": 338790,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 3145536,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        1.4417471885681152,
+        2.8827295303344727,
+        2.9209814071655273
+      ],
+      "min": [
+        -1.4423264265060425,
+        0.8027517795562744,
+        -2.4832093715667725
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 3931920,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9999969005584717,
+        0.9999972581863403,
+        0.9999761581420898
+      ],
+      "min": [
+        -0.9999984502792358,
+        -0.9999998807907104,
+        -0.9999781847000122
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1048512,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9974576830863953,
+        0.9986107349395752
+      ],
+      "min": [
+        -0.02491164207458496,
+        0.0017099529504776
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 2749068,
+      "componentType": 5125,
+      "count": 339540,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 4718304,
+      "componentType": 5126,
+      "count": 7489,
+      "max": [
+        0.4942210912704468,
+        2.169868230819702,
+        1.083326816558838
+      ],
+      "min": [
+        -0.4974236488342285,
+        1.1698155403137207,
+        -0.3316796123981476
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 4808172,
+      "componentType": 5126,
+      "count": 7489,
+      "max": [
+        0.9999309778213501,
+        0.9998519420623779,
+        0.9996113777160645
+      ],
+      "min": [
+        -0.9997636079788208,
+        -0.9998377561569214,
+        -0.9994755983352661
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1572768,
+      "componentType": 5126,
+      "count": 7489,
+      "max": [
+        0.9961346983909607,
+        0.9918630719184875
+      ],
+      "min": [
+        0.021488875150680542,
+        0.20490282773971558
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 4107228,
+      "componentType": 5125,
+      "count": 19329,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 4898040,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        1.4898161888122559,
+        3.232889175415039,
+        2.5191566944122314
+      ],
+      "min": [
+        -0.9371188282966614,
+        1.2954620122909546,
+        -0.6015175580978394
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 5684424,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        0.9999434947967529,
+        0.9999940395355225,
+        0.9999878406524658
+      ],
+      "min": [
+        -0.9999902248382568,
+        -0.9999926090240479,
+        -0.9998934268951416
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1632680,
+      "componentType": 5126,
+      "count": 65532,
+      "max": [
+        1.0,
+        1.0
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 4184544,
+      "componentType": 5125,
+      "count": 221985,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 6470808,
+      "componentType": 5126,
+      "count": 30652,
+      "max": [
+        1.2037502527236938,
+        2.7743070125579834,
+        2.4800641536712646
+      ],
+      "min": [
+        -0.9137188792228699,
+        1.1271637678146362,
+        -1.1885255575180054
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 6838632,
+      "componentType": 5126,
+      "count": 30652,
+      "max": [
+        0.9999991655349731,
+        0.9999940395355225,
+        0.9999881982803345
+      ],
+      "min": [
+        -0.999750018119812,
+        -0.9998915195465088,
+        -0.9999440908432007
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 2156936,
+      "componentType": 5126,
+      "count": 30652,
+      "max": [
+        0.9999904036521912,
+        0.999980092048645
+      ],
+      "min": [
+        0.0,
+        0.0
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 5072484,
+      "componentType": 5125,
+      "count": 94533,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "Kampfisken (https://sketchfab.com/kampfisken)",
+      "license": "CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)",
+      "source": "https://sketchfab.com/3d-models/dreamsong-a75fc814ebd545e1b4b29894646f1f26",
+      "title": "Dreamsong"
+    },
+    "generator": "Sketchfab-12.67.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 5450616,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 2402152,
+      "byteOffset": 5450616,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 7206456,
+      "byteOffset": 7852768,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 15059224,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_materials_unlit"
+  ],
+  "images": [
+    {
+      "uri": "textures/Bake_Bridge_baseColor.png"
+    },
+    {
+      "uri": "textures/Bake_Blood_baseColor.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_unlit": {}
+      },
+      "name": "Bake_Bridge",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0
+      }
+    },
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_unlit": {}
+      },
+      "name": "Bake_Blood",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "LowpolyBase_Bake_Bridge_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "LowpolyBase_Bake_Bridge_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "LowpolyBase_Bake_Bridge_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 9,
+            "POSITION": 8,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "LowpolyBase_Bake_Bridge_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 13,
+            "POSITION": 12,
+            "TEXCOORD_0": 14
+          },
+          "indices": 15,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "LowpolyBlood_Bake_Blood_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 17,
+            "POSITION": 16,
+            "TEXCOORD_0": 18
+          },
+          "indices": 19,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "LowpolyBlood_Bake_Blood_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 21,
+            "POSITION": 20,
+            "TEXCOORD_0": 22
+          },
+          "indices": 23,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        0.6050309538841248,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.3434385912261532e-16,
+        -0.6050309538841248,
+        0.0,
+        0.0,
+        0.6050309538841248,
+        1.3434385912261532e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "4a3c476309a64ba4922e4112a070ccce.fbx"
+    },
+    {
+      "children": [
+        3,
+        8
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        99.99999999999866,
+        1.6292067073209114e-05,
+        0.0,
+        0.0,
+        -1.6292067073209114e-05,
+        99.99999999999866,
+        0.0,
+        -22.256847381591797,
+        49.470176696777344,
+        -26.493289947509766,
+        1.0
+      ],
+      "name": "LowpolyBase"
+    },
+    {
+      "mesh": 0,
+      "name": "LowpolyBase_Bake_Bridge_0"
+    },
+    {
+      "mesh": 1,
+      "name": "LowpolyBase_Bake_Bridge_0"
+    },
+    {
+      "mesh": 2,
+      "name": "LowpolyBase_Bake_Bridge_0"
+    },
+    {
+      "mesh": 3,
+      "name": "LowpolyBase_Bake_Bridge_0"
+    },
+    {
+      "children": [
+        9,
+        10
+      ],
+      "matrix": [
+        100.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        99.99999999999866,
+        1.6292067073209114e-05,
+        0.0,
+        0.0,
+        -1.6292067073209114e-05,
+        99.99999999999866,
+        0.0,
+        -22.256847381591797,
+        49.470176696777344,
+        -26.493289947509766,
+        1.0
+      ],
+      "name": "LowpolyBlood"
+    },
+    {
+      "mesh": 4,
+      "name": "LowpolyBlood_Bake_Blood_0"
+    },
+    {
+      "mesh": 5,
+      "name": "LowpolyBlood_Bake_Blood_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    }
+  ]
+}
