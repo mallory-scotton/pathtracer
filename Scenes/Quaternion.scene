@@ -1,0 +1,53 @@
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 2;
+    tilewidth = 320;
+    tileheight = 180;
+    envmapfile = "Assets/HDR/peppermint_powerplant_4k.hdr";
+    envmapintensity = 5.0;
+}
+
+meshes = (
+  {
+    name = "Quaternion";
+    file = "Assets/quaternion.obj";
+    material = "default";
+    position = {
+        x: 0.0;
+        y: 0.0;
+        z: 0.0;
+    };
+  }
+)
+
+materials = (
+    {
+        name = "default";
+        color = {
+            x: 0.0;
+            y: 0.29;
+            z: 0.88;
+        };
+        roughness = 0.0;
+        metallic = 0.1;
+    }
+)
+
+camera:
+{
+    position = {
+        x: 20.0;
+        y: 0.0;
+        z: 0.0;
+    };
+    lookat = {
+        x: 0.0;
+        y: 0.0;
+        z: 0.0;
+    };
+    fov = 60.0;
+}
