@@ -17,6 +17,7 @@ const float GuiPlugin::MOUSE_SENSITIVITY = 0.01f;
 
 ///////////////////////////////////////////////////////////////////////////////
 GuiPlugin::GuiPlugin(void)
+    : m_objectMode(false)
 {
     IMGUI_CHECKVERSION();
 
@@ -92,6 +93,11 @@ void GuiPlugin::Update(float deltaSeconds)
         ctx.scene->camera->isMoving = true;
         ctx.scene->dirty = true;
     }
+
+    if (m_objectMode)
+    {
+        ctx.scene->dirty = true;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -99,6 +105,7 @@ void GuiPlugin::PreRender(void)
 {
     ImGuiIO& io = ImGui::GetIO();
     Context& ctx = Context::GetInstance();
+    RenderOptions& options = ctx.scene->renderOptions;
 
     if (io.DisplaySize.x <= 0.f || io.DisplaySize.y <= 0.f || ctx.shutdown)
     {
@@ -136,6 +143,82 @@ void GuiPlugin::PreRender(void)
 
     ImGui::Begin("Settings");
     ImGui::Text("Samples: %d ", ctx.renderer->GetSampleCount());
+    ImGui::Checkbox("Object Mode", &m_objectMode);
+
+    bool optionsChanged = false;
+    bool reloadShaders = false;
+
+    if (ImGui::CollapsingHeader("Render Settings"))
+    {
+        optionsChanged |= ImGui::SliderInt("Max Spp", &options.maxSpp, -1, 256);
+        optionsChanged |= ImGui::SliderInt("Max Depth", &options.maxDepth, 1, 10);
+        reloadShaders |= ImGui::Checkbox("Enable Russian Roulette", &options.enableRR);
+        reloadShaders |= ImGui::SliderInt("Russian Roulette Depth", &options.RRDepth, 1, 10);
+        reloadShaders |= ImGui::Checkbox("Enable Roughness Mollification", &options.enableRoughnessMollification);
+        optionsChanged |= ImGui::SliderFloat("Roughness Mollification Amount", &options.roughnessMollificationAmt, 0, 1);
+        reloadShaders |= ImGui::Checkbox("Enable Volume MIS", &options.enableVolumeMIS);
+    }
+
+    if (ImGui::CollapsingHeader("Environment"))
+    {
+        reloadShaders |= ImGui::Checkbox("Enable Uniform Light", &options.enableUniformLight);
+
+        Vec3f uniformLightCol = Vec3f::Pow(options.uniformLightCol, 1.0 / 2.2);
+        optionsChanged |= ImGui::ColorEdit3("Uniform Light Color (Gamma Corrected)", (float*)(&uniformLightCol), 0);
+        options.uniformLightCol = Vec3f::Pow(uniformLightCol, 2.2);
+
+        reloadShaders |= ImGui::Checkbox("Enable Environment Map", &options.enableEnvMap);
+        optionsChanged |= ImGui::SliderFloat("Enviornment Map Intensity", &options.envMapIntensity, 0.1f, 10.0f);
+        optionsChanged |= ImGui::SliderFloat("Enviornment Map Rotation", &options.envMapRot, 0.0f, 360.0f);
+        reloadShaders |= ImGui::Checkbox("Hide Emitters", &options.hideEmitters);
+        reloadShaders |= ImGui::Checkbox("Enable Background", &options.enableBackground);
+        optionsChanged |= ImGui::ColorEdit3("Background Color", (float*)&options.backgroundCol, 0);
+        reloadShaders |= ImGui::Checkbox("Transparent Background", &options.transparentBackground);
+    }
+
+    if (ImGui::CollapsingHeader("Tonemapping"))
+    {
+        ImGui::Checkbox("Enable Tonemap", &options.enableTonemap);
+
+        if (options.enableTonemap)
+        {
+            ImGui::Checkbox("Enable ACES", &options.enableAces);
+            if (options.enableAces)
+            {
+                ImGui::Checkbox("Simple ACES Fit", &options.simpleAcesFit);
+            }
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Denoiser"))
+    {
+        ImGui::Checkbox("Enable Denoiser", &options.enableDenoiser);
+        ImGui::SliderInt("Number of Frames to skip", &options.denoiserFrameCnt, 5, 50);
+    }
+
+    if (ImGui::CollapsingHeader("Camera"))
+    {
+        float fov = Math::Degrees(ctx.scene->camera->fov);
+        float aperture = ctx.scene->camera->aperture * 1000.0f;
+        optionsChanged |= ImGui::SliderFloat("Fov", &fov, 10, 90);
+        ctx.scene->camera->SetFov(fov);
+        optionsChanged |= ImGui::SliderFloat("Aperture", &aperture, 0.0f, 10.8f);
+        ctx.scene->camera->aperture = aperture / 1000.0f;
+        optionsChanged |= ImGui::SliderFloat("Focal Distance", &ctx.scene->camera->focalDist, 0.01f, 50.0f);
+        ImGui::Text("Pos: %.2f, %.2f, %.2f", ctx.scene->camera->position.x, ctx.scene->camera->position.y, ctx.scene->camera->position.z);
+    }
+
+    if (optionsChanged)
+    {
+        ctx.scene->dirty = true;
+    }
+
+    if (reloadShaders)
+    {
+        ctx.scene->dirty = true;
+        ctx.renderer->ReloadShaders();
+    }
+
     ImGui::End();
 }
 

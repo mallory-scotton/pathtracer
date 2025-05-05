@@ -46,6 +46,7 @@ public:
     UniquePtr<Scene> scene;             //<!
     Vector<String> availableScenes;     //<!
     bool shutdown;                      //<!
+    Vector<Byte> render;                //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////

@@ -5,6 +5,7 @@
 #include "Components/Scene.h"
 #include "OpenImageDenoise/oidn.hpp"
 #include "Utils/OpenGL.hpp"
+#include "Core/Context.hpp"
 
 namespace Ray
 {
