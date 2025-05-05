@@ -49,12 +49,19 @@ bool Mesh::LoadFromFile(const String& filename)
     Vector<tinyobj::shape_t> shapes;
     Vector<tinyobj::material_t> materials;
     String err;
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err,
-        filename.c_str(), 0, true);
+
+    bool ret = tinyobj::LoadObj(
+        &attrib,
+        &shapes,
+        &materials,
+        &err,
+        &err,
+        filename.c_str()
+    );
 
     if (!ret)
     {
-        printf("Unable to load model\n");
+        RAY_ERROR("Unable to load model: \"" << filename << "\"");
         return (false);
     }
 
@@ -64,36 +71,79 @@ bool Mesh::LoadFromFile(const String& filename)
 
         for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
         {
+            if (shapes[s].mesh.num_face_vertices[f] != 3) {
+                RAY_WARN(
+                    "Warning: Non-triangular face detected. Skipping face."
+                );
+                index_offset += shapes[s].mesh.num_face_vertices[f];
+                continue;
+            }
+
             for (size_t v = 0; v < 3; v++)
             {
+                if (index_offset + v >= shapes[s].mesh.indices.size())
+                {
+                    RAY_ERROR(
+                        "Error: Index out of bounds accessing shape indices."
+                    );
+                    return (false);
+                }
+
                 tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+
+                if (
+                    idx.vertex_index < 0 ||
+                    3 * idx.vertex_index + 2 >= (int)attrib.vertices.size()
+                )
+                {
+                    RAY_ERROR("Error: Invalid vertex index.");
+                    return (false);
+                }
+
                 tinyobj::real_t vx = attrib.vertices[3 * idx.vertex_index + 0];
                 tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
                 tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
-                tinyobj::real_t nx = attrib.normals[3 * idx.normal_index + 0];
-                tinyobj::real_t ny = attrib.normals[3 * idx.normal_index + 1];
-                tinyobj::real_t nz = attrib.normals[3 * idx.normal_index + 2];
 
-                tinyobj::real_t tx, ty;
+                tinyobj::real_t nx = 0.0f, ny = 0.0f, nz = 1.0f;
 
-                if (!attrib.texcoords.empty())
+                if (
+                    idx.normal_index >= 0 &&
+                    3 * idx.normal_index + 2 < (int)attrib.normals.size()
+                )
+                {
+                    nx = attrib.normals[3 * idx.normal_index + 0];
+                    ny = attrib.normals[3 * idx.normal_index + 1];
+                    nz = attrib.normals[3 * idx.normal_index + 2];
+                }
+                else if (!attrib.normals.empty())
+                {
+                    RAY_WARN(
+                        "Warning: Invalid normal index, using default normal."
+                    );
+                }
+
+                tinyobj::real_t tx = 0.0f, ty = 0.0f;
+
+                if (
+                    !attrib.texcoords.empty() && idx.texcoord_index >= 0 &&
+                    2 * idx.texcoord_index + 1 < (int)attrib.texcoords.size()
+                )
                 {
                     tx = attrib.texcoords[2 * idx.texcoord_index + 0];
-                    ty = 1.0 - attrib.texcoords[2 * idx.texcoord_index + 1];
+                    ty = 1.0f - attrib.texcoords[2 * idx.texcoord_index + 1];
                 }
                 else
                 {
                     if (v == 0)
                     {
-                        tx = ty = 0;
-                    }
-                    else if (v == 1)
+                        tx = ty = 0.0f;
+                    } else if (v == 1)
                     {
-                        tx = 0, ty = 1;
-                    }
-                    else
+                        tx = 0.0f;
+                        ty = 1.0f;
+                    } else
                     {
-                        tx = ty = 1;
+                        tx = ty = 1.0f;
                     }
                 }
 
