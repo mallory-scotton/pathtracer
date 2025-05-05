@@ -7,8 +7,12 @@ renderer:
     maxdepth = 2;
     tilewidth = 320;
     tileheight = 180;
-    envmapfile = "Assets/HDR/sunset.hdr";
-    envmapintensity = 5.0;
+    enableuniformlight = true;
+    uniformlightcolor = {
+        x: 1.0;
+        y: 1.0;
+        z: 1.0;
+    };
 }
 
 gltfs = (

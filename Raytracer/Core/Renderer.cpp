@@ -560,38 +560,50 @@ namespace Ray
             // THE CODE BELOW EXPORT THE TEXTURE BUFFER AS A PPM FILE AFTER 200
             // SAMPLES
 
-            // if (sampleCounter == 200)
-            // {
-            //     int width = scene->renderOptions.renderResolution.x;
-            //     int height = scene->renderOptions.renderResolution.y;
-            //     std::vector<GLubyte> rgba_pixels(width * height * 4);
-            //     glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
-            //     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba_pixels.data());
+            if (sampleCounter == 200)
+            {
+                int width = scene->renderOptions.renderResolution.x;
+                int height = scene->renderOptions.renderResolution.y;
+                std::vector<GLubyte> rgba_pixels(width * height * 4);
 
-            //     std::vector<GLubyte> rgb_pixels(width * height * 3);
-            //     for (int y = 0; y < height; ++y) {
-            //         for (int x = 0; x < width; ++x) {
-            //             int rgba_idx = ((height - 1 - y) * width + x) * 4;
-            //             int rgb_idx = (y * width + x) * 3;
-            //             rgb_pixels[rgb_idx + 0] = rgba_pixels[rgba_idx + 0]; // R
-            //             rgb_pixels[rgb_idx + 1] = rgba_pixels[rgba_idx + 1]; // G
-            //             rgb_pixels[rgb_idx + 2] = rgba_pixels[rgba_idx + 2]; // B
-            //         }
-            //     }
+                if (scene->renderOptions.enableDenoiser && denoised)
+                {
+                    glBindTexture(GL_TEXTURE_2D, denoisedTexture);
+                    RAY_SUCCESS("Exporting denoised texture");
+                    sampleCounter++;
+                }
+                else
+                {
+                    glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
+                    RAY_SUCCESS("Exporting tiled texture");
+                }
 
-            //     std::ofstream file("out.ppm", std::ios::binary);
-            //     if (!file) {
-            //         throw std::runtime_error("Could not open file for writing");
-            //     }
+                glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba_pixels.data());
 
-            //     file << "P6\n" << width << " " << height << "\n255\n";
+                std::vector<GLubyte> rgb_pixels(width * height * 3);
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        int rgba_idx = ((height - 1 - y) * width + x) * 4;
+                        int rgb_idx = (y * width + x) * 3;
+                        rgb_pixels[rgb_idx + 0] = rgba_pixels[rgba_idx + 0]; // R
+                        rgb_pixels[rgb_idx + 1] = rgba_pixels[rgba_idx + 1]; // G
+                        rgb_pixels[rgb_idx + 2] = rgba_pixels[rgba_idx + 2]; // B
+                    }
+                }
 
-            //     // Write the RGB pixel data
-            //     file.write(reinterpret_cast<char*>(rgb_pixels.data()), rgb_pixels.size());
+                std::ofstream file("out.ppm", std::ios::binary);
+                if (!file) {
+                    throw std::runtime_error("Could not open file for writing");
+                }
 
-            //     // Close the file
-            //     file.close();
-            // }
+                file << "P6\n" << width << " " << height << "\n255\n";
+
+                // Write the RGB pixel data
+                file.write(reinterpret_cast<char*>(rgb_pixels.data()), rgb_pixels.size());
+
+                // Close the file
+                file.close();
+            }
 
             quad->Draw(outputShader);
         }
