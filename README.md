@@ -90,6 +90,8 @@ Here are some example renders produced by the raytracer:
 
 ![](./Screenshots/hyperion.png)
 
+![](./Screenshots/dragon.png)
+
 ## 📚 Dependencies
 
 The project relies on the following libraries:
