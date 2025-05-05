@@ -94,6 +94,10 @@ Here are some example renders produced by the raytracer:
 
 ![](./Screenshots/mustang.png)
 
+![](./Screenshots/still_life.png)
+
+![](./Screenshots/ramen.png)
+
 ## 📚 Dependencies
 
 The project relies on the following libraries:
