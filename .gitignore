@@ -3,5 +3,6 @@
 raytracer
 *.ini
 .vscode/
-*.ppm
+/*.ppm
 *.rplugin
+Assets/
