@@ -19,7 +19,7 @@ Renderer::Options::Options(void)
     : renderResolution(1280, 720)
     , windowResolution(1280, 720)
     , uniformLightCol(0.3f)
-    , backgroundCol(1.f)
+    , backgroundCol(1.0f)
     , tileWidth(100)
     , tileHeight(100)
     , maxDepth(2)
@@ -35,7 +35,7 @@ Renderer::Options::Options(void)
     , simpleAcesFit(false)
     , openglNormalMap(true)
     , enableEnvMap(false)
-    , enableUniformLight(true)
+    , enableUniformLight(false)
     , hideEmitters(false)
     , enableBackground(false)
     , transparentBackground(false)
@@ -232,25 +232,25 @@ Renderer::Options::Options(void)
         }
 
         // Bind textures to texture slots as they will not change slots during the lifespan of the renderer
-        glActiveTexture(GL_TEXTURE1);
+        OpenGL::Texture::Active(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_BUFFER, BVHTex);
-        glActiveTexture(GL_TEXTURE2);
+        OpenGL::Texture::Active(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_BUFFER, vertexIndicesTex);
-        glActiveTexture(GL_TEXTURE3);
+        OpenGL::Texture::Active(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_BUFFER, verticesTex);
-        glActiveTexture(GL_TEXTURE4);
+        OpenGL::Texture::Active(GL_TEXTURE4);
         glBindTexture(GL_TEXTURE_BUFFER, normalsTex);
-        glActiveTexture(GL_TEXTURE5);
+        OpenGL::Texture::Active(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, materialsTex);
-        glActiveTexture(GL_TEXTURE6);
+        OpenGL::Texture::Active(GL_TEXTURE6);
         glBindTexture(GL_TEXTURE_2D, transformsTex);
-        glActiveTexture(GL_TEXTURE7);
+        OpenGL::Texture::Active(GL_TEXTURE7);
         glBindTexture(GL_TEXTURE_2D, lightsTex);
-        glActiveTexture(GL_TEXTURE8);
+        OpenGL::Texture::Active(GL_TEXTURE8);
         glBindTexture(GL_TEXTURE_2D_ARRAY, textureMapsArrayTex);
-        glActiveTexture(GL_TEXTURE9);
+        OpenGL::Texture::Active(GL_TEXTURE9);
         glBindTexture(GL_TEXTURE_2D, envMapTex);
-        glActiveTexture(GL_TEXTURE10);
+        OpenGL::Texture::Active(GL_TEXTURE10);
         glBindTexture(GL_TEXTURE_2D, envMapCDFTex);
     }
 
@@ -506,8 +506,10 @@ Renderer::Options::Options(void)
 
         if (scene->envMap)
         {
-            shader->Uniform("envMapRes",
-                Vec2f(scene->envMap->width, scene->envMap->height));
+            shader->Uniform("envMapRes",Vec2f(
+                scene->envMap->width,
+                scene->envMap->height
+            ));
             shader->Uniform("envMapTotalSum", scene->envMap->totalSum);
         }
 
@@ -539,7 +541,7 @@ Renderer::Options::Options(void)
 
         glDisable(GL_BLEND); 
         glDisable(GL_DEPTH_TEST);
-        glActiveTexture(GL_TEXTURE0);
+        OpenGL::Texture::Active(GL_TEXTURE0);
 
         if (scene->dirty)
         {
@@ -574,7 +576,7 @@ Renderer::Options::Options(void)
 
     void Renderer::Present()
     {
-        glActiveTexture(GL_TEXTURE0);
+        OpenGL::Texture::Active(GL_TEXTURE0);
         glDisable(GL_BLEND); 
         glDisable(GL_DEPTH_TEST);
 
@@ -753,11 +755,10 @@ Renderer::Options::Options(void)
             denoised = false;
             frameCounter = 1;
 
-            // Clear out the accumulated texture for rendering a new image
             OpenGL::BindFramebuffer(accumFBO);
-            glClear(GL_COLOR_BUFFER_BIT);
+            OpenGL::Clear(GL_COLOR_BUFFER_BIT);
         }
-        else // Update render state
+        else
         {
             frameCounter++;
             tile.x++;
@@ -767,7 +768,6 @@ Renderer::Options::Options(void)
                 tile.y--;
                 if (tile.y < 0)
                 {
-                    // If we've reached here, it means all the tiles have been rendered (for a single sample) and the image can now be displayed.
                     tile.x = 0;
                     tile.y = numTiles.y - 1;
                     sampleCounter++;
@@ -776,49 +776,34 @@ Renderer::Options::Options(void)
             }
         }
 
-        // Update uniforms
-
-        GLuint shaderObject;
         pathTraceShader->Use();
-        shaderObject = pathTraceShader->GetObject();
-
         scene->camera->SetUniforms(pathTraceShader);
-
-        glUniform1i(glGetUniformLocation(shaderObject, "enableEnvMap"), scene->envMap == nullptr ? false : scene->renderOptions.enableEnvMap);
-        glUniform1f(glGetUniformLocation(shaderObject, "envMapIntensity"), scene->renderOptions.envMapIntensity);
-        glUniform1f(glGetUniformLocation(shaderObject, "envMapRot"), scene->renderOptions.envMapRot / 360.0f);
-        glUniform1i(glGetUniformLocation(shaderObject, "maxDepth"), scene->renderOptions.maxDepth);
-        glUniform2f(glGetUniformLocation(shaderObject, "tileOffset"), (float)tile.x * invNumTiles.x, (float)tile.y * invNumTiles.y);
-        glUniform3f(glGetUniformLocation(shaderObject, "uniformLightCol"), scene->renderOptions.uniformLightCol.x, scene->renderOptions.uniformLightCol.y, scene->renderOptions.uniformLightCol.z);
-        glUniform1f(glGetUniformLocation(shaderObject, "roughnessMollificationAmt"), scene->renderOptions.roughnessMollificationAmt);
-        glUniform1i(glGetUniformLocation(shaderObject, "frameNum"), frameCounter);
+        pathTraceShader->Uniform("enableEnvMap", scene->envMap == nullptr ? false : scene->renderOptions.enableEnvMap);
+        pathTraceShader->Uniform("envMapIntensity", scene->renderOptions.envMapIntensity);
+        pathTraceShader->Uniform("envMapRot", scene->renderOptions.envMapRot / 360.0f);
+        pathTraceShader->Uniform("maxDepth", scene->renderOptions.maxDepth);
+        pathTraceShader->Uniform("tileOffset", Vec2f(tile) * invNumTiles);
+        pathTraceShader->Uniform("uniformLightCol", scene->renderOptions.uniformLightCol);
+        pathTraceShader->Uniform("roughnessMollificationAmt", scene->renderOptions.roughnessMollificationAmt);
+        pathTraceShader->Uniform("frameNum", frameCounter);
         pathTraceShader->StopUsing();
 
         pathTraceShaderLowRes->Use();
-        shaderObject = pathTraceShaderLowRes->GetObject();
-
         scene->camera->SetUniforms(pathTraceShaderLowRes);
-
-        glUniform1i(glGetUniformLocation(shaderObject, "enableEnvMap"), scene->envMap == nullptr ? false : scene->renderOptions.enableEnvMap);
-        glUniform1f(glGetUniformLocation(shaderObject, "envMapIntensity"), scene->renderOptions.envMapIntensity);
-        glUniform1f(glGetUniformLocation(shaderObject, "envMapRot"), scene->renderOptions.envMapRot / 360.0f);
-        glUniform1i(glGetUniformLocation(shaderObject, "maxDepth"), scene->dirty ? 2 : scene->renderOptions.maxDepth);
-        glUniform3f(glGetUniformLocation(shaderObject, "uniformLightCol"), scene->renderOptions.uniformLightCol.x, scene->renderOptions.uniformLightCol.y, scene->renderOptions.uniformLightCol.z);
-        glUniform1f(glGetUniformLocation(shaderObject, "roughnessMollificationAmt"), scene->renderOptions.roughnessMollificationAmt);
+        pathTraceShaderLowRes->Uniform("enableEnvMap", scene->envMap == nullptr ? false : scene->renderOptions.enableEnvMap);
+        pathTraceShaderLowRes->Uniform("envMapIntensity", scene->renderOptions.envMapIntensity);
+        pathTraceShaderLowRes->Uniform("envMapRot", scene->renderOptions.envMapRot / 360.0f);
+        pathTraceShaderLowRes->Uniform("maxDepth", scene->dirty ? 2 : scene->renderOptions.maxDepth);
+        pathTraceShaderLowRes->Uniform("uniformLightCol", scene->renderOptions.uniformLightCol);
+        pathTraceShaderLowRes->Uniform("roughnessMollificationAmt", scene->renderOptions.roughnessMollificationAmt);
         pathTraceShaderLowRes->StopUsing();
 
         tonemapShader->Use();
-
         tonemapShader->Uniform("invSampleCounter", 1.f / sampleCounter);
-        tonemapShader->Uniform("enableTonemap", static_cast<int>(
-            scene->renderOptions.enableTonemap));
-        tonemapShader->Uniform("enableAces", static_cast<int>(
-            scene->renderOptions.enableAces));
-        tonemapShader->Uniform("simpleAcesFit", static_cast<int>(
-            scene->renderOptions.simpleAcesFit));
-        tonemapShader->Uniform("backgroundCol",
-            scene->renderOptions.backgroundCol);
-
+        tonemapShader->Uniform("enableTonemap", static_cast<int>(scene->renderOptions.enableTonemap));
+        tonemapShader->Uniform("enableAces", static_cast<int>(scene->renderOptions.enableAces));
+        tonemapShader->Uniform("simpleAcesFit", static_cast<int>(scene->renderOptions.simpleAcesFit));
+        tonemapShader->Uniform("backgroundCol", scene->renderOptions.backgroundCol);
         tonemapShader->StopUsing();
     }
 }
