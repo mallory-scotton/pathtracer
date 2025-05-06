@@ -82,10 +82,8 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     //
     ///////////////////////////////////////////////////////////////////////////
-    Scene* scene;
     Quad quad;
 
-    // Opengl buffer objects and textures for storing scene data on the GPU
     GLuint BVHBuffer;
     GLuint BVHTex;
     GLuint vertexIndicesBuffer;
@@ -101,31 +99,25 @@ private:
     GLuint envMapTex;
     GLuint envMapCDFTex;
 
-    // FBOs
     GLuint pathTraceFBO;
     GLuint pathTraceFBOLowRes;
     GLuint accumFBO;
     GLuint outputFBO;
 
-    // Shaders
-    String shadersDirectory;
     UniquePtr<Shader> pathTraceShader;
     UniquePtr<Shader> pathTraceShaderLowRes;
     UniquePtr<Shader> outputShader;
     UniquePtr<Shader> tonemapShader;
 
-    // Render textures
     GLuint pathTraceTextureLowRes;
     GLuint pathTraceTexture;
     GLuint accumTexture;
     GLuint tileOutputTexture[2];
     GLuint denoisedTexture;
 
-    // Render resolution and window resolution
     Vec2i renderSize;
     Vec2i windowSize;
 
-    // Variables to track rendering status
     Vec2i tile;
     Vec2i numTiles;
     Vec2f invNumTiles;
@@ -136,19 +128,16 @@ private:
     int sampleCounter;
     float pixelRatio;
 
-    // Denoiser output
     Vec3f* denoiserInputFramePtr;
     Vec3f* frameOutputPtr;
     bool denoised;
-
-    bool initialized;
 
 public:
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
     ///
     ///////////////////////////////////////////////////////////////////////////
-    Renderer(Scene* scene, const std::string& shadersDirectory);
+    Renderer(void);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief

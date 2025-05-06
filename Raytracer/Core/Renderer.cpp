@@ -47,52 +47,47 @@ Renderer::Options::Options(void)
     , roughnessMollificationAmt(0.0f)
 {}
 
-    Renderer::Renderer(Scene* scene, const std::string& shadersDirectory)
-        : scene(scene)
-        , BVHBuffer(0)
-        , BVHTex(0)
-        , vertexIndicesBuffer(0)
-        , vertexIndicesTex(0)
-        , verticesBuffer(0)
-        , verticesTex(0)
-        , normalsBuffer(0)
-        , normalsTex(0)
-        , materialsTex(0)
-        , transformsTex(0)
-        , lightsTex(0)
-        , textureMapsArrayTex(0)
-        , envMapTex(0)
-        , envMapCDFTex(0)
-        , pathTraceTextureLowRes(0)
-        , pathTraceTexture(0)
-        , accumTexture(0)
-        , tileOutputTexture()
-        , denoisedTexture(0)
-        , pathTraceFBO(0)
-        , pathTraceFBOLowRes(0)
-        , accumFBO(0)
-        , outputFBO(0)
-        , shadersDirectory(shadersDirectory)
-        , pathTraceShader(nullptr)
-        , pathTraceShaderLowRes(nullptr)
-        , outputShader(nullptr)
-        , tonemapShader(nullptr)
+///////////////////////////////////////////////////////////////////////////////
+Renderer::Renderer(void)
+    : BVHBuffer(0)
+    , BVHTex(0)
+    , vertexIndicesBuffer(0)
+    , vertexIndicesTex(0)
+    , verticesBuffer(0)
+    , verticesTex(0)
+    , normalsBuffer(0)
+    , normalsTex(0)
+    , materialsTex(0)
+    , transformsTex(0)
+    , lightsTex(0)
+    , textureMapsArrayTex(0)
+    , envMapTex(0)
+    , envMapCDFTex(0)
+    , pathTraceFBO(0)
+    , pathTraceFBOLowRes(0)
+    , accumFBO(0)
+    , outputFBO(0)
+    , pathTraceTextureLowRes(0)
+    , pathTraceTexture(0)
+    , accumTexture(0)
+    , denoisedTexture(0)
+    , currentBuffer(0)
+    , frameCounter(0)
+    , sampleCounter(0)
+    , pixelRatio(1.0f)
+    , denoised(false)
+{
+    Context& ctx = Context::GetInstance();
+
+    if (!ctx.scene->initialized)
     {
-        if (scene == nullptr)
-        {
-            printf("No Scene Found\n");
-            return;
-        }
-
-        if (!scene->initialized)
-            scene->ProcessScene();
-
-        InitGPUDataBuffers();
-        pixelRatio = 1.f;
-
-        InitFBOs();
-        InitShaders();
+        ctx.scene->ProcessScene();
     }
+
+    InitGPUDataBuffers();
+    InitFBOs();
+    InitShaders();
+}
 
     Renderer::~Renderer()
     {
@@ -140,12 +135,14 @@ Renderer::Options::Options(void)
 
     void Renderer::InitGPUDataBuffers()
     {
+        Context& ctx = Context::GetInstance();
+
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
         // Create buffer and texture for BVH
         glGenBuffers(1, &BVHBuffer);
         glBindBuffer(GL_TEXTURE_BUFFER, BVHBuffer);
-        glBufferData(GL_TEXTURE_BUFFER, sizeof(Ray::BvhTranslator::Node) * scene->bvhTranslator.nodes.size(), &scene->bvhTranslator.nodes[0], GL_STATIC_DRAW);
+        glBufferData(GL_TEXTURE_BUFFER, sizeof(Ray::BvhTranslator::Node) * ctx.scene->bvhTranslator.nodes.size(), &ctx.scene->bvhTranslator.nodes[0], GL_STATIC_DRAW);
         glGenTextures(1, &BVHTex);
         glBindTexture(GL_TEXTURE_BUFFER, BVHTex);
         glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, BVHBuffer);
@@ -153,7 +150,7 @@ Renderer::Options::Options(void)
         // Create buffer and texture for vertex indices
         glGenBuffers(1, &vertexIndicesBuffer);
         glBindBuffer(GL_TEXTURE_BUFFER, vertexIndicesBuffer);
-        glBufferData(GL_TEXTURE_BUFFER, sizeof(Indices) * scene->vertIndices.size(), &scene->vertIndices[0], GL_STATIC_DRAW);
+        glBufferData(GL_TEXTURE_BUFFER, sizeof(Indices) * ctx.scene->vertIndices.size(), &ctx.scene->vertIndices[0], GL_STATIC_DRAW);
         glGenTextures(1, &vertexIndicesTex);
         glBindTexture(GL_TEXTURE_BUFFER, vertexIndicesTex);
         glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32I, vertexIndicesBuffer);
@@ -161,7 +158,7 @@ Renderer::Options::Options(void)
         // Create buffer and texture for vertices
         glGenBuffers(1, &verticesBuffer);
         glBindBuffer(GL_TEXTURE_BUFFER, verticesBuffer);
-        glBufferData(GL_TEXTURE_BUFFER, sizeof(Vec4f) * scene->verticesUVX.size(), &scene->verticesUVX[0], GL_STATIC_DRAW);
+        glBufferData(GL_TEXTURE_BUFFER, sizeof(Vec4f) * ctx.scene->verticesUVX.size(), &ctx.scene->verticesUVX[0], GL_STATIC_DRAW);
         glGenTextures(1, &verticesTex);
         glBindTexture(GL_TEXTURE_BUFFER, verticesTex);
         glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, verticesBuffer);
@@ -169,7 +166,7 @@ Renderer::Options::Options(void)
         // Create buffer and texture for normals
         glGenBuffers(1, &normalsBuffer);
         glBindBuffer(GL_TEXTURE_BUFFER, normalsBuffer);
-        glBufferData(GL_TEXTURE_BUFFER, sizeof(Vec4f) * scene->normalsUVY.size(), &scene->normalsUVY[0], GL_STATIC_DRAW);
+        glBufferData(GL_TEXTURE_BUFFER, sizeof(Vec4f) * ctx.scene->normalsUVY.size(), &ctx.scene->normalsUVY[0], GL_STATIC_DRAW);
         glGenTextures(1, &normalsTex);
         glBindTexture(GL_TEXTURE_BUFFER, normalsTex);
         glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, normalsBuffer);
@@ -177,7 +174,7 @@ Renderer::Options::Options(void)
         // Create texture for materials
         glGenTextures(1, &materialsTex);
         glBindTexture(GL_TEXTURE_2D, materialsTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &scene->materials[0]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * ctx.scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->materials[0]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -185,47 +182,47 @@ Renderer::Options::Options(void)
         // Create texture for transforms
         glGenTextures(1, &transformsTex);
         glBindTexture(GL_TEXTURE_2D, transformsTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &scene->transforms[0]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * ctx.scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->transforms[0]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // Create texture for lights
-        if (!scene->lights.empty())
+        if (!ctx.scene->lights.empty())
         {
             //Create texture for lights
             glGenTextures(1, &lightsTex);
             glBindTexture(GL_TEXTURE_2D, lightsTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, (sizeof(Light) / sizeof(Vec3f)) * scene->lights.size(), 1, 0, GL_RGB, GL_FLOAT, &scene->lights[0]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, (sizeof(Light) / sizeof(Vec3f)) * ctx.scene->lights.size(), 1, 0, GL_RGB, GL_FLOAT, &ctx.scene->lights[0]);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glBindTexture(GL_TEXTURE_2D, 0);
         }
 
         // Create texture for scene textures
-        if (!scene->textures.empty())
+        if (!ctx.scene->textures.empty())
         {
             glGenTextures(1, &textureMapsArrayTex);
             glBindTexture(GL_TEXTURE_2D_ARRAY, textureMapsArrayTex);
-            glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, scene->renderOptions.texArrayWidth, scene->renderOptions.texArrayHeight, scene->textures.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, &scene->textureMapsArray[0]);
+            glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, ctx.scene->renderOptions.texArrayWidth, ctx.scene->renderOptions.texArrayHeight, ctx.scene->textures.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, &ctx.scene->textureMapsArray[0]);
             glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
         }
 
         // Create texture for environment map
-        if (scene->envMap != nullptr)
+        if (ctx.scene->envMap != nullptr)
         {
             glGenTextures(1, &envMapTex);
             glBindTexture(GL_TEXTURE_2D, envMapTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, scene->envMap->width, scene->envMap->height, 0, GL_RGB, GL_FLOAT, scene->envMap->img.get());
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RGB, GL_FLOAT, ctx.scene->envMap->img.get());
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glBindTexture(GL_TEXTURE_2D, 0);
 
             glGenTextures(1, &envMapCDFTex);
             glBindTexture(GL_TEXTURE_2D, envMapCDFTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, scene->envMap->width, scene->envMap->height, 0, GL_RED, GL_FLOAT, scene->envMap->cdf.get());
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RED, GL_FLOAT, ctx.scene->envMap->cdf.get());
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -286,15 +283,17 @@ Renderer::Options::Options(void)
 
     void Renderer::InitFBOs()
     {
+        Context& ctx = Context::GetInstance();
+
         sampleCounter = 1;
         currentBuffer = 0;
         frameCounter = 1;
 
-        renderSize = scene->renderOptions.renderResolution;
-        windowSize = scene->renderOptions.windowResolution;
+        renderSize = ctx.scene->renderOptions.renderResolution;
+        windowSize = ctx.scene->renderOptions.windowResolution;
 
-        tileWidth = scene->renderOptions.tileWidth;
-        tileHeight = scene->renderOptions.tileHeight;
+        tileWidth = ctx.scene->renderOptions.tileWidth;
+        tileHeight = ctx.scene->renderOptions.tileHeight;
 
         invNumTiles.x = (float)tileWidth / renderSize.x;
         invNumTiles.y = (float)tileHeight / renderSize.y;
@@ -397,6 +396,9 @@ Renderer::Options::Options(void)
 
     void Renderer::InitShaders()
     {
+        Context& ctx = Context::GetInstance();
+        String shadersDirectory = ctx.GetShaderPath();
+
         String vertexShaderSrc = Shader::Source(shadersDirectory + "Vertex/Vertex.glsl");
         String pathTraceShaderSrc = Shader::Source(shadersDirectory + "Lighting/Tile.glsl");
         String pathTraceShaderLowResSrc = Shader::Source(shadersDirectory + "Stages/Preview.glsl");
@@ -407,61 +409,61 @@ Renderer::Options::Options(void)
         std::string pathtraceDefines = "";
         std::string tonemapDefines = "";
 
-        if (scene->renderOptions.enableEnvMap && scene->envMap != nullptr)
+        if (ctx.scene->renderOptions.enableEnvMap && ctx.scene->envMap != nullptr)
             pathtraceDefines += "#define OPT_ENVMAP\n";
 
-        if (!scene->lights.empty())
+        if (!ctx.scene->lights.empty())
             pathtraceDefines += "#define OPT_LIGHTS\n";
 
-        if (scene->renderOptions.enableRR)
+        if (ctx.scene->renderOptions.enableRR)
         {
             pathtraceDefines += "#define OPT_RR\n";
-            pathtraceDefines += "#define OPT_RR_DEPTH " + std::to_string(scene->renderOptions.RRDepth) + "\n";
+            pathtraceDefines += "#define OPT_RR_DEPTH " + std::to_string(ctx.scene->renderOptions.RRDepth) + "\n";
         }
 
-        if (scene->renderOptions.enableUniformLight)
+        if (ctx.scene->renderOptions.enableUniformLight)
             pathtraceDefines += "#define OPT_UNIFORM_LIGHT\n";
 
-        if (scene->renderOptions.openglNormalMap)
+        if (ctx.scene->renderOptions.openglNormalMap)
             pathtraceDefines += "#define OPT_OPENGL_NORMALMAP\n";
 
-        if (scene->renderOptions.hideEmitters)
+        if (ctx.scene->renderOptions.hideEmitters)
             pathtraceDefines += "#define OPT_HIDE_EMITTERS\n";
 
-        if (scene->renderOptions.enableBackground)
+        if (ctx.scene->renderOptions.enableBackground)
         {
             pathtraceDefines += "#define OPT_BACKGROUND\n";
             tonemapDefines += "#define OPT_BACKGROUND\n";
         }
 
-        if (scene->renderOptions.transparentBackground)
+        if (ctx.scene->renderOptions.transparentBackground)
         {
             pathtraceDefines += "#define OPT_TRANSPARENT_BACKGROUND\n";
             tonemapDefines += "#define OPT_TRANSPARENT_BACKGROUND\n";
         }
 
-        for (int i = 0; i < scene->materials.size(); i++)
+        for (int i = 0; i < ctx.scene->materials.size(); i++)
         {
-            if ((int)scene->materials[i].alphaMode != Material::OPAQUE)
+            if ((int)ctx.scene->materials[i].alphaMode != Material::OPAQUE)
             {
                 pathtraceDefines += "#define OPT_ALPHA_TEST\n";
                 break;
             }
         }
 
-        if (scene->renderOptions.enableRoughnessMollification)
+        if (ctx.scene->renderOptions.enableRoughnessMollification)
             pathtraceDefines += "#define OPT_ROUGHNESS_MOLLIFICATION\n";
 
-        for (int i = 0; i < scene->materials.size(); i++)
+        for (int i = 0; i < ctx.scene->materials.size(); i++)
         {
-            if ((int)scene->materials[i].mediumType != Material::NONE)
+            if ((int)ctx.scene->materials[i].mediumType != Material::NONE)
             {
                 pathtraceDefines += "#define OPT_MEDIUM\n";
                 break;
             }
         }
 
-        if (scene->renderOptions.enableVolumeMIS)
+        if (ctx.scene->renderOptions.enableVolumeMIS)
             pathtraceDefines += "#define OPT_VOL_MIS\n";
 
         if (pathtraceDefines.size() > 0)
@@ -502,21 +504,23 @@ Renderer::Options::Options(void)
 
     void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
     {
+        Context& ctx = Context::GetInstance();
+
         shader->Use();
 
-        if (scene->envMap)
+        if (ctx.scene->envMap)
         {
             shader->Uniform("envMapRes",Vec2f(
-                scene->envMap->width,
-                scene->envMap->height
+                ctx.scene->envMap->width,
+                ctx.scene->envMap->height
             ));
-            shader->Uniform("envMapTotalSum", scene->envMap->totalSum);
+            shader->Uniform("envMapTotalSum", ctx.scene->envMap->totalSum);
         }
 
-        shader->Uniform("topBVHIndex", scene->bvhTranslator.topLevelIndex);
+        shader->Uniform("topBVHIndex", ctx.scene->bvhTranslator.topLevelIndex);
         shader->Uniform("resolution", Vec2f(renderSize));
         shader->Uniform("invNumTiles", invNumTiles);
-        shader->Uniform("numOfLights", static_cast<int>(scene->lights.size()));
+        shader->Uniform("numOfLights", static_cast<int>(ctx.scene->lights.size()));
         shader->Uniform("accumTexture", 0);
         shader->Uniform("BVH", 1);
         shader->Uniform("vertexIndicesTex", 2);
@@ -534,25 +538,25 @@ Renderer::Options::Options(void)
 
     void Renderer::Render()
     {
-        // If maxSpp was reached then stop rendering.
-        // TODO: Tonemapping and denosing still need to be able to run on final image
-        if (!scene->dirty && scene->renderOptions.maxSpp != -1 && sampleCounter >= scene->renderOptions.maxSpp)
+        Context& ctx = Context::GetInstance();
+
+        if (!ctx.scene->dirty && ctx.scene->renderOptions.maxSpp != -1 && sampleCounter >= ctx.scene->renderOptions.maxSpp)
             return;
 
         OpenGL::Disable(GL_BLEND);
         OpenGL::Disable(GL_DEPTH_TEST);
         OpenGL::Texture::Active(GL_TEXTURE0);
 
-        if (scene->dirty)
+        if (ctx.scene->dirty)
         {
             // Renders a low res preview if camera/instances are modified
             OpenGL::BindFramebuffer(pathTraceFBOLowRes);
             glViewport(0, 0, windowSize.x * pixelRatio, windowSize.y * pixelRatio);
             quad.Draw(pathTraceShaderLowRes);
 
-            scene->instancesModified = false;
-            scene->dirty = false;
-            scene->envMapModified = false;
+            ctx.scene->instancesModified = false;
+            ctx.scene->dirty = false;
+            ctx.scene->envMapModified = false;
         }
         else
         {
@@ -576,18 +580,19 @@ Renderer::Options::Options(void)
 
     void Renderer::Present()
     {
+        Context& ctx = Context::GetInstance();
         OpenGL::Texture::Active(GL_TEXTURE0);
         OpenGL::Disable(GL_BLEND);
         OpenGL::Disable(GL_DEPTH_TEST);
 
-        if (scene->dirty || sampleCounter == 1)
+        if (ctx.scene->dirty || sampleCounter == 1)
         {
             glBindTexture(GL_TEXTURE_2D, pathTraceTextureLowRes);
             quad.Draw(tonemapShader);
         }
         else
         {
-            if (scene->renderOptions.enableDenoiser && denoised)
+            if (ctx.scene->renderOptions.enableDenoiser && denoised)
                 glBindTexture(GL_TEXTURE_2D, denoisedTexture);
             else
                 glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
@@ -598,11 +603,11 @@ Renderer::Options::Options(void)
 
             if (sampleCounter == 200)
             {
-                int width = scene->renderOptions.renderResolution.x;
-                int height = scene->renderOptions.renderResolution.y;
+                int width = ctx.scene->renderOptions.renderResolution.x;
+                int height = ctx.scene->renderOptions.renderResolution.y;
                 std::vector<GLubyte> rgba_pixels(width * height * 4);
 
-                if (scene->renderOptions.enableDenoiser && denoised)
+                if (ctx.scene->renderOptions.enableDenoiser && denoised)
                 {
                     glBindTexture(GL_TEXTURE_2D, denoisedTexture);
                     RAY_SUCCESS("Exporting denoised texture");
@@ -648,7 +653,9 @@ Renderer::Options::Options(void)
 ///////////////////////////////////////////////////////////////////////////////
 float Renderer::GetProgress(void)
 {
-    int maxSpp = scene->renderOptions.maxSpp;
+    Context& ctx = Context::GetInstance();
+
+    int maxSpp = ctx.scene->renderOptions.maxSpp;
 
     if (maxSpp <= 0)
     {
@@ -663,63 +670,62 @@ int Renderer::GetSampleCount(void)
     return (sampleCounter);
 }
 
-    void Renderer::Update(float secondsElapsed)
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::Update(float secondsElapsed)
+{
+    RAY_UNUSED(secondsElapsed);
+    Context& ctx = Context::GetInstance();
+    Renderer::Options& options = ctx.scene->renderOptions;
+
+    if (ctx.scene->dirty == false && options.maxSpp != -1 && sampleCounter >= options.maxSpp)
     {
-        // If maxSpp was reached then stop updates
-        // TODO: Tonemapping and denosing still need to be able to run on final image
-        if (!scene->dirty && scene->renderOptions.maxSpp != -1 && sampleCounter >= scene->renderOptions.maxSpp)
-            return;
+        return;
+    }
 
-        // Update data for instances
-        if (scene->instancesModified)
+    if (ctx.scene->instancesModified)
+    {
+        glBindTexture(GL_TEXTURE_2D, transformsTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * ctx.scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->transforms[0]);
+
+        glBindTexture(GL_TEXTURE_2D, materialsTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * ctx.scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->materials[0]);
+
+        int index = ctx.scene->bvhTranslator.topLevelIndex;
+        int offset = sizeof(Ray::BvhTranslator::Node) * index;
+        int size = sizeof(Ray::BvhTranslator::Node) * (ctx.scene->bvhTranslator.nodes.size() - index);
+        glBindBuffer(GL_TEXTURE_BUFFER, BVHBuffer);
+        glBufferSubData(GL_TEXTURE_BUFFER, offset, size, &ctx.scene->bvhTranslator.nodes[index]);
+    }
+
+    if (ctx.scene->envMapModified)
+    {
+        if (ctx.scene->envMap != nullptr)
         {
-            // Update transforms
-            glBindTexture(GL_TEXTURE_2D, transformsTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &scene->transforms[0]);
+            glBindTexture(GL_TEXTURE_2D, envMapTex);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RGB, GL_FLOAT, ctx.scene->envMap->img.get());
 
-            // Update materials
-            glBindTexture(GL_TEXTURE_2D, materialsTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &scene->materials[0]);
+            glBindTexture(GL_TEXTURE_2D, envMapCDFTex);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RED, GL_FLOAT, ctx.scene->envMap->cdf.get());
 
-            // Update top level BVH
-            int index = scene->bvhTranslator.topLevelIndex;
-            int offset = sizeof(Ray::BvhTranslator::Node) * index;
-            int size = sizeof(Ray::BvhTranslator::Node) * (scene->bvhTranslator.nodes.size() - index);
-            glBindBuffer(GL_TEXTURE_BUFFER, BVHBuffer);
-            glBufferSubData(GL_TEXTURE_BUFFER, offset, size, &scene->bvhTranslator.nodes[index]);
+            GLuint shaderObject;
+            pathTraceShader->Use();
+            shaderObject = pathTraceShader->GetObject();
+            glUniform2f(glGetUniformLocation(shaderObject, "envMapRes"), (float)ctx.scene->envMap->width, (float)ctx.scene->envMap->height);
+            glUniform1f(glGetUniformLocation(shaderObject, "envMapTotalSum"), ctx.scene->envMap->totalSum);
+            pathTraceShader->StopUsing();
+
+            pathTraceShaderLowRes->Use();
+            shaderObject = pathTraceShaderLowRes->GetObject();
+            glUniform2f(glGetUniformLocation(shaderObject, "envMapRes"), (float)ctx.scene->envMap->width, (float)ctx.scene->envMap->height);
+            glUniform1f(glGetUniformLocation(shaderObject, "envMapTotalSum"), ctx.scene->envMap->totalSum);
+            pathTraceShaderLowRes->StopUsing();
         }
-
-        // Recreate texture for envmaps
-        if (scene->envMapModified)
-        {
-            // Create texture for environment map
-            if (scene->envMap != nullptr)
-            {
-                glBindTexture(GL_TEXTURE_2D, envMapTex);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, scene->envMap->width, scene->envMap->height, 0, GL_RGB, GL_FLOAT, scene->envMap->img.get());
-
-                glBindTexture(GL_TEXTURE_2D, envMapCDFTex);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, scene->envMap->width, scene->envMap->height, 0, GL_RED, GL_FLOAT, scene->envMap->cdf.get());
-
-                GLuint shaderObject;
-                pathTraceShader->Use();
-                shaderObject = pathTraceShader->GetObject();
-                glUniform2f(glGetUniformLocation(shaderObject, "envMapRes"), (float)scene->envMap->width, (float)scene->envMap->height);
-                glUniform1f(glGetUniformLocation(shaderObject, "envMapTotalSum"), scene->envMap->totalSum);
-                pathTraceShader->StopUsing();
-
-                pathTraceShaderLowRes->Use();
-                shaderObject = pathTraceShaderLowRes->GetObject();
-                glUniform2f(glGetUniformLocation(shaderObject, "envMapRes"), (float)scene->envMap->width, (float)scene->envMap->height);
-                glUniform1f(glGetUniformLocation(shaderObject, "envMapTotalSum"), scene->envMap->totalSum);
-                pathTraceShaderLowRes->StopUsing();
-            }
-        }
+    }
 
         // Denoise image if requested
-        if (scene->renderOptions.enableDenoiser && sampleCounter > 1)
+        if (ctx.scene->renderOptions.enableDenoiser && sampleCounter > 1)
         {
-            if (!denoised || (frameCounter % (scene->renderOptions.denoiserFrameCnt * (numTiles.x * numTiles.y)) == 0))
+            if (!denoised || (frameCounter % (ctx.scene->renderOptions.denoiserFrameCnt * (numTiles.x * numTiles.y)) == 0))
             {
                 glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
                 glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, denoiserInputFramePtr);
@@ -754,7 +760,7 @@ int Renderer::GetSampleCount(void)
             denoised = false;
 
         // If scene was modified then clear out image for re-rendering
-        if (scene->dirty)
+        if (ctx.scene->dirty)
         {
             tile.x = -1;
             tile.y = numTiles.y - 1;
@@ -784,33 +790,33 @@ int Renderer::GetSampleCount(void)
         }
 
         pathTraceShader->Use();
-        scene->camera->SetUniforms(pathTraceShader);
-        pathTraceShader->Uniform("enableEnvMap", scene->envMap == nullptr ? false : scene->renderOptions.enableEnvMap);
-        pathTraceShader->Uniform("envMapIntensity", scene->renderOptions.envMapIntensity);
-        pathTraceShader->Uniform("envMapRot", scene->renderOptions.envMapRot / 360.0f);
-        pathTraceShader->Uniform("maxDepth", scene->renderOptions.maxDepth);
+        ctx.scene->camera->SetUniforms(pathTraceShader);
+        pathTraceShader->Uniform("enableEnvMap", ctx.scene->envMap == nullptr ? false : ctx.scene->renderOptions.enableEnvMap);
+        pathTraceShader->Uniform("envMapIntensity", ctx.scene->renderOptions.envMapIntensity);
+        pathTraceShader->Uniform("envMapRot", ctx.scene->renderOptions.envMapRot / 360.0f);
+        pathTraceShader->Uniform("maxDepth", ctx.scene->renderOptions.maxDepth);
         pathTraceShader->Uniform("tileOffset", Vec2f(tile) * invNumTiles);
-        pathTraceShader->Uniform("uniformLightCol", scene->renderOptions.uniformLightCol);
-        pathTraceShader->Uniform("roughnessMollificationAmt", scene->renderOptions.roughnessMollificationAmt);
+        pathTraceShader->Uniform("uniformLightCol", ctx.scene->renderOptions.uniformLightCol);
+        pathTraceShader->Uniform("roughnessMollificationAmt", ctx.scene->renderOptions.roughnessMollificationAmt);
         pathTraceShader->Uniform("frameNum", frameCounter);
         pathTraceShader->StopUsing();
 
         pathTraceShaderLowRes->Use();
-        scene->camera->SetUniforms(pathTraceShaderLowRes);
-        pathTraceShaderLowRes->Uniform("enableEnvMap", scene->envMap == nullptr ? false : scene->renderOptions.enableEnvMap);
-        pathTraceShaderLowRes->Uniform("envMapIntensity", scene->renderOptions.envMapIntensity);
-        pathTraceShaderLowRes->Uniform("envMapRot", scene->renderOptions.envMapRot / 360.0f);
-        pathTraceShaderLowRes->Uniform("maxDepth", scene->dirty ? 2 : scene->renderOptions.maxDepth);
-        pathTraceShaderLowRes->Uniform("uniformLightCol", scene->renderOptions.uniformLightCol);
-        pathTraceShaderLowRes->Uniform("roughnessMollificationAmt", scene->renderOptions.roughnessMollificationAmt);
+        ctx.scene->camera->SetUniforms(pathTraceShaderLowRes);
+        pathTraceShaderLowRes->Uniform("enableEnvMap", ctx.scene->envMap == nullptr ? false : ctx.scene->renderOptions.enableEnvMap);
+        pathTraceShaderLowRes->Uniform("envMapIntensity", ctx.scene->renderOptions.envMapIntensity);
+        pathTraceShaderLowRes->Uniform("envMapRot", ctx.scene->renderOptions.envMapRot / 360.0f);
+        pathTraceShaderLowRes->Uniform("maxDepth", ctx.scene->dirty ? 2 : ctx.scene->renderOptions.maxDepth);
+        pathTraceShaderLowRes->Uniform("uniformLightCol", ctx.scene->renderOptions.uniformLightCol);
+        pathTraceShaderLowRes->Uniform("roughnessMollificationAmt", ctx.scene->renderOptions.roughnessMollificationAmt);
         pathTraceShaderLowRes->StopUsing();
 
         tonemapShader->Use();
         tonemapShader->Uniform("invSampleCounter", 1.f / sampleCounter);
-        tonemapShader->Uniform("enableTonemap", static_cast<int>(scene->renderOptions.enableTonemap));
-        tonemapShader->Uniform("enableAces", static_cast<int>(scene->renderOptions.enableAces));
-        tonemapShader->Uniform("simpleAcesFit", static_cast<int>(scene->renderOptions.simpleAcesFit));
-        tonemapShader->Uniform("backgroundCol", scene->renderOptions.backgroundCol);
+        tonemapShader->Uniform("enableTonemap", static_cast<int>(ctx.scene->renderOptions.enableTonemap));
+        tonemapShader->Uniform("enableAces", static_cast<int>(ctx.scene->renderOptions.enableAces));
+        tonemapShader->Uniform("simpleAcesFit", static_cast<int>(ctx.scene->renderOptions.simpleAcesFit));
+        tonemapShader->Uniform("backgroundCol", ctx.scene->renderOptions.backgroundCol);
         tonemapShader->StopUsing();
     }
 }
