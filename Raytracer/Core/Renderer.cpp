@@ -88,7 +88,6 @@ Renderer::Options::Options(void)
             scene->ProcessScene();
 
         InitGPUDataBuffers();
-        quad = new Quad();
         pixelRatio = 1.f;
 
         InitFBOs();
@@ -97,8 +96,6 @@ Renderer::Options::Options(void)
 
     Renderer::~Renderer()
     {
-        delete quad;
-
         // Delete textures
         glDeleteTextures(1, &BVHTex);
         glDeleteTextures(1, &vertexIndicesTex);
@@ -549,7 +546,7 @@ Renderer::Options::Options(void)
             // Renders a low res preview if camera/instances are modified
             OpenGL::BindFramebuffer(pathTraceFBOLowRes);
             glViewport(0, 0, windowSize.x * pixelRatio, windowSize.y * pixelRatio);
-            quad->Draw(pathTraceShaderLowRes);
+            quad.Draw(pathTraceShaderLowRes);
 
             scene->instancesModified = false;
             scene->dirty = false;
@@ -560,18 +557,18 @@ Renderer::Options::Options(void)
             OpenGL::BindFramebuffer(pathTraceFBO);
             glViewport(0, 0, tileWidth, tileHeight);
             glBindTexture(GL_TEXTURE_2D, accumTexture);
-            quad->Draw(pathTraceShader);
+            quad.Draw(pathTraceShader);
 
             OpenGL::BindFramebuffer(accumFBO);
             glViewport(tileWidth * tile.x, tileHeight * tile.y, tileWidth, tileHeight);
             glBindTexture(GL_TEXTURE_2D, pathTraceTexture);
-            quad->Draw(outputShader);
+            quad.Draw(outputShader);
 
             OpenGL::BindFramebuffer(outputFBO);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tileOutputTexture[currentBuffer], 0);
             glViewport(0, 0, renderSize.x, renderSize.y);
             glBindTexture(GL_TEXTURE_2D, accumTexture);
-            quad->Draw(tonemapShader);
+            quad.Draw(tonemapShader);
         }
     }
 
@@ -584,7 +581,7 @@ Renderer::Options::Options(void)
         if (scene->dirty || sampleCounter == 1)
         {
             glBindTexture(GL_TEXTURE_2D, pathTraceTextureLowRes);
-            quad->Draw(tonemapShader);
+            quad.Draw(tonemapShader);
         }
         else
         {
@@ -642,7 +639,7 @@ Renderer::Options::Options(void)
                 file.close();
             }
 
-            quad->Draw(outputShader);
+            quad.Draw(outputShader);
         }
     }
 

@@ -83,7 +83,7 @@ private:
     //
     ///////////////////////////////////////////////////////////////////////////
     Scene* scene;
-    Quad* quad;
+    Quad quad;
 
     // Opengl buffer objects and textures for storing scene data on the GPU
     GLuint BVHBuffer;
