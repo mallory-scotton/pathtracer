@@ -399,4 +399,16 @@ void OpenGL::Disable(GLenum cap)
     glDisable(cap);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Viewport(int x, int y, int width, int height)
+{
+    glViewport(x, y, width, height);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Viewport(const Vec2i& position, const Vec2i& dimension)
+{
+    glViewport(position.x, position.y, dimension.x, dimension.y);
+}
+
 } // namespace Ray
