@@ -11,24 +11,25 @@ namespace Ray
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+const float Quad::VERTICES[] =
+{
+    -1.0f, 1.0f, 0.0f, 1.0f,
+    -1.0f, -1.0f, 0.0f, 0.0f,
+    1.0f, -1.0f, 1.0f, 0.0f,
+    -1.0f, 1.0f, 0.0f, 1.0f,
+    1.0f, -1.0f, 1.0f, 0.0f,
+    1.0f, 1.0f, 1.0f, 1.0f
+};
+
+///////////////////////////////////////////////////////////////////////////////
 Quad::Quad(void)
     : m_vao(std::make_unique<OpenGL::VertexArray>())
+    , m_vbo(std::make_unique<OpenGL::Buffer>(GL_ARRAY_BUFFER))
 {
-    glGenBuffers(1, &m_vbo);
     m_vao->Bind();
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    m_vbo->Bind();
 
-    static const float vertices[] =
-    {
-        -1.0f, 1.0f, 0.0f, 1.0f,
-        -1.0f, -1.0f, 0.0f, 0.0f,
-        1.0f, -1.0f, 1.0f, 0.0f,
-        -1.0f, 1.0f, 0.0f, 1.0f,
-        1.0f, -1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 1.0f, 1.0f
-    };
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+    m_vbo->SetData(sizeof(VERTICES), &VERTICES, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(
@@ -42,16 +43,6 @@ Quad::Quad(void)
     );
 
     m_vao->Unbind();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-Quad::~Quad()
-{
-    if (m_vbo != 0)
-    {
-        glDeleteBuffers(1, &m_vbo);
-        m_vbo = 0;
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
