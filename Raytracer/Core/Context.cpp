@@ -58,16 +58,23 @@ void Context::Initialize(int argc, char* argv[])
     for (const auto& sceneFile : scenes)
     {
         availableScenes.push_back(sceneFile);
-
-        if (argc > 1 && sceneFile.filename() == argv[1])
-        {
-            sceneToLoad = sceneFile;
-        }
     }
 
-    if (sceneToLoad.empty() && availableScenes.size() > 0)
+    if (
+        argc > 1 &&
+        Fs::Exists(argv[1]) &&
+        Fs::GetExtension(argv[1]) == ".scene"
+    )
+    {
+        sceneToLoad = argv[1];
+    }
+    else if (availableScenes.size() > 0)
     {
         sceneToLoad = availableScenes[0];
+    }
+    else
+    {
+        throw Exception("No default scene to load.");
     }
 
     Loader::LoadScene(sceneToLoad);
