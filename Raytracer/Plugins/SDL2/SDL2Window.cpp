@@ -117,7 +117,7 @@ void SDL2Window::Update(void)
         {
             if (event.window.event == SDL_WINDOWEVENT_RESIZED)
             {
-                RenderOptions& options = ctx.scene->renderOptions;
+                Renderer::Options& options = ctx.scene->renderOptions;
 
                 SDL_GL_GetDrawableSize(m_window.get(),
                     &options.windowResolution.x,

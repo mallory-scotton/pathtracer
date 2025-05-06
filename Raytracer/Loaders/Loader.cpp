@@ -105,7 +105,7 @@ void Loader::ParseSceneMaterial(
 void Loader::ParseSceneRendererOptions(const LibConfig::Setting& cfg)
 {
     Context& ctx = Context::GetInstance();
-    RenderOptions& options = ctx.scene->renderOptions;
+    Renderer::Options& options = ctx.scene->renderOptions;
     String envMap;
 
     cfg.Value("envmapfile", envMap);

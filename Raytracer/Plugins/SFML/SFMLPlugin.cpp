@@ -73,7 +73,7 @@ void SFMLPlugin::Update(float deltaSeconds)
 
     if (m_previousSize != m_window.getSize())
     {
-        RenderOptions& options = ctx.scene->renderOptions;
+        Renderer::Options& options = ctx.scene->renderOptions;
         sf::Vector2u size = m_window.getSize();
 
         Vec2i newSize(

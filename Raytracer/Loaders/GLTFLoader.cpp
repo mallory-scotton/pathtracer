@@ -380,7 +380,7 @@ void LoadInstances(Scene* scene, tinygltf::Model& gltfModel, Mat4x4f xform,
 }
 
 bool LoadGLTF(const std::string& filename, Scene* scene,
-              RenderOptions& renderOptions, Mat4x4f xform, bool binary) {
+    Renderer::Options& renderOptions, Mat4x4f xform, bool binary) {
     tinygltf::Model gltfModel;
     tinygltf::TinyGLTF loader;
     std::string err;

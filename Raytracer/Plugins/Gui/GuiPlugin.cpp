@@ -105,7 +105,7 @@ void GuiPlugin::PreRender(void)
 {
     ImGuiIO& io = ImGui::GetIO();
     Context& ctx = Context::GetInstance();
-    RenderOptions& options = ctx.scene->renderOptions;
+    Renderer::Options& options = ctx.scene->renderOptions;
 
     if (io.DisplaySize.x <= 0.f || io.DisplaySize.y <= 0.f || ctx.shutdown)
     {

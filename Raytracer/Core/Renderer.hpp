@@ -19,75 +19,6 @@ namespace Ray
 {
 
 ///////////////////////////////////////////////////////////////////////////////
-/// \brief
-///
-///////////////////////////////////////////////////////////////////////////////
-struct RenderOptions
-{
-    RenderOptions()
-    {
-        renderResolution = Vec2i(1280, 720);
-        windowResolution = Vec2i(1280, 720);
-        uniformLightCol = Vec3f(0.3f);
-        backgroundCol = Vec3f(1.0f);
-        tileWidth = 100;
-        tileHeight = 100;
-        maxDepth = 2;
-        maxSpp = -1;
-        RRDepth = 2;
-        texArrayWidth = 2048;
-        texArrayHeight = 2048;
-        denoiserFrameCnt = 20;
-        enableRR = true;
-        enableDenoiser = false;
-        enableTonemap = true;
-        enableAces = false;
-        openglNormalMap = true;
-        enableEnvMap = false;
-        enableUniformLight = false;
-        hideEmitters = false;
-        enableBackground = false;
-        transparentBackground = false;
-        independentRenderSize = false;
-        enableRoughnessMollification = false;
-        enableVolumeMIS = false;
-        envMapIntensity = 1.0f;
-        envMapRot = 0.0f;
-        roughnessMollificationAmt = 0.0f;
-    }
-
-    Vec2i renderResolution;
-    Vec2i windowResolution;
-    Vec3f uniformLightCol;
-    Vec3f backgroundCol;
-    int tileWidth;
-    int tileHeight;
-    int maxDepth;
-    int maxSpp;
-    int RRDepth;
-    int texArrayWidth;
-    int texArrayHeight;
-    int denoiserFrameCnt;
-    bool enableRR;
-    bool enableDenoiser;
-    bool enableTonemap;
-    bool enableAces;
-    bool simpleAcesFit;
-    bool openglNormalMap;
-    bool enableEnvMap;
-    bool enableUniformLight;
-    bool hideEmitters;
-    bool enableBackground;
-    bool transparentBackground;
-    bool independentRenderSize;
-    bool enableRoughnessMollification;
-    bool enableVolumeMIS;
-    float envMapIntensity;
-    float envMapRot;
-    float roughnessMollificationAmt;
-};
-
-///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
 class Scene;
@@ -98,6 +29,55 @@ class Scene;
 ///////////////////////////////////////////////////////////////////////////////
 class Renderer
 {
+public:
+    ///////////////////////////////////////////////////////////////////////////
+    /// \brief
+    ///
+    ///////////////////////////////////////////////////////////////////////////
+    class Options
+    {
+    public:
+        ///////////////////////////////////////////////////////////////////////
+        //
+        ///////////////////////////////////////////////////////////////////////
+        Vec2i renderResolution;             //<!
+        Vec2i windowResolution;             //<!
+        Vec3f uniformLightCol;              //<!
+        Vec3f backgroundCol;                //<!
+        int tileWidth;                      //<!
+        int tileHeight;                     //<!
+        int maxDepth;                       //<!
+        int maxSpp;                         //<!
+        int RRDepth;                        //<!
+        int texArrayWidth;                  //<!
+        int texArrayHeight;                 //<!
+        int denoiserFrameCnt;               //<!
+        bool enableRR;                      //<!
+        bool enableDenoiser;                //<!
+        bool enableTonemap;                 //<!
+        bool enableAces;                    //<!
+        bool simpleAcesFit;                 //<!
+        bool openglNormalMap;               //<!
+        bool enableEnvMap;                  //<!
+        bool enableUniformLight;            //<!
+        bool hideEmitters;                  //<!
+        bool enableBackground;              //<!
+        bool transparentBackground;         //<!
+        bool independentRenderSize;         //<!
+        bool enableRoughnessMollification;  //<!
+        bool enableVolumeMIS;               //<!
+        float envMapIntensity;              //<!
+        float envMapRot;                    //<!
+        float roughnessMollificationAmt;    //<!
+
+    public:
+        ///////////////////////////////////////////////////////////////////////
+        /// \brief
+        ///
+        ///////////////////////////////////////////////////////////////////////
+        Options(void);
+    };
+
 private:
     ///////////////////////////////////////////////////////////////////////////
     //

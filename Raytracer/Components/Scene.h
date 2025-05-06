@@ -49,7 +49,7 @@ namespace Ray
         void RebuildInstances();
 
         // Options
-        RenderOptions renderOptions;
+        Renderer::Options renderOptions;
 
         // Meshes
         std::vector<Mesh*> meshes;

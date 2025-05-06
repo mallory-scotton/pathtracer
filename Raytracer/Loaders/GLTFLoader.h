@@ -7,5 +7,5 @@ namespace Ray {
 class Scene;
 
 bool LoadGLTF(const std::string& filename, Scene* scene,
-              RenderOptions& renderOptions, Mat4x4f xform, bool binary);
+    Renderer::Options& renderOptions, Mat4x4f xform, bool binary);
 }  // namespace Ray
