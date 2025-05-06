@@ -442,7 +442,7 @@ Renderer::Renderer(void)
             tonemapDefines += "#define OPT_TRANSPARENT_BACKGROUND\n";
         }
 
-        for (int i = 0; i < ctx.scene->materials.size(); i++)
+        for (Uint64 i = 0; i < ctx.scene->materials.size(); i++)
         {
             if ((int)ctx.scene->materials[i].alphaMode != Material::OPAQUE)
             {
@@ -454,7 +454,7 @@ Renderer::Renderer(void)
         if (ctx.scene->renderOptions.enableRoughnessMollification)
             pathtraceDefines += "#define OPT_ROUGHNESS_MOLLIFICATION\n";
 
-        for (int i = 0; i < ctx.scene->materials.size(); i++)
+        for (Uint64 i = 0; i < ctx.scene->materials.size(); i++)
         {
             if ((int)ctx.scene->materials[i].mediumType != Material::NONE)
             {
@@ -469,14 +469,14 @@ Renderer::Renderer(void)
         if (pathtraceDefines.size() > 0)
         {
             size_t idx = pathTraceShaderSrc.find("#version");
-            if (idx != -1)
+            if (idx != String::npos)
                 idx = pathTraceShaderSrc.find("\n", idx);
             else
                 idx = 0;
             pathTraceShaderSrc.insert(idx + 1, pathtraceDefines);
 
             idx = pathTraceShaderLowResSrc.find("#version");
-            if (idx != -1)
+            if (idx != String::npos)
                 idx = pathTraceShaderLowResSrc.find("\n", idx);
             else
                 idx = 0;
@@ -486,7 +486,7 @@ Renderer::Renderer(void)
         if (tonemapDefines.size() > 0)
         {
             size_t idx = tonemapShaderSrc.find("#version");
-            if (idx != -1)
+            if (idx != String::npos)
                 idx = tonemapShaderSrc.find("\n", idx);
             else
                 idx = 0;
