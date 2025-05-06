@@ -1,0 +1,136 @@
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 7;
+    tilewidth = 256;
+    tileheight = 144;
+    envmapfile = "Assets/HDR/peppermint_powerplant_4k.hdr";
+    envmapintensity = 1.411;
+    enablerr = true;
+    rrdepth = 2;
+}
+
+camera:
+{
+    position = {
+        x: 7.3;
+        y: 2.2;
+        z: 9.6;
+    };
+    lookat = {
+        x: -0.3;
+        y: 0.4;
+        z: 0.0;
+    };
+    fov = 22.0;
+}
+
+materials = (
+    {
+        name = "floor";
+        color = { x: 0.0; y: 0.0; z: 0.0; };
+        roughness = 1.0;
+    },
+    {
+        name = "black";
+        color = { x: 0.008; y: 0.008; z: 0.008; };
+        roughness = 1.0;
+    },
+    {
+        name = "chrome";
+        color = { x: 0.9; y: 0.9; z: 0.9; };
+        roughness = 0.0;
+        metallic = 1.0;
+    },
+    {
+        name = "glass";
+        color = { x: 1.0; y: 1.0; z: 1.0; };
+        roughness = 0.0;
+        spectrans = 1.0;
+        ior = 1.45;
+    },
+    {
+        name = "headlight";
+        color = { x: 1.0; y: 1.0; z: 1.0; };
+        roughness = 0.1;
+        spectrans = 1.0;
+        ior = 1.45;
+    },
+    {
+        name = "yellow_blinkers";
+        color = { x: 1.0; y: 0.28; z: 0.122; };
+        roughness = 0.156;
+        spectrans = 1.0;
+        ior = 1.45;
+    },
+    {
+        name = "red_taillight";
+        color = { x: 0.581; y: 0.009; z: 0.009; };
+        roughness = 0.0;
+        metallic = 0.738;
+    },
+    {
+        name = "paint";
+        color = { x: 0.82; y: 0.0; z: 0.0; };
+        roughness = 0.0;
+        metallic = 0.2;
+        clearcoat = 1.0;
+    },
+    {
+        name = "red_interior";
+        color = { x: 0.2; y: 0.02; z: 0.02; };
+        roughness = 0.5;
+        ior = 1.1;
+    },
+    {
+        name = "tyres";
+        color = { x: 0.008; y: 0.008; z: 0.008; };
+        roughness = 0.5;
+    }
+)
+
+meshes = (
+    {
+        file = "Assets/Mustang/Black.obj";
+        material = "black";
+    },
+    {
+        file = "Assets/Mustang/Body.obj";
+        material = "paint";
+    },
+    {
+        file = "Assets/Mustang/Chrome.obj";
+        material = "chrome";
+    },
+    {
+        file = "Assets/Mustang/Floor.obj";
+        material = "floor";
+    },
+    {
+        file = "Assets/Mustang/Front_Blinkers.obj";
+        material = "yellow_blinkers";
+    },
+    {
+        file = "Assets/Mustang/Glass.obj";
+        material = "glass";
+    },
+    {
+        file = "Assets/Mustang/Lights.obj";
+        material = "headlight";
+    },
+    {
+        file = "Assets/Mustang/Red_Interior.obj";
+        material = "red_interior";
+    },
+    {
+        file = "Assets/Mustang/Tail_Lights.obj";
+        material = "red_taillight";
+    },
+    {
+        file = "Assets/Mustang/Tyres.obj";
+        material = "tyres";
+    }
+)

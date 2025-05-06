@@ -1,0 +1,49 @@
+
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 2;
+    tilewidth = 256;
+    tileheight = 144;
+    envmapfile = "Assets/HDR/cape_hill_2k.hdr";
+    envmapintensity = 5.0;
+}
+
+camera:
+{
+    position = {
+        x: 7.07;
+        y: 2.76;
+        z: -3.76;
+    };
+    lookat = {
+        x: 0.0;
+        y: 0.0;
+        z: 0.0;
+    };
+    fov = 45.0;
+}
+
+gltfs = (
+    {
+        file = "Assets/mercedes/scene.gltf";
+    }
+)
+
+materials = (
+    {
+        name = "floor";
+        color = { x: 0.0; y: 0.0; z: 0.0; };
+        roughness = 1.0;
+    }
+)
+
+meshes = (
+    {
+        file = "Assets/Mustang/Floor.obj";
+        material = "floor";
+    }
+)

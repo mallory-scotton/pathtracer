@@ -1,0 +1,34 @@
+
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 2;
+    tilewidth = 256;
+    tileheight = 144;
+    envmapfile = "Assets/HDR/cape_hill_2k.hdr";
+    envmapintensity = 5.0;
+}
+
+camera:
+{
+    position = {
+        x: -2.63;
+        y: 0.94;
+        z: 4.0;
+    };
+    lookat = {
+        x: 0.0;
+        y: 1.0;
+        z: 0.0;
+    };
+    fov = 45.0;
+}
+
+gltfs = (
+    {
+        file = "Assets/serpent_dragon_diorama/scene.gltf";
+    }
+)
