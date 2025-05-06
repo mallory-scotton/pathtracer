@@ -15,21 +15,6 @@
 namespace Ray
 {
 
-// FIXME: C FUNCTION
-///////////////////////////////////////////////////////////////////////////////
-float sphericalTheta(const Vec3f& v)
-{
-    return (acosf(Math::Clamp(v.y, -1.f, 1.f)));
-}
-
-// FIXME: C FUNCTION
-///////////////////////////////////////////////////////////////////////////////
-float sphericalPhi(const Vec3f& v)
-{
-    float p = atan2f(v.z, v.x);
-    return ((p < 0.f) ? p + 2.f * PI : p);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 Mesh::Mesh(void)
     : bvh(std::make_unique<Ray::SplitBvh>(2.0f, 64, 0, 0.001f, 0))
