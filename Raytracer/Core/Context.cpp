@@ -86,7 +86,7 @@ void Context::Initialize(int argc, char* argv[])
         throw Exception("Failed to initialize OpenGL loader");
     }
 
-    renderer = std::make_unique<Renderer>(scene.get(), m_shaderPath);
+    renderer = std::make_unique<Renderer>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -136,6 +136,24 @@ void Context::SetScenesPath(const Path& path)
     {
         RAY_WARN(path << " doesn't exists or is not a directory.");
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Path Context::GetShaderPath(void) const
+{
+    return (m_shaderPath);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Path Context::GetAssetsPath(void) const
+{
+    return (m_assetsPath);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+Path Context::GetScenesPath(void) const
+{
+    return (m_scenesPath);
 }
 
 } // namespace Ray
