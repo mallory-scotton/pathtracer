@@ -3,6 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Plugins/SDL2/SDL2Window.hpp"
 #include "Core/Context.hpp"
+#include "Utils/OpenGL.hpp"
 #include "Errors/PluginException.hpp"
 #include "Errors/OpenGLException.hpp"
 #include "ImGui/imgui_impl_sdl2.h"
@@ -153,9 +154,9 @@ void SDL2Window::Update(void)
 ///////////////////////////////////////////////////////////////////////////////
 void SDL2Window::Clear(void)
 {
-    glClearColor(0., 0., 0., 0.);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
+    OpenGL::Clear(Vec4f(0.f, 0.f, 0.f, 0.f));
+    OpenGL::Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    OpenGL::Disable(GL_DEPTH_TEST);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
