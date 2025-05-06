@@ -645,16 +645,23 @@ Renderer::Options::Options(void)
         }
     }
 
-    float Renderer::GetProgress()
-    {
-        int maxSpp = scene->renderOptions.maxSpp;
-        return maxSpp <= 0 ? 0.0f : sampleCounter * 100.0f / maxSpp;
-    }
+///////////////////////////////////////////////////////////////////////////////
+float Renderer::GetProgress(void)
+{
+    int maxSpp = scene->renderOptions.maxSpp;
 
-    int Renderer::GetSampleCount()
+    if (maxSpp <= 0)
     {
-        return sampleCounter;
+        return (0.f);
     }
+    return (sampleCounter * 100.f / maxSpp);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+int Renderer::GetSampleCount(void)
+{
+    return (sampleCounter);
+}
 
     void Renderer::Update(float secondsElapsed)
     {
