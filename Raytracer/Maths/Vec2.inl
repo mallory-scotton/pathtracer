@@ -59,6 +59,13 @@ Vec2<T>::operator sf::Vector2<T>(void) const
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+Vec2<T> operator*(const Vec2<T>& lhs, const Vec2<T>& rhs)
+{
+    return (Vec2<T>(lhs.x * rhs.x, lhs.y * rhs.y));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 std::ostream& operator<<(std::ostream& os, const Vec2<T>& vec)
 {
     os << '(' << vec.x << ", " << vec.y << ')';
