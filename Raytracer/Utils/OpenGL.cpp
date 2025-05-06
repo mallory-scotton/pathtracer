@@ -375,9 +375,16 @@ void OpenGL::BindFramebuffer(GLuint fbo)
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 void OpenGL::Clear(GLbitfield mask)
 {
     glClear(mask);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Disable(GLenum cap)
+{
+    glDisable(cap);
 }
 
 } // namespace Ray
