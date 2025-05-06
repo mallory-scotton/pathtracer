@@ -7,7 +7,7 @@
 #include <map>
 #include "Graphics/EnvironmentMap.hpp"
 #include "Acceleration/bvh.h"
-#include "Core/Renderer.h"
+#include "Core/Renderer.hpp"
 #include "Components/Mesh.hpp"
 #include "Components/Camera.hpp"
 #include "Acceleration/bvh_translator.h"

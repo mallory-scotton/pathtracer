@@ -1,7 +1,7 @@
 
 // FIXME: THE WHOLE FILE
 #include "Config.hpp"
-#include "Core/Renderer.h"
+#include "Core/Renderer.hpp"
 #include "Components/Scene.h"
 #include "OpenImageDenoise/oidn.hpp"
 #include "Utils/OpenGL.hpp"
@@ -613,23 +613,6 @@ namespace Ray
     {
         int maxSpp = scene->renderOptions.maxSpp;
         return maxSpp <= 0 ? 0.0f : sampleCounter * 100.0f / maxSpp;
-    }
-
-    void Renderer::GetOutputBuffer(unsigned char** data, int& w, int& h)
-    {
-        w = renderSize.x;
-        h = renderSize.y;
-
-        *data = new unsigned char[w * h * 4];
-
-        glActiveTexture(GL_TEXTURE0);
-
-        if (scene->renderOptions.enableDenoiser && denoised)
-            glBindTexture(GL_TEXTURE_2D, denoisedTexture);
-        else
-            glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
-
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, *data);
     }
 
     int Renderer::GetSampleCount()
