@@ -50,6 +50,42 @@ GLuint OpenGL::Object::GetHandler(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+OpenGL::Buffer::Buffer(GLenum target)
+    : m_target(target)
+{
+    glGenBuffers(1, &m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Buffer::~Buffer()
+{
+    if (m_handler != 0)
+    {
+        glDeleteBuffers(1, &m_handler);
+        m_handler = 0;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Buffer::Bind(void)
+{
+    glBindBuffer(m_target, m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Buffer::Unbind(void)
+{
+    glBindBuffer(m_target, 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Buffer::SetData(GLsizeiptr size, const void* data, GLenum usage)
+{
+    Bind();
+    glBufferData(m_target, size, data, usage);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 OpenGL::VertexArray::VertexArray(void)
 {
     glGenVertexArrays(1, &m_handler);
@@ -90,7 +126,6 @@ OpenGL::Texture::Texture(GLenum target)
     : m_target(target)
 {
     glGenTextures(1, &m_handler);
-    glBindTexture(m_target, m_handler);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
