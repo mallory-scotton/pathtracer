@@ -539,8 +539,8 @@ Renderer::Options::Options(void)
         if (!scene->dirty && scene->renderOptions.maxSpp != -1 && sampleCounter >= scene->renderOptions.maxSpp)
             return;
 
-        glDisable(GL_BLEND); 
-        glDisable(GL_DEPTH_TEST);
+        OpenGL::Disable(GL_BLEND);
+        OpenGL::Disable(GL_DEPTH_TEST);
         OpenGL::Texture::Active(GL_TEXTURE0);
 
         if (scene->dirty)
@@ -577,8 +577,8 @@ Renderer::Options::Options(void)
     void Renderer::Present()
     {
         OpenGL::Texture::Active(GL_TEXTURE0);
-        glDisable(GL_BLEND); 
-        glDisable(GL_DEPTH_TEST);
+        OpenGL::Disable(GL_BLEND);
+        OpenGL::Disable(GL_DEPTH_TEST);
 
         if (scene->dirty || sampleCounter == 1)
         {
