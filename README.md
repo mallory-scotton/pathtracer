@@ -86,9 +86,13 @@ Here are some example renders produced by the raytracer:
 
 ![](./Screenshots/dream.png)
 
+![](./Screenshots/bistro.png)
+
 ![](./Screenshots/jinx.png)
 
 ![](./Screenshots/hyperion.png)
+
+![](./Screenshots/p1.png)
 
 ![](./Screenshots/dragon.png)
 
@@ -97,6 +101,8 @@ Here are some example renders produced by the raytracer:
 ![](./Screenshots/still_life.png)
 
 ![](./Screenshots/ramen.png)
+
+![](./Screenshots/material.png)
 
 ## 📚 Dependencies
 
