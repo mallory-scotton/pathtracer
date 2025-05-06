@@ -190,14 +190,6 @@ public:
         /// \brief
         ///
         /// \param index
-        ///
-        ///////////////////////////////////////////////////////////////////////
-        void EnableVertexAttribArray(GLuint index);
-
-        ///////////////////////////////////////////////////////////////////////
-        /// \brief
-        ///
-        /// \param index
         /// \param size
         /// \param type
         /// \param noramlized
@@ -205,7 +197,7 @@ public:
         /// \param pointer
         ///
         ///////////////////////////////////////////////////////////////////////
-        void VertexAttribPointer(
+        void SetVertexAttribPointer(
             GLuint index,
             GLint size,
             GLenum type,

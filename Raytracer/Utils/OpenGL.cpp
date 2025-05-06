@@ -122,6 +122,20 @@ void OpenGL::VertexArray::Draw(GLenum mode, int first, int count)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void OpenGL::VertexArray::SetVertexAttribPointer(
+    GLuint index,
+    GLint size,
+    GLenum type,
+    GLboolean normalized,
+    GLsizei stride,
+    const void* pointer
+)
+{
+    glEnableVertexAttribArray(index);
+    glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 OpenGL::Texture::Texture(GLenum target)
     : m_target(target)
 {
