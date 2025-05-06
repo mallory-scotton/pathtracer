@@ -50,6 +50,42 @@ GLuint OpenGL::Object::GetHandler(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+OpenGL::VertexArray::VertexArray(void)
+{
+    glGenVertexArrays(1, &m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::VertexArray::~VertexArray(void)
+{
+    if (m_handler != 0)
+    {
+        glDeleteVertexArrays(1, &m_handler);
+        m_handler = 0;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::VertexArray::Bind(void)
+{
+    glBindVertexArray(m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::VertexArray::Unbind(void)
+{
+    glBindVertexArray(0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::VertexArray::Draw(GLenum mode, int first, int count)
+{
+    Bind();
+    glDrawArrays(mode, first, count);
+    Unbind();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 OpenGL::Texture::Texture(GLenum target)
     : m_target(target)
 {
@@ -266,7 +302,7 @@ GLint OpenGL::GetUniformLocation(GLuint program, const String& uniform)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void OpenGL::Uniform(GLuint location, float a)
+void OpenGL::Uniform(GLint location, float a)
 {
     if (location != -1)
     {
@@ -275,7 +311,7 @@ void OpenGL::Uniform(GLuint location, float a)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void OpenGL::Uniform(GLuint location, int a)
+void OpenGL::Uniform(GLint location, int a)
 {
     if (location != -1)
     {
@@ -284,7 +320,7 @@ void OpenGL::Uniform(GLuint location, int a)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void OpenGL::Uniform(GLuint location, float a, float b)
+void OpenGL::Uniform(GLint location, float a, float b)
 {
     if (location != -1)
     {
@@ -293,7 +329,7 @@ void OpenGL::Uniform(GLuint location, float a, float b)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void OpenGL::Uniform(GLuint location, int a, int b)
+void OpenGL::Uniform(GLint location, int a, int b)
 {
     if (location != -1)
     {
@@ -302,7 +338,7 @@ void OpenGL::Uniform(GLuint location, int a, int b)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void OpenGL::Uniform(GLuint location, float a, float b, float c)
+void OpenGL::Uniform(GLint location, float a, float b, float c)
 {
     if (location != -1)
     {
@@ -311,7 +347,7 @@ void OpenGL::Uniform(GLuint location, float a, float b, float c)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void OpenGL::Uniform(GLuint location, int a, int b, int c)
+void OpenGL::Uniform(GLint location, int a, int b, int c)
 {
     if (location != -1)
     {
