@@ -12,10 +12,10 @@ namespace Ray
 
 ///////////////////////////////////////////////////////////////////////////////
 Quad::Quad(void)
+    : m_vao(std::make_unique<OpenGL::VertexArray>())
 {
-    glGenVertexArrays(1, &m_vao);
     glGenBuffers(1, &m_vbo);
-    glBindVertexArray(m_vao);
+    m_vao->Bind();
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
     static const float vertices[] =
@@ -41,18 +41,12 @@ Quad::Quad(void)
         4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat))
     );
 
-    glBindVertexArray(0);
+    m_vao->Unbind();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 Quad::~Quad()
 {
-    if (m_vao != 0)
-    {
-        glDeleteVertexArrays(1, &m_vao);
-        m_vao = 0;
-    }
-
     if (m_vbo != 0)
     {
         glDeleteBuffers(1, &m_vbo);
@@ -64,9 +58,7 @@ Quad::~Quad()
 void Quad::Draw(UniquePtr<Shader>& shader)
 {
     shader->Use();
-    glBindVertexArray(m_vao);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    glBindVertexArray(0);
+    m_vao->Draw(GL_TRIANGLES, 0, 6);
     shader->StopUsing();
 }
 
