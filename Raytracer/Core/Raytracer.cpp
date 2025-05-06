@@ -82,11 +82,7 @@ void Raytracer::Run(void)
         ctx.renderer->Render();
 
         OpenGL::BindFramebuffer(0);
-        glViewport(
-            0, 0,
-            ctx.scene->renderOptions.windowResolution.x,
-            ctx.scene->renderOptions.windowResolution.y
-        );
+        OpenGL::Viewport(Vec2i(0), ctx.scene->renderOptions.windowResolution);
 
         ctx.renderer->Present();
 
