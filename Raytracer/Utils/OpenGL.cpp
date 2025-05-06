@@ -10,6 +10,106 @@ namespace Ray
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+OpenGL::Object::Object(void)
+    : m_handler(0)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Object::Object(GLuint handler)
+    : m_handler(handler)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Object::Object(Object&& other) noexcept
+    : m_handler(other.m_handler)
+{
+    other.m_handler = 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Object& OpenGL::Object::operator=(OpenGL::Object&& other) noexcept
+{
+    if (this != &other)
+    {
+        m_handler = other.m_handler;
+        other.m_handler = 0;
+    }
+    return (*this);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Object::operator GLuint(void) const
+{
+    return (m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+GLuint OpenGL::Object::GetHandler(void) const
+{
+    return (m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Texture::Texture(GLenum target)
+    : m_target(target)
+{
+    glGenTextures(1, &m_handler);
+    glBindTexture(m_target, m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Texture::~Texture()
+{
+    if (m_handler != 0)
+    {
+        glDeleteTextures(1, &m_handler);
+        m_handler = 0;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Texture::Active(GLenum texture)
+{
+    glActiveTexture(texture);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Texture::Bind(void)
+{
+    glBindTexture(m_target, m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Texture::Unbind(void)
+{
+    glBindTexture(m_target, 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Texture::SetParameter(GLenum parameter, GLint value)
+{
+    glTexParameteri(m_target, parameter, value);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Texture2D::Texture2D(void)
+    : OpenGL::Texture(GL_TEXTURE_2D)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::Texture2DArray::Texture2DArray(void)
+    : OpenGL::Texture(GL_TEXTURE_2D_ARRAY)
+{}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::TextureBuffer::TextureBuffer(UniquePtr<Buffer>& buffer, GLenum format)
+    : OpenGL::Texture(GL_TEXTURE_BUFFER)
+    , m_format(format)
+{
+    glTexBuffer(m_target, m_format, buffer->GetHandler());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void OpenGL::UseProgram(GLuint program)
 {
     glUseProgram(program);
@@ -273,6 +373,11 @@ String OpenGL::GetShaderInfoLog(GLuint shader)
 void OpenGL::BindFramebuffer(GLuint fbo)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+}
+
+void OpenGL::Clear(GLbitfield mask)
+{
+    glClear(mask);
 }
 
 } // namespace Ray
