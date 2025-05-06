@@ -31,13 +31,12 @@ Quad::Quad(void)
 
     m_vbo->SetData(sizeof(VERTICES), &VERTICES, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
+    m_vao->SetVertexAttribPointer(
         0, 2, GL_FLOAT, GL_FALSE,
         4 * sizeof(GLfloat), (GLvoid*)0
     );
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
+
+    m_vao->SetVertexAttribPointer(
         1, 2, GL_FLOAT, GL_FALSE,
         4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat))
     );
