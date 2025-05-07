@@ -63,10 +63,6 @@ Renderer::Renderer(void)
     , textureMapsArrayTex(0)
     , envMapTex(0)
     , envMapCDFTex(0)
-    , pathTraceFBO(0)
-    , pathTraceFBOLowRes(0)
-    , accumFBO(0)
-    , outputFBO(0)
     , pathTraceTextureLowRes(0)
     , pathTraceTexture(0)
     , accumTexture(0)
@@ -115,22 +111,9 @@ Renderer::Renderer(void)
         glDeleteBuffers(1, &verticesBuffer);
         glDeleteBuffers(1, &normalsBuffer);
 
-        // Delete FBOs
-        glDeleteFramebuffers(1, &pathTraceFBO);
-        glDeleteFramebuffers(1, &pathTraceFBOLowRes);
-        glDeleteFramebuffers(1, &accumFBO);
-        glDeleteFramebuffers(1, &outputFBO);
-
-        // Delete shaders
-        pathTraceShader.reset();
-        pathTraceShaderLowRes.reset();
-        outputShader.reset();
-        tonemapShader.reset();
-
         // Delete denoiser data
         delete[] denoiserInputFramePtr;
         delete[] frameOutputPtr;
-
     }
 
     void Renderer::InitGPUDataBuffers()
@@ -262,10 +245,10 @@ Renderer::Renderer(void)
         glDeleteTextures(1, &denoisedTexture);
 
         // Delete FBOs
-        glDeleteFramebuffers(1, &pathTraceFBO);
-        glDeleteFramebuffers(1, &pathTraceFBOLowRes);
-        glDeleteFramebuffers(1, &accumFBO);
-        glDeleteFramebuffers(1, &outputFBO);
+        pathTraceFBO.reset();
+        pathTraceFBOLowRes.reset();
+        accumFBO.reset();
+        outputFBO.reset();
 
         // Delete denoiser data
         delete[] denoiserInputFramePtr;
@@ -305,8 +288,8 @@ Renderer::Renderer(void)
         tile.y = numTiles.y - 1;
 
         // Create FBOs for path trace shader
-        glGenFramebuffers(1, &pathTraceFBO);
-        OpenGL::BindFramebuffer(pathTraceFBO);
+        pathTraceFBO = std::make_unique<OpenGL::FrameBuffer>();
+        pathTraceFBO->Bind();
 
         // Create Texture for FBO
         glGenTextures(1, &pathTraceTexture);
@@ -318,8 +301,8 @@ Renderer::Renderer(void)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTexture, 0);
 
         // Create FBOs for low res preview shader
-        glGenFramebuffers(1, &pathTraceFBOLowRes);
-        OpenGL::BindFramebuffer(pathTraceFBOLowRes);
+        pathTraceFBOLowRes = std::make_unique<OpenGL::FrameBuffer>();
+        pathTraceFBOLowRes->Bind();
 
         // Create Texture for FBO
         glGenTextures(1, &pathTraceTextureLowRes);
@@ -333,8 +316,8 @@ Renderer::Renderer(void)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTextureLowRes, 0);
 
         // Create FBOs for accum buffer
-        glGenFramebuffers(1, &accumFBO);
-        OpenGL::BindFramebuffer(accumFBO);
+        accumFBO = std::make_unique<OpenGL::FrameBuffer>();
+        accumFBO->Bind();
 
         // Create Texture for FBO
         glGenTextures(1, &accumTexture);
@@ -346,8 +329,8 @@ Renderer::Renderer(void)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, accumTexture, 0);
 
         // Create FBOs for tile output shader
-        glGenFramebuffers(1, &outputFBO);
-        OpenGL::BindFramebuffer(outputFBO);
+        outputFBO = std::make_unique<OpenGL::FrameBuffer>();
+        outputFBO->Bind();
 
         // Create Texture for FBO
         glGenTextures(1, &tileOutputTexture[0]);
@@ -598,7 +581,7 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
         if (ctx.scene->dirty)
         {
             // Renders a low res preview if camera/instances are modified
-            OpenGL::BindFramebuffer(pathTraceFBOLowRes);
+            pathTraceFBOLowRes->Bind();
             OpenGL::Viewport(Vec2i(0), Vec2i(Vec2f(windowSize) * pixelRatio));
             quad.Draw(pathTraceShaderLowRes);
 
@@ -608,12 +591,12 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
         }
         else
         {
-            OpenGL::BindFramebuffer(pathTraceFBO);
+            pathTraceFBO->Bind();
             OpenGL::Viewport(Vec2i(0), Vec2i(tileWidth, tileHeight));
             glBindTexture(GL_TEXTURE_2D, accumTexture);
             quad.Draw(pathTraceShader);
 
-            OpenGL::BindFramebuffer(accumFBO);
+            accumFBO->Bind();
             OpenGL::Viewport(
                 Vec2i(tileWidth * tile.x, tileHeight * tile.y),
                 Vec2i(tileWidth, tileHeight)
@@ -621,7 +604,7 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
             glBindTexture(GL_TEXTURE_2D, pathTraceTexture);
             quad.Draw(outputShader);
 
-            OpenGL::BindFramebuffer(outputFBO);
+            outputFBO->Bind();
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tileOutputTexture[currentBuffer], 0);
             OpenGL::Viewport(Vec2i(0), renderSize);
             glBindTexture(GL_TEXTURE_2D, accumTexture);
@@ -824,7 +807,7 @@ void Renderer::Update(float secondsElapsed)
             denoised = false;
             frameCounter = 1;
 
-            OpenGL::BindFramebuffer(accumFBO);
+            accumFBO->Bind();
             OpenGL::Clear(GL_COLOR_BUFFER_BIT);
         }
         else

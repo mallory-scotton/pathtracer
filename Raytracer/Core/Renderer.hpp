@@ -122,10 +122,10 @@ private:
     GLuint envMapTex;                           //<!
     GLuint envMapCDFTex;                        //<!
 
-    GLuint pathTraceFBO;                        //<!
-    GLuint pathTraceFBOLowRes;                  //<!
-    GLuint accumFBO;                            //<!
-    GLuint outputFBO;                           //<!
+    UniquePtr<OpenGL::FrameBuffer> pathTraceFBO;        //<!
+    UniquePtr<OpenGL::FrameBuffer> pathTraceFBOLowRes;  //<!
+    UniquePtr<OpenGL::FrameBuffer> accumFBO;            //<!
+    UniquePtr<OpenGL::FrameBuffer> outputFBO;           //<!
 
     UniquePtr<Shader> pathTraceShader;          //<!
     UniquePtr<Shader> pathTraceShaderLowRes;    //<!
