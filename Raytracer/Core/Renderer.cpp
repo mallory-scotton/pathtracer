@@ -383,158 +383,204 @@ Renderer::Renderer(void)
         printf("Tile Size : %d %d\n", tileWidth, tileHeight);
     }
 
-    void Renderer::ReloadShaders()
-    {
-        // Delete shaders
-        pathTraceShader.reset();
-        pathTraceShaderLowRes.reset();
-        outputShader.reset();
-        tonemapShader.reset();
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::ReloadShaders(void)
+{
+    pathTraceShader.reset();
+    pathTraceShaderLowRes.reset();
+    outputShader.reset();
+    tonemapShader.reset();
 
-        InitShaders();
+    InitShaders();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+String Renderer::GetPathtraceShaderOptions(void) const
+{
+    Context& ctx = Context::GetInstance();
+    UniquePtr<Scene>& scene = ctx.scene;
+    Renderer::Options& options = scene->renderOptions;
+    String defines;
+
+    if (options.enableEnvMap && scene->envMap != nullptr)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_ENVMAP);
     }
 
-    void Renderer::InitShaders()
+    if (!scene->lights.empty())
     {
-        Context& ctx = Context::GetInstance();
-        String shadersDirectory = ctx.GetShaderPath();
-
-        String vertexShaderSrc = Shader::Source(shadersDirectory + "Vertex/Vertex.glsl");
-        String pathTraceShaderSrc = Shader::Source(shadersDirectory + "Lighting/Tile.glsl");
-        String pathTraceShaderLowResSrc = Shader::Source(shadersDirectory + "Stages/Preview.glsl");
-        String outputShaderSrc = Shader::Source(shadersDirectory + "Stages/Output.glsl");
-        String tonemapShaderSrc = Shader::Source(shadersDirectory + "Lighting/Tonemap.glsl");
-
-        // Add preprocessor defines for conditional compilation
-        std::string pathtraceDefines = "";
-        std::string tonemapDefines = "";
-
-        if (ctx.scene->renderOptions.enableEnvMap && ctx.scene->envMap != nullptr)
-            pathtraceDefines += "#define OPT_ENVMAP\n";
-
-        if (!ctx.scene->lights.empty())
-            pathtraceDefines += "#define OPT_LIGHTS\n";
-
-        if (ctx.scene->renderOptions.enableRR)
-        {
-            pathtraceDefines += "#define OPT_RR\n";
-            pathtraceDefines += "#define OPT_RR_DEPTH " + std::to_string(ctx.scene->renderOptions.RRDepth) + "\n";
-        }
-
-        if (ctx.scene->renderOptions.enableUniformLight)
-            pathtraceDefines += "#define OPT_UNIFORM_LIGHT\n";
-
-        if (ctx.scene->renderOptions.openglNormalMap)
-            pathtraceDefines += "#define OPT_OPENGL_NORMALMAP\n";
-
-        if (ctx.scene->renderOptions.hideEmitters)
-            pathtraceDefines += "#define OPT_HIDE_EMITTERS\n";
-
-        if (ctx.scene->renderOptions.enableBackground)
-        {
-            pathtraceDefines += "#define OPT_BACKGROUND\n";
-            tonemapDefines += "#define OPT_BACKGROUND\n";
-        }
-
-        if (ctx.scene->renderOptions.transparentBackground)
-        {
-            pathtraceDefines += "#define OPT_TRANSPARENT_BACKGROUND\n";
-            tonemapDefines += "#define OPT_TRANSPARENT_BACKGROUND\n";
-        }
-
-        for (Uint64 i = 0; i < ctx.scene->materials.size(); i++)
-        {
-            if ((int)ctx.scene->materials[i].alphaMode != Material::OPAQUE)
-            {
-                pathtraceDefines += "#define OPT_ALPHA_TEST\n";
-                break;
-            }
-        }
-
-        if (ctx.scene->renderOptions.enableRoughnessMollification)
-            pathtraceDefines += "#define OPT_ROUGHNESS_MOLLIFICATION\n";
-
-        for (Uint64 i = 0; i < ctx.scene->materials.size(); i++)
-        {
-            if ((int)ctx.scene->materials[i].mediumType != Material::NONE)
-            {
-                pathtraceDefines += "#define OPT_MEDIUM\n";
-                break;
-            }
-        }
-
-        if (ctx.scene->renderOptions.enableVolumeMIS)
-            pathtraceDefines += "#define OPT_VOL_MIS\n";
-
-        if (pathtraceDefines.size() > 0)
-        {
-            size_t idx = pathTraceShaderSrc.find("#version");
-            if (idx != String::npos)
-                idx = pathTraceShaderSrc.find("\n", idx);
-            else
-                idx = 0;
-            pathTraceShaderSrc.insert(idx + 1, pathtraceDefines);
-
-            idx = pathTraceShaderLowResSrc.find("#version");
-            if (idx != String::npos)
-                idx = pathTraceShaderLowResSrc.find("\n", idx);
-            else
-                idx = 0;
-            pathTraceShaderLowResSrc.insert(idx + 1, pathtraceDefines);
-        }
-
-        if (tonemapDefines.size() > 0)
-        {
-            size_t idx = tonemapShaderSrc.find("#version");
-            if (idx != String::npos)
-                idx = tonemapShaderSrc.find("\n", idx);
-            else
-                idx = 0;
-            tonemapShaderSrc.insert(idx + 1, tonemapDefines);
-        }
-
-        pathTraceShader = std::make_unique<Shader>(vertexShaderSrc, pathTraceShaderSrc);
-        pathTraceShaderLowRes = std::make_unique<Shader>(vertexShaderSrc, pathTraceShaderLowResSrc);
-        outputShader = std::make_unique<Shader>(vertexShaderSrc, outputShaderSrc);
-        tonemapShader = std::make_unique<Shader>(vertexShaderSrc, tonemapShaderSrc);
-
-        InitializeUniforms(pathTraceShader);
-        InitializeUniforms(pathTraceShaderLowRes);
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_LIGHTS);
     }
 
-    void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
+    if (options.enableRR)
     {
-        Context& ctx = Context::GetInstance();
-
-        shader->Use();
-
-        if (ctx.scene->envMap)
-        {
-            shader->Uniform("envMapRes",Vec2f(
-                ctx.scene->envMap->width,
-                ctx.scene->envMap->height
-            ));
-            shader->Uniform("envMapTotalSum", ctx.scene->envMap->totalSum);
-        }
-
-        shader->Uniform("topBVHIndex", ctx.scene->bvhTranslator.topLevelIndex);
-        shader->Uniform("resolution", Vec2f(renderSize));
-        shader->Uniform("invNumTiles", invNumTiles);
-        shader->Uniform("numOfLights", static_cast<int>(ctx.scene->lights.size()));
-        shader->Uniform("accumTexture", 0);
-        shader->Uniform("BVH", 1);
-        shader->Uniform("vertexIndicesTex", 2);
-        shader->Uniform("verticesTex", 3);
-        shader->Uniform("normalsTex", 4);
-        shader->Uniform("materialsTex", 5);
-        shader->Uniform("transformsTex", 6);
-        shader->Uniform("lightsTex", 7);
-        shader->Uniform("textureMapsArrayTex", 8);
-        shader->Uniform("envMapTex", 9);
-        shader->Uniform("envMapCDFTex", 10);
-
-        shader->StopUsing();
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_RR);
+        defines += DEFINE_OPTIONS(
+            + (RENDERER_OPTIONS_RRDEPTH + std::to_string(options.RRDepth)) +);
     }
+
+    if (options.enableUniformLight)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_UNIFORM);
+    }
+
+    if (options.openglNormalMap)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_OPENGLNORMAL);
+    }
+
+    if (options.hideEmitters)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_HIDEEMITTERS);
+    }
+
+    if (options.enableBackground)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_BACKGROUND);
+    }
+
+    if (options.transparentBackground)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_TRANSPARENT_BG);
+    }
+
+    for (const auto& material : scene->materials)
+    {
+        if (static_cast<int>(material.alphaMode) != Material::OPAQUE)
+        {
+            defines += DEFINE_OPTIONS(RENDERER_ENABLE_ALPHA_TEST);
+            break;
+        }
+    }
+
+    if (options.enableRoughnessMollification)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_ROUGHNESS_MOLL);
+    }
+
+    for (const auto& material : scene->materials)
+    {
+        if (static_cast<int>(material.mediumType) != Material::NONE)
+        {
+            defines += DEFINE_OPTIONS(RENDERER_ENABLE_MEDIUM);
+            break;
+        }
+    }
+
+    if (options.enableVolumeMIS)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_VOLUME_MIS);
+    }
+
+    return (defines);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+String Renderer::GetTonemapShaderOptions(void) const
+{
+    Context& ctx = Context::GetInstance();
+    Renderer::Options& options = ctx.scene->renderOptions;
+    String defines;
+
+    if (options.enableBackground)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_BACKGROUND);
+    }
+
+    if (options.transparentBackground)
+    {
+        defines += DEFINE_OPTIONS(RENDERER_ENABLE_TRANSPARENT_BG);
+    }
+
+    return (defines);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::InsertDefinitions(String& source, const String& defines)
+{
+    Uint64 index = source.find("#version");
+
+    if (index != String::npos)
+    {
+        index = source.find("\n", index);
+    }
+    else
+    {
+        index = 0;
+    }
+
+    source.insert(index + 1, defines);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::InitShaders(void)
+{
+    Context& ctx = Context::GetInstance();
+    Path shadersDirectory = ctx.GetShaderPath();
+
+    String vertexSrc = Shader::Source(shadersDirectory / "Vertex/Vertex.glsl");
+    String pathTraceSrc = Shader::Source(shadersDirectory / "Lighting/Tile.glsl");
+    String pathTraceLowResSrc = Shader::Source(shadersDirectory / "Stages/Preview.glsl");
+    String outputSrc = Shader::Source(shadersDirectory / "Stages/Output.glsl");
+    String tonemapSrc = Shader::Source(shadersDirectory / "Lighting/Tonemap.glsl");
+
+    String pathtraceDefines = GetPathtraceShaderOptions();
+    String tonemapDefines = GetTonemapShaderOptions();
+
+    if (!pathtraceDefines.empty())
+    {
+        InsertDefinitions(pathTraceSrc, pathtraceDefines);
+        InsertDefinitions(pathTraceLowResSrc, pathtraceDefines);
+    }
+
+    if (!tonemapDefines.empty())
+    {
+        InsertDefinitions(tonemapSrc, tonemapDefines);
+    }
+
+    pathTraceShader = std::make_unique<Shader>(vertexSrc, pathTraceSrc);
+    pathTraceShaderLowRes = std::make_unique<Shader>(vertexSrc, pathTraceLowResSrc);
+    outputShader = std::make_unique<Shader>(vertexSrc, outputSrc);
+    tonemapShader = std::make_unique<Shader>(vertexSrc, tonemapSrc);
+
+    InitializeUniforms(pathTraceShader);
+    InitializeUniforms(pathTraceShaderLowRes);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
+{
+    Context& ctx = Context::GetInstance();
+
+    shader->Use();
+
+    if (ctx.scene->envMap)
+    {
+        shader->Uniform("envMapRes",Vec2f(
+            ctx.scene->envMap->width,
+            ctx.scene->envMap->height
+        ));
+        shader->Uniform("envMapTotalSum", ctx.scene->envMap->totalSum);
+    }
+
+    shader->Uniform("topBVHIndex", ctx.scene->bvhTranslator.topLevelIndex);
+    shader->Uniform("resolution", Vec2f(renderSize));
+    shader->Uniform("invNumTiles", invNumTiles);
+    shader->Uniform("numOfLights", static_cast<int>(ctx.scene->lights.size()));
+    shader->Uniform("accumTexture", 0);
+    shader->Uniform("BVH", 1);
+    shader->Uniform("vertexIndicesTex", 2);
+    shader->Uniform("verticesTex", 3);
+    shader->Uniform("normalsTex", 4);
+    shader->Uniform("materialsTex", 5);
+    shader->Uniform("transformsTex", 6);
+    shader->Uniform("lightsTex", 7);
+    shader->Uniform("textureMapsArrayTex", 8);
+    shader->Uniform("envMapTex", 9);
+    shader->Uniform("envMapCDFTex", 10);
+
+    shader->StopUsing();
+}
 
     void Renderer::Render()
     {
