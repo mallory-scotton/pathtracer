@@ -49,8 +49,7 @@ Renderer::Options::Options(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::Renderer(void)
-    : textureMapsArrayTex(0)
-    , pathTraceTextureLowRes(0)
+    : pathTraceTextureLowRes(0)
     , pathTraceTexture(0)
     , accumTexture(0)
     , denoisedTexture(0)
@@ -74,8 +73,6 @@ Renderer::Renderer(void)
 
     Renderer::~Renderer()
     {
-        glDeleteTextures(1, &textureMapsArrayTex);
-
         glDeleteTextures(1, &pathTraceTexture);
         glDeleteTextures(1, &pathTraceTextureLowRes);
         glDeleteTextures(1, &accumTexture);
@@ -113,7 +110,7 @@ void Renderer::ActivateTextures(void)
     OpenGL::Texture::Active(GL_TEXTURE8);
     if (!ctx.scene->textures.empty())
     {
-        glBindTexture(GL_TEXTURE_2D_ARRAY, textureMapsArrayTex);
+        textureMapsArrayTex->Bind();
     }
     OpenGL::Texture::Active(GL_TEXTURE9);
     if (ctx.scene->envMap != nullptr)
@@ -208,12 +205,17 @@ void Renderer::InitGPUDataBuffers(void)
 
     if (!ctx.scene->textures.empty())
     {
-        glGenTextures(1, &textureMapsArrayTex);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, textureMapsArrayTex);
-        glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, ctx.scene->renderOptions.texArrayWidth, ctx.scene->renderOptions.texArrayHeight, ctx.scene->textures.size(), 0, GL_RGBA, GL_UNSIGNED_BYTE, &ctx.scene->textureMapsArray[0]);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+        textureMapsArrayTex = std::make_unique<OpenGL::Texture2DArray>();
+        textureMapsArrayTex->Image3D(
+            0, GL_RGBA8,
+            scene->renderOptions.texArrayWidth,
+            scene->renderOptions.texArrayHeight,
+            scene->textures.size(), 0, GL_RGBA,
+            GL_UNSIGNED_BYTE, &scene->textureMapsArray[0]
+        );
+        textureMapsArrayTex->SetParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        textureMapsArrayTex->SetParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        textureMapsArrayTex->Unbind();
     }
 
     if (ctx.scene->envMap != nullptr)

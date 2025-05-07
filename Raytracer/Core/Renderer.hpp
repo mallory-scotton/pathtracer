@@ -105,55 +105,55 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     //
     ///////////////////////////////////////////////////////////////////////////
-    Quad quad;                                          //<!
+    Quad quad;                                              //<!
 
-    UniquePtr<OpenGL::Buffer> BVHBuffer;                //<!
-    UniquePtr<OpenGL::TextureBuffer> BVHTex;            //<!
-    UniquePtr<OpenGL::Buffer> vertexIndicesBuffer;      //<!
-    UniquePtr<OpenGL::TextureBuffer> vertexIndicesTex;  //<!
-    UniquePtr<OpenGL::Buffer> verticesBuffer;           //<!
-    UniquePtr<OpenGL::TextureBuffer> verticesTex;       //<!
-    UniquePtr<OpenGL::Buffer> normalsBuffer;            //<!
-    UniquePtr<OpenGL::TextureBuffer> normalsTex;        //<!
-    UniquePtr<OpenGL::Texture2D> materialsTex;          //<!
-    UniquePtr<OpenGL::Texture2D> transformsTex;         //<!
-    UniquePtr<OpenGL::Texture2D> lightsTex;             //<!
-    GLuint textureMapsArrayTex;                         //<!
-    UniquePtr<OpenGL::Texture2D> envMapTex;             //<!
-    UniquePtr<OpenGL::Texture2D> envMapCDFTex;          //<!
+    UniquePtr<OpenGL::Buffer> BVHBuffer;                    //<!
+    UniquePtr<OpenGL::TextureBuffer> BVHTex;                //<!
+    UniquePtr<OpenGL::Buffer> vertexIndicesBuffer;          //<!
+    UniquePtr<OpenGL::TextureBuffer> vertexIndicesTex;      //<!
+    UniquePtr<OpenGL::Buffer> verticesBuffer;               //<!
+    UniquePtr<OpenGL::TextureBuffer> verticesTex;           //<!
+    UniquePtr<OpenGL::Buffer> normalsBuffer;                //<!
+    UniquePtr<OpenGL::TextureBuffer> normalsTex;            //<!
+    UniquePtr<OpenGL::Texture2D> materialsTex;              //<!
+    UniquePtr<OpenGL::Texture2D> transformsTex;             //<!
+    UniquePtr<OpenGL::Texture2D> lightsTex;                 //<!
+    UniquePtr<OpenGL::Texture2DArray> textureMapsArrayTex;  //<!
+    UniquePtr<OpenGL::Texture2D> envMapTex;                 //<!
+    UniquePtr<OpenGL::Texture2D> envMapCDFTex;              //<!
 
-    UniquePtr<OpenGL::FrameBuffer> pathTraceFBO;        //<!
-    UniquePtr<OpenGL::FrameBuffer> pathTraceFBOLowRes;  //<!
-    UniquePtr<OpenGL::FrameBuffer> accumFBO;            //<!
-    UniquePtr<OpenGL::FrameBuffer> outputFBO;           //<!
+    UniquePtr<OpenGL::FrameBuffer> pathTraceFBO;            //<!
+    UniquePtr<OpenGL::FrameBuffer> pathTraceFBOLowRes;      //<!
+    UniquePtr<OpenGL::FrameBuffer> accumFBO;                //<!
+    UniquePtr<OpenGL::FrameBuffer> outputFBO;               //<!
 
-    UniquePtr<Shader> pathTraceShader;                  //<!
-    UniquePtr<Shader> pathTraceShaderLowRes;            //<!
-    UniquePtr<Shader> outputShader;                     //<!
-    UniquePtr<Shader> tonemapShader;                    //<!
+    UniquePtr<Shader> pathTraceShader;                      //<!
+    UniquePtr<Shader> pathTraceShaderLowRes;                //<!
+    UniquePtr<Shader> outputShader;                         //<!
+    UniquePtr<Shader> tonemapShader;                        //<!
 
-    GLuint pathTraceTextureLowRes;                      //<!
-    GLuint pathTraceTexture;                            //<!
-    GLuint accumTexture;                                //<!
-    GLuint tileOutputTexture[2];                        //<!
-    GLuint denoisedTexture;                             //<!
+    GLuint pathTraceTextureLowRes;                          //<!
+    GLuint pathTraceTexture;                                //<!
+    GLuint accumTexture;                                    //<!
+    GLuint tileOutputTexture[2];                            //<!
+    GLuint denoisedTexture;                                 //<!
 
-    Vec2i renderSize;                                   //<!
-    Vec2i windowSize;                                   //<!
+    Vec2i renderSize;                                       //<!
+    Vec2i windowSize;                                       //<!
 
-    Vec2i tile;                                         //<!
-    Vec2i numTiles;                                     //<!
-    Vec2f invNumTiles;                                  //<!
-    int tileWidth;                                      //<!
-    int tileHeight;                                     //<!
-    int currentBuffer;                                  //<!
-    int frameCounter;                                   //<!
-    int sampleCounter;                                  //<!
-    float pixelRatio;                                   //<!
+    Vec2i tile;                                             //<!
+    Vec2i numTiles;                                         //<!
+    Vec2f invNumTiles;                                      //<!
+    int tileWidth;                                          //<!
+    int tileHeight;                                         //<!
+    int currentBuffer;                                      //<!
+    int frameCounter;                                       //<!
+    int sampleCounter;                                      //<!
+    float pixelRatio;                                       //<!
 
-    Vec3f* denoiserInputFramePtr;                       //<!
-    Vec3f* frameOutputPtr;                              //<!
-    bool denoised;                                      //<!
+    Vec3f* denoiserInputFramePtr;                           //<!
+    Vec3f* frameOutputPtr;                                  //<!
+    bool denoised;                                          //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////
