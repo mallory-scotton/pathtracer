@@ -191,6 +191,7 @@ OpenGL::TextureBuffer::TextureBuffer(UniquePtr<Buffer>& buffer, GLenum format)
     : OpenGL::Texture(GL_TEXTURE_BUFFER)
     , m_format(format)
 {
+    Bind();
     glTexBuffer(m_target, m_format, buffer->GetHandler());
 }
 
