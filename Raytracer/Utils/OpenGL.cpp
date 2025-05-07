@@ -86,6 +86,17 @@ void OpenGL::Buffer::SetData(GLsizeiptr size, const void* data, GLenum usage)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Buffer::SetSubData(
+    GLintptr offset,
+    GLsizeiptr size,
+    const void* data
+)
+{
+    Bind();
+    glBufferSubData(m_target, offset, size, data);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 OpenGL::VertexArray::VertexArray(void)
 {
     glGenVertexArrays(1, &m_handler);
