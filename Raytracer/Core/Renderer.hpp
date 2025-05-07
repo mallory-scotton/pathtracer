@@ -116,11 +116,11 @@ private:
     UniquePtr<OpenGL::Buffer> normalsBuffer;            //<!
     UniquePtr<OpenGL::TextureBuffer> normalsTex;        //<!
     UniquePtr<OpenGL::Texture2D> materialsTex;          //<!
-    GLuint transformsTex;                               //<!
-    GLuint lightsTex;                                   //<!
+    UniquePtr<OpenGL::Texture2D> transformsTex;         //<!
+    UniquePtr<OpenGL::Texture2D> lightsTex;             //<!
     GLuint textureMapsArrayTex;                         //<!
-    GLuint envMapTex;                                   //<!
-    GLuint envMapCDFTex;                                //<!
+    UniquePtr<OpenGL::Texture2D> envMapTex;             //<!
+    UniquePtr<OpenGL::Texture2D> envMapCDFTex;          //<!
 
     UniquePtr<OpenGL::FrameBuffer> pathTraceFBO;        //<!
     UniquePtr<OpenGL::FrameBuffer> pathTraceFBOLowRes;  //<!

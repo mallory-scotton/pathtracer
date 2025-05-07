@@ -49,11 +49,7 @@ Renderer::Options::Options(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::Renderer(void)
-    : transformsTex(0)
-    , lightsTex(0)
-    , textureMapsArrayTex(0)
-    , envMapTex(0)
-    , envMapCDFTex(0)
+    : textureMapsArrayTex(0)
     , pathTraceTextureLowRes(0)
     , pathTraceTexture(0)
     , accumTexture(0)
@@ -78,12 +74,8 @@ Renderer::Renderer(void)
 
     Renderer::~Renderer()
     {
-        // Delete textures
-        glDeleteTextures(1, &transformsTex);
-        glDeleteTextures(1, &lightsTex);
         glDeleteTextures(1, &textureMapsArrayTex);
-        glDeleteTextures(1, &envMapTex);
-        glDeleteTextures(1, &envMapCDFTex);
+
         glDeleteTextures(1, &pathTraceTexture);
         glDeleteTextures(1, &pathTraceTextureLowRes);
         glDeleteTextures(1, &accumTexture);
@@ -102,54 +94,43 @@ Renderer::Renderer(void)
 
         OpenGL::PixelStore(GL_PACK_ALIGNMENT, 1);
 
-        // Create buffer and texture for BVH
         BVHBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
         BVHBuffer->SetData(sizeof(Ray::BvhTranslator::Node) * ctx.scene->bvhTranslator.nodes.size(), &ctx.scene->bvhTranslator.nodes[0], GL_STATIC_DRAW);
         BVHTex = std::make_unique<OpenGL::TextureBuffer>(BVHBuffer, GL_RGB32F);
 
-        // Create buffer and texture for vertex indices
         vertexIndicesBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
         vertexIndicesBuffer->SetData(sizeof(Indices) * ctx.scene->vertIndices.size(), &ctx.scene->vertIndices[0], GL_STATIC_DRAW);
         vertexIndicesTex = std::make_unique<OpenGL::TextureBuffer>(vertexIndicesBuffer, GL_RGB32I);
 
-        // Create buffer and texture for vertices
         verticesBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
         verticesBuffer->SetData(sizeof(Vec4f) * ctx.scene->verticesUVX.size(), &ctx.scene->verticesUVX[0], GL_STATIC_DRAW);
         verticesTex = std::make_unique<OpenGL::TextureBuffer>(verticesBuffer, GL_RGBA32F);
 
-        // Create buffer and texture for normals
         normalsBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
         normalsBuffer->SetData(sizeof(Vec4f) * ctx.scene->normalsUVY.size(), &ctx.scene->normalsUVY[0], GL_STATIC_DRAW);
         normalsTex = std::make_unique<OpenGL::TextureBuffer>(normalsBuffer, GL_RGBA32F);
 
-        // Create texture for materials
         materialsTex = std::make_unique<OpenGL::Texture2D>();
         materialsTex->Image2D(0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * ctx.scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->materials[0]);
         materialsTex->SetParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         materialsTex->SetParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         materialsTex->Unbind();
 
-        // Create texture for transforms
-        glGenTextures(1, &transformsTex);
-        glBindTexture(GL_TEXTURE_2D, transformsTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * ctx.scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->transforms[0]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        transformsTex = std::make_unique<OpenGL::Texture2D>();
+        transformsTex->Image2D(0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * ctx.scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->transforms[0]);
+        transformsTex->SetParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        transformsTex->SetParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        transformsTex->Unbind();
 
-        // Create texture for lights
         if (!ctx.scene->lights.empty())
         {
-            //Create texture for lights
-            glGenTextures(1, &lightsTex);
-            glBindTexture(GL_TEXTURE_2D, lightsTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, (sizeof(Light) / sizeof(Vec3f)) * ctx.scene->lights.size(), 1, 0, GL_RGB, GL_FLOAT, &ctx.scene->lights[0]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            lightsTex = std::make_unique<OpenGL::Texture2D>();
+            lightsTex->Image2D(0, GL_RGB32F, (sizeof(Light) / sizeof(Vec3f)) * ctx.scene->lights.size(), 1, 0, GL_RGB, GL_FLOAT, &ctx.scene->lights[0]);
+            lightsTex->SetParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            lightsTex->SetParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            lightsTex->Unbind();
         }
 
-        // Create texture for scene textures
         if (!ctx.scene->textures.empty())
         {
             glGenTextures(1, &textureMapsArrayTex);
@@ -160,25 +141,21 @@ Renderer::Renderer(void)
             glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
         }
 
-        // Create texture for environment map
         if (ctx.scene->envMap != nullptr)
         {
-            glGenTextures(1, &envMapTex);
-            glBindTexture(GL_TEXTURE_2D, envMapTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RGB, GL_FLOAT, ctx.scene->envMap->img.get());
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            envMapTex = std::make_unique<OpenGL::Texture2D>();
+            envMapTex->Image2D(0, GL_RGB32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RGB, GL_FLOAT, ctx.scene->envMap->img.get());
+            envMapTex->SetParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            envMapTex->SetParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            envMapTex->Unbind();
 
-            glGenTextures(1, &envMapCDFTex);
-            glBindTexture(GL_TEXTURE_2D, envMapCDFTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RED, GL_FLOAT, ctx.scene->envMap->cdf.get());
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            envMapCDFTex = std::make_unique<OpenGL::Texture2D>();
+            envMapCDFTex->Image2D(0, GL_R32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RED, GL_FLOAT, ctx.scene->envMap->cdf.get());
+            envMapCDFTex->SetParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            envMapCDFTex->SetParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            envMapCDFTex->Unbind();
         }
 
-        // Bind textures to texture slots as they will not change slots during the lifespan of the renderer
         OpenGL::Texture::Active(GL_TEXTURE1);
         BVHTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE2);
@@ -190,15 +167,27 @@ Renderer::Renderer(void)
         OpenGL::Texture::Active(GL_TEXTURE5);
         materialsTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE6);
-        glBindTexture(GL_TEXTURE_2D, transformsTex);
+        transformsTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE7);
-        glBindTexture(GL_TEXTURE_2D, lightsTex);
+        if (lightsTex)
+        {
+            lightsTex->Bind();
+        }
         OpenGL::Texture::Active(GL_TEXTURE8);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, textureMapsArrayTex);
+        if (!ctx.scene->textures.empty())
+        {
+            glBindTexture(GL_TEXTURE_2D_ARRAY, textureMapsArrayTex);
+        }
         OpenGL::Texture::Active(GL_TEXTURE9);
-        glBindTexture(GL_TEXTURE_2D, envMapTex);
+        if (ctx.scene->envMap != nullptr)
+        {
+            envMapTex->Bind();
+        }
         OpenGL::Texture::Active(GL_TEXTURE10);
-        glBindTexture(GL_TEXTURE_2D, envMapCDFTex);
+        if (ctx.scene->envMap != nullptr)
+        {
+            envMapCDFTex->Bind();
+        }
     }
 
     void Renderer::ResizeRenderer()
@@ -682,9 +671,7 @@ void Renderer::Update(float secondsElapsed)
 
     if (ctx.scene->instancesModified)
     {
-        glBindTexture(GL_TEXTURE_2D, transformsTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * ctx.scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->transforms[0]);
-
+        transformsTex->Image2D(0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * ctx.scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->transforms[0]);
         materialsTex->Image2D(0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * ctx.scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->materials[0]);
 
         int index = ctx.scene->bvhTranslator.topLevelIndex;
@@ -697,11 +684,8 @@ void Renderer::Update(float secondsElapsed)
     {
         if (ctx.scene->envMap != nullptr)
         {
-            glBindTexture(GL_TEXTURE_2D, envMapTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RGB, GL_FLOAT, ctx.scene->envMap->img.get());
-
-            glBindTexture(GL_TEXTURE_2D, envMapCDFTex);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RED, GL_FLOAT, ctx.scene->envMap->cdf.get());
+            envMapTex->Image2D(0, GL_RGB32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RGB, GL_FLOAT, ctx.scene->envMap->img.get());
+            envMapCDFTex->Image2D(0, GL_R32F, ctx.scene->envMap->width, ctx.scene->envMap->height, 0, GL_RED, GL_FLOAT, ctx.scene->envMap->cdf.get());
 
             GLuint shaderObject;
             pathTraceShader->Use();
