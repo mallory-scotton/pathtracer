@@ -747,51 +747,28 @@ void Renderer::Update(float secondsElapsed)
                 glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
                 glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, denoiserInputFramePtr);
 
-                // Create an Intel Open Image Denoise device
-                oidn::DeviceRef device = oidn::newDevice(); // Automatically selects the best available device
+                oidn::DeviceRef device = oidn::newDevice();
                 device.commit();
 
-                // Calculate buffer size
                 size_t imageWidth = static_cast<size_t>(renderSize.x);
                 size_t imageHeight = static_cast<size_t>(renderSize.y);
-                size_t numChannels = 3; // For GL_RGB and oidn::Format::Float3
+                size_t numChannels = 3;
                 size_t bufferByteSize = imageWidth * imageHeight * numChannels * sizeof(float);
 
-                // Create OIDN Buffers for input and output
-                // These buffers will be managed by the OIDN device (could be CPU or GPU)
                 oidn::BufferRef colorBuffer = device.newBuffer(bufferByteSize);
                 oidn::BufferRef outputBuffer = device.newBuffer(bufferByteSize);
 
-                // Write input data from your host pointer to the OIDN input buffer
-                // This is a blocking write operation. Async versions are available for more performance.
                 colorBuffer.write(0, bufferByteSize, denoiserInputFramePtr);
 
-                // Create a denoising filter
-                oidn::FilterRef filter = device.newFilter("RT"); // generic ray tracing filter
+                oidn::FilterRef filter = device.newFilter("RT");
 
-                // Set filter images using OIDNBuffer objects
-                // The byteOffset, pixelByteStride, and rowByteStride are set to 0 or defaults
-                // assuming the data in the buffer is contiguous and tightly packed starting from offset 0.
-                // If your data layout within the buffer were different, you'd specify these.
-                // For a full image tightly packed:
-                // pixelByteStride = numChannels * sizeof(float)
-                // rowByteStride = imageWidth * numChannels * sizeof(float)
                 filter.setImage("color", colorBuffer, oidn::Format::Float3, imageWidth, imageHeight, 0, numChannels * sizeof(float), imageWidth * numChannels * sizeof(float));
                 filter.setImage("output", outputBuffer, oidn::Format::Float3, imageWidth, imageHeight, 0, numChannels * sizeof(float), imageWidth * numChannels * sizeof(float));
-
-                // Set other filter parameters
-                filter.set("hdr", false); // Set to true if your input data is HDR
-                // For OIDN 2.x, you might also consider auxiliary feature buffers (albedo, normal)
-                // if available, to improve denoising quality.
-                // e.g., filter.setImage("albedo", albedoBuffer, ...);
-                //       filter.setImage("normal", normalBuffer, ...);
+                filter.set("hdr", false);
 
                 filter.commit();
-
-                // Filter the image
                 filter.execute();
 
-                // Check for errors
                 const char* errorMessage;
                 if (device.getError(errorMessage) != oidn::Error::None)
                 {
@@ -799,11 +776,8 @@ void Renderer::Update(float secondsElapsed)
                 }
                 else
                 {
-                    // Read denoised data from the OIDN output buffer to your host pointer
-                    // This is a blocking read operation. Async versions are available.
                     outputBuffer.read(0, bufferByteSize, frameOutputPtr);
 
-                    // Copy the denoised data to denoisedTexture
                     glBindTexture(GL_TEXTURE_2D, denoisedTexture);
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, renderSize.x, renderSize.y, 0, GL_RGB, GL_FLOAT, frameOutputPtr);
                 }
