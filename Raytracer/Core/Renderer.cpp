@@ -71,19 +71,19 @@ Renderer::Renderer(void)
     InitShaders();
 }
 
-    Renderer::~Renderer()
-    {
-        glDeleteTextures(1, &pathTraceTexture);
-        glDeleteTextures(1, &pathTraceTextureLowRes);
-        glDeleteTextures(1, &accumTexture);
-        glDeleteTextures(1, &tileOutputTexture[0]);
-        glDeleteTextures(1, &tileOutputTexture[1]);
-        glDeleteTextures(1, &denoisedTexture);
+///////////////////////////////////////////////////////////////////////////////
+Renderer::~Renderer()
+{
+    glDeleteTextures(1, &pathTraceTexture);
+    glDeleteTextures(1, &pathTraceTextureLowRes);
+    glDeleteTextures(1, &accumTexture);
+    glDeleteTextures(1, &tileOutputTexture[0]);
+    glDeleteTextures(1, &tileOutputTexture[1]);
+    glDeleteTextures(1, &denoisedTexture);
 
-        // Delete denoiser data
-        delete[] denoiserInputFramePtr;
-        delete[] frameOutputPtr;
-    }
+    delete[] denoiserInputFramePtr;
+    delete[] frameOutputPtr;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 void Renderer::ActivateTextures(void)
