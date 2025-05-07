@@ -115,7 +115,7 @@ private:
     UniquePtr<OpenGL::TextureBuffer> verticesTex;       //<!
     UniquePtr<OpenGL::Buffer> normalsBuffer;            //<!
     UniquePtr<OpenGL::TextureBuffer> normalsTex;        //<!
-    GLuint materialsTex;                                //<!
+    UniquePtr<OpenGL::Texture2D> materialsTex;          //<!
     GLuint transformsTex;                               //<!
     GLuint lightsTex;                                   //<!
     GLuint textureMapsArrayTex;                         //<!

@@ -49,8 +49,7 @@ Renderer::Options::Options(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::Renderer(void)
-    : materialsTex(0)
-    , transformsTex(0)
+    : transformsTex(0)
     , lightsTex(0)
     , textureMapsArrayTex(0)
     , envMapTex(0)
@@ -80,7 +79,6 @@ Renderer::Renderer(void)
     Renderer::~Renderer()
     {
         // Delete textures
-        glDeleteTextures(1, &materialsTex);
         glDeleteTextures(1, &transformsTex);
         glDeleteTextures(1, &lightsTex);
         glDeleteTextures(1, &textureMapsArrayTex);
@@ -125,12 +123,11 @@ Renderer::Renderer(void)
         normalsTex = std::make_unique<OpenGL::TextureBuffer>(normalsBuffer, GL_RGBA32F);
 
         // Create texture for materials
-        glGenTextures(1, &materialsTex);
-        glBindTexture(GL_TEXTURE_2D, materialsTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * ctx.scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->materials[0]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        materialsTex = std::make_unique<OpenGL::Texture2D>();
+        materialsTex->Image2D(0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * ctx.scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->materials[0]);
+        materialsTex->SetParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        materialsTex->SetParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        materialsTex->Unbind();
 
         // Create texture for transforms
         glGenTextures(1, &transformsTex);
@@ -191,7 +188,7 @@ Renderer::Renderer(void)
         OpenGL::Texture::Active(GL_TEXTURE4);
         normalsTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE5);
-        glBindTexture(GL_TEXTURE_2D, materialsTex);
+        materialsTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE6);
         glBindTexture(GL_TEXTURE_2D, transformsTex);
         OpenGL::Texture::Active(GL_TEXTURE7);
@@ -688,8 +685,7 @@ void Renderer::Update(float secondsElapsed)
         glBindTexture(GL_TEXTURE_2D, transformsTex);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Mat4x4f) / sizeof(Vec4f)) * ctx.scene->transforms.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->transforms[0]);
 
-        glBindTexture(GL_TEXTURE_2D, materialsTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * ctx.scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->materials[0]);
+        materialsTex->Image2D(0, GL_RGBA32F, (sizeof(Material) / sizeof(Vec4f)) * ctx.scene->materials.size(), 1, 0, GL_RGBA, GL_FLOAT, &ctx.scene->materials[0]);
 
         int index = ctx.scene->bvhTranslator.topLevelIndex;
         int offset = sizeof(Ray::BvhTranslator::Node) * index;
