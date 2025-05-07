@@ -120,7 +120,7 @@ Renderer::Renderer(void)
     {
         Context& ctx = Context::GetInstance();
 
-        glPixelStorei(GL_PACK_ALIGNMENT, 1);
+        OpenGL::PixelStore(GL_PACK_ALIGNMENT, 1);
 
         // Create buffer and texture for BVH
         glGenBuffers(1, &BVHBuffer);
