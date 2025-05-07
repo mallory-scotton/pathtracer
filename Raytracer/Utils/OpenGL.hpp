@@ -298,6 +298,31 @@ public:
         ///
         ///////////////////////////////////////////////////////////////////////
         virtual ~Texture2D() = default;
+
+    public:
+        ///////////////////////////////////////////////////////////////////////
+        /// \brief
+        ///
+        /// \param level
+        /// \param internalFormat
+        /// \param width
+        /// \param height
+        /// \param border
+        /// \param format
+        /// \param type
+        /// \param pixels
+        ///
+        ///////////////////////////////////////////////////////////////////////
+        void Image2D(
+            GLint level,
+            GLint internalformat,
+            GLsizei width,
+            GLsizei height,
+            GLint border,
+            GLenum format,
+            GLenum type,
+            const void *pixels
+        );
     };
 
     ///////////////////////////////////////////////////////////////////////////

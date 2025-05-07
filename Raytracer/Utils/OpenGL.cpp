@@ -193,6 +193,32 @@ OpenGL::Texture2D::Texture2D(void)
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Texture2D::Image2D(
+    GLint level,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLint border,
+    GLenum format,
+    GLenum type,
+    const void *pixels
+)
+{
+    Bind();
+    glTexImage2D(
+        m_target,
+        level,
+        internalformat,
+        width,
+        height,
+        border,
+        format,
+        type,
+        pixels
+    );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 OpenGL::Texture2DArray::Texture2DArray(void)
     : OpenGL::Texture(GL_TEXTURE_2D_ARRAY)
 {}
