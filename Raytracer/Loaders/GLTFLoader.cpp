@@ -278,7 +278,7 @@ void LoadMaterials(Scene* scene, tinygltf::Model& gltfModel) {
                     (float)(ext.Get("transmissionFactor").Get<double>());
         }
 
-        scene->AddMaterial(material);
+        scene->AddMaterial(material, "placeholder");
     }
 
     // Default material

@@ -8,6 +8,7 @@
 #include "Utils/FileSystem.hpp"
 #include "Builders/CameraBuilder.hpp"
 #include "Builders/LightBuilder.hpp"
+#include "Builders/MaterialBuilder.hpp"
 #include "Core/Context.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,73 +182,85 @@ void Loader::ParseSceneMesh(
 )
 {
     Context& ctx = Context::GetInstance();
-    String file, name, material;
-    Vec3f position, scale;
-    Quaternionf rotation;
-    Mat4x4f matRot, matTrans, matScale;
-    int materialID = 0;
+    MaterialBuilder builder;
 
-    cfg.Value("name", name);
-    cfg.Value("file", file);
-
-    if (cfg.Value("material", material))
-    {
-        if (materials.find(material) != materials.end())
-        {
-            materialID = materials[material].id;
-        }
-        else
-        {
-            RAY_WARN("Could not find material " << material);
-        }
-    }
-
-    if (cfg.Value("position", position))
-    {
-        matTrans[3][0] = position.x;
-        matTrans[3][1] = position.y;
-        matTrans[3][2] = position.z;
-    }
-
-    if (cfg.Value("scale", scale))
-    {
-        matScale[0][0] = scale.x;
-        matScale[1][1] = scale.y;
-        matScale[2][2] = scale.z;
-    }
-
-    if (cfg.Value("rotation", rotation))
-    {
-        matRot = Mat4x4f::QuaternionToMatrix(rotation);
-    }
-
-    if (!file.empty())
-    {
-        int id = ctx.scene->AddMesh(file);
-
-        if (id != -1)
-        {
-            String instanceName;
-
-            if (!name.empty() && name != "none")
-            {
-                instanceName = name;
-            }
-            else
-            {
-                size_t pos = file.find_last_of("/\\");
-                instanceName = file.substr(pos + 1);
-            }
-
-            Mat4x4f transform;
-
-            transform = matRot * matScale * matTrans;
-
-            MeshInstance instance(instanceName, id, transform, materialID);
-            ctx.scene->AddMeshInstance(instance);
-        }
-    }
+    builder.FromConfiguration(cfg).BuildMesh();
 }
+
+/////////////////////////////////////////////////////////////////////////////
+// void Loader::ParseSceneMesh(
+//     const LibConfig::Setting& cfg,
+//     Map<String, MaterialData>& materials
+// )
+// {
+    // Context& ctx = Context::GetInstance();
+//     String file, name, material;
+//     Vec3f position, scale;
+//     Quaternionf rotation;
+//     Mat4x4f matRot, matTrans, matScale;
+//     int materialID = 0;
+
+//     cfg.Value("name", name);
+//     cfg.Value("file", file);
+
+//     if (cfg.Value("material", material))
+//     {
+//         if (materials.find(material) != materials.end())
+//         {
+//             materialID = materials[material].id;
+//         }
+//         else
+//         {
+//             RAY_WARN("Could not find material " << material);
+//         }
+//     }
+
+//     if (cfg.Value("position", position))
+//     {
+//         matTrans[3][0] = position.x;
+//         matTrans[3][1] = position.y;
+//         matTrans[3][2] = position.z;
+//     }
+
+//     if (cfg.Value("scale", scale))
+//     {
+//         matScale[0][0] = scale.x;
+//         matScale[1][1] = scale.y;
+//         matScale[2][2] = scale.z;
+//     }
+
+//     if (cfg.Value("rotation", rotation))
+//     {
+//         matRot = Mat4x4f::QuaternionToMatrix(rotation);
+//     }
+
+//     if (!file.empty())
+//     {
+//         int id = ctx.scene->AddMesh(file);
+
+//         if (id != -1)
+//         {
+//             String instanceName;
+
+//             if (!name.empty() && name != "none")
+//             {
+//                 instanceName = name;
+//             }
+//             else
+//             {
+//                 size_t pos = file.find_last_of("/\\");
+//                 instanceName = file.substr(pos + 1);
+//             }
+
+//             Mat4x4f transform;
+
+//             transform = matRot * matScale * matTrans;
+
+//             MeshInstance instance(instanceName, id, transform, materialID);
+//             ctx.scene->AddMeshInstance(instance);
+//         }
+//     }
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 void Loader::ParseSceneGLTF(const LibConfig::Setting& cfg)

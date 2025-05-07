@@ -75,11 +75,25 @@ namespace Ray
         return id;
     }
 
-    int Scene::AddMaterial(const Material& material)
+    int Scene::AddMaterial(const Material& material, String name)
     {
         int id = materials.size();
         materials.push_back(material);
+        materialsName.push_back(name);
         return id;
+
+    }
+
+    int Scene::getMaterialID(String name)
+    {
+        auto it = std::find(materialsName.begin(), materialsName.end(), name);
+        if (it != materialsName.end()) {
+            int index = std::distance(materialsName.begin(), it);
+            return index;
+        } else {
+            RAY_WARN("Could not find material " << name);
+            return -1;
+        }
     }
 
     void Scene::AddEnvMap(const std::string& filename)
@@ -199,7 +213,7 @@ namespace Ray
         printf("Copying Mesh Data\n");
         for (int i = 0; i < meshes.size(); i++)
         {
-            // Copy indices from BVH and not from Mesh. 
+            // Copy indices from BVH and not from Mesh.
             // Required if splitBVH is used as a triangle can be shared by leaf nodes
             int numIndices = meshes[i]->bvh->GetNumIndices();
             const int* triIndices = meshes[i]->bvh->GetIndices();

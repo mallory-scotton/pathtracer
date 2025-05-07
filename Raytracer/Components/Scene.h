@@ -39,10 +39,10 @@ namespace Ray
 
         int AddMesh(const std::string& filename);
         int AddTexture(const std::string& filename);
-        int AddMaterial(const Material& material);
+        int AddMaterial(const Material& material, String name);
         int AddMeshInstance(const MeshInstance& meshInstance);
         int AddLight(const Light& light);
-
+        int getMaterialID(String name);
         void AddEnvMap(const std::string& filename);
 
         void ProcessScene();
@@ -62,6 +62,8 @@ namespace Ray
 
         // Materials
         std::vector<Material> materials;
+
+        std::vector<String> materialsName;
 
         // Instances
         std::vector<MeshInstance> meshInstances;
