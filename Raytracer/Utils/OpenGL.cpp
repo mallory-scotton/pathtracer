@@ -195,6 +195,34 @@ OpenGL::TextureBuffer::TextureBuffer(UniquePtr<Buffer>& buffer, GLenum format)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+OpenGL::FrameBuffer::FrameBuffer(void)
+{
+    glGenFramebuffers(1, &m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+OpenGL::FrameBuffer::~FrameBuffer()
+{
+    if (!m_handler)
+    {
+        glDeleteFramebuffers(1, &m_handler);
+        m_handler = 0;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::FrameBuffer::Bind(void)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, m_handler);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::FrameBuffer::Unbind(void)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void OpenGL::UseProgram(GLuint program)
 {
     glUseProgram(program);
