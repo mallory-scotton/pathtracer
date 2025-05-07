@@ -244,23 +244,24 @@ void Renderer::InitGPUDataBuffers(void)
     ActivateTextures();
 }
 
-    void Renderer::ResizeRenderer()
-    {
-        // Delete textures
-        glDeleteTextures(1, &pathTraceTexture);
-        glDeleteTextures(1, &pathTraceTextureLowRes);
-        glDeleteTextures(1, &accumTexture);
-        glDeleteTextures(1, &tileOutputTexture[0]);
-        glDeleteTextures(1, &tileOutputTexture[1]);
-        glDeleteTextures(1, &denoisedTexture);
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::ResizeRenderer(void)
+{
+    // Delete textures
+    glDeleteTextures(1, &pathTraceTexture);
+    glDeleteTextures(1, &pathTraceTextureLowRes);
+    glDeleteTextures(1, &accumTexture);
+    glDeleteTextures(1, &tileOutputTexture[0]);
+    glDeleteTextures(1, &tileOutputTexture[1]);
+    glDeleteTextures(1, &denoisedTexture);
 
-        // Delete denoiser data
-        delete[] denoiserInputFramePtr;
-        delete[] frameOutputPtr;
+    // Delete denoiser data
+    delete[] denoiserInputFramePtr;
+    delete[] frameOutputPtr;
 
-        InitFBOs();
-        InitShaders();
-    }
+    InitFBOs();
+    InitShaders();
+}
 
     void Renderer::InitFBOs()
     {
@@ -358,10 +359,10 @@ void Renderer::InitGPUDataBuffers(void)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
 
-        printf("Window Resolution : %d %d\n", windowSize.x, windowSize.y);
-        printf("Render Resolution : %d %d\n", renderSize.x, renderSize.y);
-        printf("Preview Resolution : %d %d\n", (int)((float)windowSize.x * pixelRatio), (int)((float)windowSize.y * pixelRatio));
-        printf("Tile Size : %d %d\n", tileWidth, tileHeight);
+        RAY_INFO("Window Resolution: " << windowSize);
+        RAY_INFO("Render Resolution: " << renderSize);
+        RAY_INFO("Preview Resolution: " << Vec2i(Vec2f(windowSize) * pixelRatio));
+        RAY_INFO("Tile Size: " << Vec2i(tileWidth, tileHeight));
     }
 
 ///////////////////////////////////////////////////////////////////////////////
