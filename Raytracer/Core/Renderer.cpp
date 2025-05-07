@@ -587,7 +587,9 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
         Context& ctx = Context::GetInstance();
 
         if (!ctx.scene->dirty && ctx.scene->renderOptions.maxSpp != -1 && sampleCounter >= ctx.scene->renderOptions.maxSpp)
+        {
             return;
+        }
 
         OpenGL::Disable(GL_BLEND);
         OpenGL::Disable(GL_DEPTH_TEST);
@@ -597,7 +599,7 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
         {
             // Renders a low res preview if camera/instances are modified
             OpenGL::BindFramebuffer(pathTraceFBOLowRes);
-            glViewport(0, 0, windowSize.x * pixelRatio, windowSize.y * pixelRatio);
+            OpenGL::Viewport(Vec2i(0), Vec2i(Vec2f(windowSize) * pixelRatio));
             quad.Draw(pathTraceShaderLowRes);
 
             ctx.scene->instancesModified = false;
@@ -607,18 +609,21 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
         else
         {
             OpenGL::BindFramebuffer(pathTraceFBO);
-            glViewport(0, 0, tileWidth, tileHeight);
+            OpenGL::Viewport(Vec2i(0), Vec2i(tileWidth, tileHeight));
             glBindTexture(GL_TEXTURE_2D, accumTexture);
             quad.Draw(pathTraceShader);
 
             OpenGL::BindFramebuffer(accumFBO);
-            glViewport(tileWidth * tile.x, tileHeight * tile.y, tileWidth, tileHeight);
+            OpenGL::Viewport(
+                Vec2i(tileWidth * tile.x, tileHeight * tile.y),
+                Vec2i(tileWidth, tileHeight)
+            );
             glBindTexture(GL_TEXTURE_2D, pathTraceTexture);
             quad.Draw(outputShader);
 
             OpenGL::BindFramebuffer(outputFBO);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tileOutputTexture[currentBuffer], 0);
-            glViewport(0, 0, renderSize.x, renderSize.y);
+            OpenGL::Viewport(Vec2i(0), renderSize);
             glBindTexture(GL_TEXTURE_2D, accumTexture);
             quad.Draw(tonemapShader);
         }
@@ -639,9 +644,13 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
         else
         {
             if (ctx.scene->renderOptions.enableDenoiser && denoised)
+            {
                 glBindTexture(GL_TEXTURE_2D, denoisedTexture);
+            }
             else
+            {
                 glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
+            }
 
             // FIXME: RETURN AN IMAGE INSTEAD OF DRAWING IT DIRECTLY
             // THE CODE BELOW EXPORT THE TEXTURE BUFFER AS A PPM FILE AFTER 200
@@ -679,7 +688,8 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
                 }
 
                 std::ofstream file("out.ppm", std::ios::binary);
-                if (!file) {
+                if (!file)
+                {
                     throw std::runtime_error("Could not open file for writing");
                 }
 
