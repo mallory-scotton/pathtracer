@@ -105,55 +105,55 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     //
     ///////////////////////////////////////////////////////////////////////////
-    Quad quad;                                  //<!
+    Quad quad;                                          //<!
 
     UniquePtr<OpenGL::Buffer> BVHBuffer;                //<!
-    GLuint BVHTex;                              //<!
+    GLuint BVHTex;                                      //<!
     UniquePtr<OpenGL::Buffer> vertexIndicesBuffer;      //<!
-    GLuint vertexIndicesTex;                    //<!
+    GLuint vertexIndicesTex;                            //<!
     UniquePtr<OpenGL::Buffer> verticesBuffer;           //<!
-    GLuint verticesTex;                         //<!
+    GLuint verticesTex;                                 //<!
     UniquePtr<OpenGL::Buffer> normalsBuffer;            //<!
-    GLuint normalsTex;                          //<!
-    GLuint materialsTex;                        //<!
-    GLuint transformsTex;                       //<!
-    GLuint lightsTex;                           //<!
-    GLuint textureMapsArrayTex;                 //<!
-    GLuint envMapTex;                           //<!
-    GLuint envMapCDFTex;                        //<!
+    GLuint normalsTex;                                  //<!
+    GLuint materialsTex;                                //<!
+    GLuint transformsTex;                               //<!
+    GLuint lightsTex;                                   //<!
+    GLuint textureMapsArrayTex;                         //<!
+    GLuint envMapTex;                                   //<!
+    GLuint envMapCDFTex;                                //<!
 
     UniquePtr<OpenGL::FrameBuffer> pathTraceFBO;        //<!
     UniquePtr<OpenGL::FrameBuffer> pathTraceFBOLowRes;  //<!
     UniquePtr<OpenGL::FrameBuffer> accumFBO;            //<!
     UniquePtr<OpenGL::FrameBuffer> outputFBO;           //<!
 
-    UniquePtr<Shader> pathTraceShader;          //<!
-    UniquePtr<Shader> pathTraceShaderLowRes;    //<!
-    UniquePtr<Shader> outputShader;             //<!
-    UniquePtr<Shader> tonemapShader;            //<!
+    UniquePtr<Shader> pathTraceShader;                  //<!
+    UniquePtr<Shader> pathTraceShaderLowRes;            //<!
+    UniquePtr<Shader> outputShader;                     //<!
+    UniquePtr<Shader> tonemapShader;                    //<!
 
-    GLuint pathTraceTextureLowRes;              //<!
-    GLuint pathTraceTexture;                    //<!
-    GLuint accumTexture;                        //<!
-    GLuint tileOutputTexture[2];                //<!
-    GLuint denoisedTexture;                     //<!
+    GLuint pathTraceTextureLowRes;                      //<!
+    GLuint pathTraceTexture;                            //<!
+    GLuint accumTexture;                                //<!
+    GLuint tileOutputTexture[2];                        //<!
+    GLuint denoisedTexture;                             //<!
 
-    Vec2i renderSize;                           //<!
-    Vec2i windowSize;                           //<!
+    Vec2i renderSize;                                   //<!
+    Vec2i windowSize;                                   //<!
 
-    Vec2i tile;                                 //<!
-    Vec2i numTiles;                             //<!
-    Vec2f invNumTiles;                          //<!
-    int tileWidth;                              //<!
-    int tileHeight;                             //<!
-    int currentBuffer;                          //<!
-    int frameCounter;                           //<!
-    int sampleCounter;                          //<!
-    float pixelRatio;                           //<!
+    Vec2i tile;                                         //<!
+    Vec2i numTiles;                                     //<!
+    Vec2f invNumTiles;                                  //<!
+    int tileWidth;                                      //<!
+    int tileHeight;                                     //<!
+    int currentBuffer;                                  //<!
+    int frameCounter;                                   //<!
+    int sampleCounter;                                  //<!
+    float pixelRatio;                                   //<!
 
-    Vec3f* denoiserInputFramePtr;               //<!
-    Vec3f* frameOutputPtr;                      //<!
-    bool denoised;                              //<!
+    Vec3f* denoiserInputFramePtr;                       //<!
+    Vec3f* frameOutputPtr;                              //<!
+    bool denoised;                                      //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////
