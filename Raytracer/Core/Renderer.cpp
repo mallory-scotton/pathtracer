@@ -492,7 +492,6 @@ void Renderer::InitShaders(void)
     String vertexSrc = Shader::Source(shadersDirectory / "Vertex/Vertex.glsl");
     String pathTraceSrc = Shader::Source(shadersDirectory / "Lighting/Tile.glsl");
     String pathTraceLowResSrc = Shader::Source(shadersDirectory / "Stages/Preview.glsl");
-    String outputSrc = Shader::Source(shadersDirectory / "Stages/Output.glsl");
     String tonemapSrc = Shader::Source(shadersDirectory / "Lighting/Tonemap.glsl");
 
     String pathtraceDefines = GetPathtraceShaderOptions();
@@ -511,8 +510,13 @@ void Renderer::InitShaders(void)
 
     pathTraceShader = std::make_unique<Shader>(vertexSrc, pathTraceSrc);
     pathTraceShaderLowRes = std::make_unique<Shader>(vertexSrc, pathTraceLowResSrc);
-    outputShader = std::make_unique<Shader>(vertexSrc, outputSrc);
     tonemapShader = std::make_unique<Shader>(vertexSrc, tonemapSrc);
+
+    if (!outputShader)
+    {
+        String outputSrc = Shader::Source(shadersDirectory / "Stages/Output.glsl");
+        outputShader = std::make_unique<Shader>(vertexSrc, outputSrc);
+    }
 
     InitializeUniforms(pathTraceShader);
     InitializeUniforms(pathTraceShaderLowRes);
