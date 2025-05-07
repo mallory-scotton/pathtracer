@@ -244,21 +244,9 @@ Renderer::Renderer(void)
         glDeleteTextures(1, &tileOutputTexture[1]);
         glDeleteTextures(1, &denoisedTexture);
 
-        // Delete FBOs
-        pathTraceFBO.reset();
-        pathTraceFBOLowRes.reset();
-        accumFBO.reset();
-        outputFBO.reset();
-
         // Delete denoiser data
         delete[] denoiserInputFramePtr;
         delete[] frameOutputPtr;
-
-        // Delete shaders
-        pathTraceShader.reset();
-        pathTraceShaderLowRes.reset();
-        outputShader.reset();
-        tonemapShader.reset();
 
         InitFBOs();
         InitShaders();
