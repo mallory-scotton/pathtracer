@@ -201,7 +201,7 @@ void OpenGL::Texture2D::Image2D(
     GLint border,
     GLenum format,
     GLenum type,
-    const void *pixels
+    const void* pixels
 )
 {
     Bind();
@@ -222,6 +222,34 @@ void OpenGL::Texture2D::Image2D(
 OpenGL::Texture2DArray::Texture2DArray(void)
     : OpenGL::Texture(GL_TEXTURE_2D_ARRAY)
 {}
+
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::Texture2DArray::Image3D(
+    GLint level,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLsizei depth,
+    GLint border,
+    GLenum format,
+    GLenum type,
+    const void* pixels
+)
+{
+    Bind();
+    glTexImage3D(
+        m_target,
+        level,
+        internalformat,
+        width,
+        height,
+        depth,
+        border,
+        format,
+        type,
+        pixels
+    );
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 OpenGL::TextureBuffer::TextureBuffer(UniquePtr<Buffer>& buffer, GLenum format)

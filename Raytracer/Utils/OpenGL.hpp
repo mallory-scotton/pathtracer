@@ -321,7 +321,7 @@ public:
             GLint border,
             GLenum format,
             GLenum type,
-            const void *pixels
+            const void* pixels
         );
     };
 
@@ -343,6 +343,33 @@ public:
         ///
         ///////////////////////////////////////////////////////////////////////
         virtual ~Texture2DArray() = default;
+
+    public:
+        ///////////////////////////////////////////////////////////////////////
+        /// \brief
+        ///
+        /// \param level
+        /// \param internalformat
+        /// \param width
+        /// \param height
+        /// \param depth
+        /// \param border
+        /// \param format
+        /// \param type
+        /// \param pixels
+        ///
+        ///////////////////////////////////////////////////////////////////////
+        void Image3D(
+            GLint level,
+            GLint internalformat,
+            GLsizei width,
+            GLsizei height,
+            GLsizei depth,
+            GLint border,
+            GLenum format,
+            GLenum type,
+            const void* pixels
+        );
     };
 
     ///////////////////////////////////////////////////////////////////////////
