@@ -49,13 +49,9 @@ Renderer::Options::Options(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::Renderer(void)
-    : BVHBuffer(0)
-    , BVHTex(0)
-    , vertexIndicesBuffer(0)
+    : BVHTex(0)
     , vertexIndicesTex(0)
-    , verticesBuffer(0)
     , verticesTex(0)
-    , normalsBuffer(0)
     , normalsTex(0)
     , materialsTex(0)
     , transformsTex(0)
@@ -105,12 +101,6 @@ Renderer::Renderer(void)
         glDeleteTextures(1, &tileOutputTexture[1]);
         glDeleteTextures(1, &denoisedTexture);
 
-        // Delete buffers
-        glDeleteBuffers(1, &BVHBuffer);
-        glDeleteBuffers(1, &vertexIndicesBuffer);
-        glDeleteBuffers(1, &verticesBuffer);
-        glDeleteBuffers(1, &normalsBuffer);
-
         // Delete denoiser data
         delete[] denoiserInputFramePtr;
         delete[] frameOutputPtr;
@@ -123,36 +113,33 @@ Renderer::Renderer(void)
         OpenGL::PixelStore(GL_PACK_ALIGNMENT, 1);
 
         // Create buffer and texture for BVH
-        glGenBuffers(1, &BVHBuffer);
-        glBindBuffer(GL_TEXTURE_BUFFER, BVHBuffer);
-        glBufferData(GL_TEXTURE_BUFFER, sizeof(Ray::BvhTranslator::Node) * ctx.scene->bvhTranslator.nodes.size(), &ctx.scene->bvhTranslator.nodes[0], GL_STATIC_DRAW);
+        BVHBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
+        BVHBuffer->SetData(sizeof(Ray::BvhTranslator::Node) * ctx.scene->bvhTranslator.nodes.size(), &ctx.scene->bvhTranslator.nodes[0], GL_STATIC_DRAW);
         glGenTextures(1, &BVHTex);
         glBindTexture(GL_TEXTURE_BUFFER, BVHTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, BVHBuffer);
+        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, BVHBuffer->GetHandler());
 
         // Create buffer and texture for vertex indices
-        glGenBuffers(1, &vertexIndicesBuffer);
-        glBindBuffer(GL_TEXTURE_BUFFER, vertexIndicesBuffer);
-        glBufferData(GL_TEXTURE_BUFFER, sizeof(Indices) * ctx.scene->vertIndices.size(), &ctx.scene->vertIndices[0], GL_STATIC_DRAW);
+        vertexIndicesBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
+        vertexIndicesBuffer->Bind();
+        vertexIndicesBuffer->SetData(sizeof(Indices) * ctx.scene->vertIndices.size(), &ctx.scene->vertIndices[0], GL_STATIC_DRAW);
         glGenTextures(1, &vertexIndicesTex);
         glBindTexture(GL_TEXTURE_BUFFER, vertexIndicesTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32I, vertexIndicesBuffer);
+        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32I, vertexIndicesBuffer->GetHandler());
 
         // Create buffer and texture for vertices
-        glGenBuffers(1, &verticesBuffer);
-        glBindBuffer(GL_TEXTURE_BUFFER, verticesBuffer);
-        glBufferData(GL_TEXTURE_BUFFER, sizeof(Vec4f) * ctx.scene->verticesUVX.size(), &ctx.scene->verticesUVX[0], GL_STATIC_DRAW);
+        verticesBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
+        verticesBuffer->SetData(sizeof(Vec4f) * ctx.scene->verticesUVX.size(), &ctx.scene->verticesUVX[0], GL_STATIC_DRAW);
         glGenTextures(1, &verticesTex);
         glBindTexture(GL_TEXTURE_BUFFER, verticesTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, verticesBuffer);
+        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, verticesBuffer->GetHandler());
 
         // Create buffer and texture for normals
-        glGenBuffers(1, &normalsBuffer);
-        glBindBuffer(GL_TEXTURE_BUFFER, normalsBuffer);
-        glBufferData(GL_TEXTURE_BUFFER, sizeof(Vec4f) * ctx.scene->normalsUVY.size(), &ctx.scene->normalsUVY[0], GL_STATIC_DRAW);
+        normalsBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
+        normalsBuffer->SetData(sizeof(Vec4f) * ctx.scene->normalsUVY.size(), &ctx.scene->normalsUVY[0], GL_STATIC_DRAW);
         glGenTextures(1, &normalsTex);
         glBindTexture(GL_TEXTURE_BUFFER, normalsTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, normalsBuffer);
+        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, normalsBuffer->GetHandler());
 
         // Create texture for materials
         glGenTextures(1, &materialsTex);
@@ -724,8 +711,7 @@ void Renderer::Update(float secondsElapsed)
         int index = ctx.scene->bvhTranslator.topLevelIndex;
         int offset = sizeof(Ray::BvhTranslator::Node) * index;
         int size = sizeof(Ray::BvhTranslator::Node) * (ctx.scene->bvhTranslator.nodes.size() - index);
-        glBindBuffer(GL_TEXTURE_BUFFER, BVHBuffer);
-        glBufferSubData(GL_TEXTURE_BUFFER, offset, size, &ctx.scene->bvhTranslator.nodes[index]);
+        BVHBuffer->SetSubData(offset, size, &ctx.scene->bvhTranslator.nodes[index]);
     }
 
     if (ctx.scene->envMapModified)

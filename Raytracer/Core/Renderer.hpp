@@ -107,13 +107,13 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     Quad quad;                                  //<!
 
-    GLuint BVHBuffer;                           //<!
+    UniquePtr<OpenGL::Buffer> BVHBuffer;                //<!
     GLuint BVHTex;                              //<!
-    GLuint vertexIndicesBuffer;                 //<!
+    UniquePtr<OpenGL::Buffer> vertexIndicesBuffer;      //<!
     GLuint vertexIndicesTex;                    //<!
-    GLuint verticesBuffer;                      //<!
+    UniquePtr<OpenGL::Buffer> verticesBuffer;           //<!
     GLuint verticesTex;                         //<!
-    GLuint normalsBuffer;                       //<!
+    UniquePtr<OpenGL::Buffer> normalsBuffer;            //<!
     GLuint normalsTex;                          //<!
     GLuint materialsTex;                        //<!
     GLuint transformsTex;                       //<!
