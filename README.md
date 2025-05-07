@@ -115,7 +115,7 @@ The project relies on the following libraries:
 |GL3W               |Modern OpenGL loading              |Latest     |
 |GLEW               |OpenGL extension loading           |2.1.0+     |
 |LibConfig++        |Scene configuration parsing        |1.7+       |
-|OpenImageDenoise   |AI-accelerated denoising           |1.4.0+     |
+|OpenImageDenoise   |AI-accelerated denoising           |2.3.0+     |
 |ImGui              |Graphical user interface           |Latest     |
 |ImGuizmo           |3D manipulation widgets            |Latest     |
 |StbImage           |Image loading/saving               |Latest     |
