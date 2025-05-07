@@ -525,4 +525,10 @@ void OpenGL::Viewport(const Vec2i& position, const Vec2i& dimension)
     glViewport(position.x, position.y, dimension.x, dimension.y);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::PixelStore(GLenum param, GLint value)
+{
+    glPixelStorei(param, value);
+}
+
 } // namespace Ray
