@@ -49,11 +49,7 @@ Renderer::Options::Options(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::Renderer(void)
-    : BVHTex(0)
-    , vertexIndicesTex(0)
-    , verticesTex(0)
-    , normalsTex(0)
-    , materialsTex(0)
+    : materialsTex(0)
     , transformsTex(0)
     , lightsTex(0)
     , textureMapsArrayTex(0)
@@ -84,10 +80,6 @@ Renderer::Renderer(void)
     Renderer::~Renderer()
     {
         // Delete textures
-        glDeleteTextures(1, &BVHTex);
-        glDeleteTextures(1, &vertexIndicesTex);
-        glDeleteTextures(1, &verticesTex);
-        glDeleteTextures(1, &normalsTex);
         glDeleteTextures(1, &materialsTex);
         glDeleteTextures(1, &transformsTex);
         glDeleteTextures(1, &lightsTex);
@@ -115,31 +107,22 @@ Renderer::Renderer(void)
         // Create buffer and texture for BVH
         BVHBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
         BVHBuffer->SetData(sizeof(Ray::BvhTranslator::Node) * ctx.scene->bvhTranslator.nodes.size(), &ctx.scene->bvhTranslator.nodes[0], GL_STATIC_DRAW);
-        glGenTextures(1, &BVHTex);
-        glBindTexture(GL_TEXTURE_BUFFER, BVHTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32F, BVHBuffer->GetHandler());
+        BVHTex = std::make_unique<OpenGL::TextureBuffer>(BVHBuffer, GL_RGB32F);
 
         // Create buffer and texture for vertex indices
         vertexIndicesBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
-        vertexIndicesBuffer->Bind();
         vertexIndicesBuffer->SetData(sizeof(Indices) * ctx.scene->vertIndices.size(), &ctx.scene->vertIndices[0], GL_STATIC_DRAW);
-        glGenTextures(1, &vertexIndicesTex);
-        glBindTexture(GL_TEXTURE_BUFFER, vertexIndicesTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGB32I, vertexIndicesBuffer->GetHandler());
+        vertexIndicesTex = std::make_unique<OpenGL::TextureBuffer>(vertexIndicesBuffer, GL_RGB32I);
 
         // Create buffer and texture for vertices
         verticesBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
         verticesBuffer->SetData(sizeof(Vec4f) * ctx.scene->verticesUVX.size(), &ctx.scene->verticesUVX[0], GL_STATIC_DRAW);
-        glGenTextures(1, &verticesTex);
-        glBindTexture(GL_TEXTURE_BUFFER, verticesTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, verticesBuffer->GetHandler());
+        verticesTex = std::make_unique<OpenGL::TextureBuffer>(verticesBuffer, GL_RGBA32F);
 
         // Create buffer and texture for normals
         normalsBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
         normalsBuffer->SetData(sizeof(Vec4f) * ctx.scene->normalsUVY.size(), &ctx.scene->normalsUVY[0], GL_STATIC_DRAW);
-        glGenTextures(1, &normalsTex);
-        glBindTexture(GL_TEXTURE_BUFFER, normalsTex);
-        glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, normalsBuffer->GetHandler());
+        normalsTex = std::make_unique<OpenGL::TextureBuffer>(normalsBuffer, GL_RGBA32F);
 
         // Create texture for materials
         glGenTextures(1, &materialsTex);
@@ -200,13 +183,13 @@ Renderer::Renderer(void)
 
         // Bind textures to texture slots as they will not change slots during the lifespan of the renderer
         OpenGL::Texture::Active(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_BUFFER, BVHTex);
+        BVHTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_BUFFER, vertexIndicesTex);
+        vertexIndicesTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_BUFFER, verticesTex);
+        verticesTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_BUFFER, normalsTex);
+        normalsTex->Bind();
         OpenGL::Texture::Active(GL_TEXTURE5);
         glBindTexture(GL_TEXTURE_2D, materialsTex);
         OpenGL::Texture::Active(GL_TEXTURE6);
