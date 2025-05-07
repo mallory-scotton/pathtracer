@@ -7,6 +7,7 @@
 #include "Utils/LibConfig.hpp"
 #include "Utils/FileSystem.hpp"
 #include "Builders/CameraBuilder.hpp"
+#include "Builders/LightBuilder.hpp"
 #include "Core/Context.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,7 +97,7 @@ void Loader::ParseSceneMaterial(
 
     if (materials.find(name) == materials.end())
     {
-        int id = ctx.scene->AddMaterial(material);
+        int id = ctx.scene->AddMaterial(material, name);
         materials[name] = MaterialData{material, id};
     }
 }
@@ -168,39 +169,12 @@ void Loader::ParseSceneCamera(const LibConfig::Setting& cfg)
 void Loader::ParseSceneLight(const LibConfig::Setting& cfg)
 {
     Context& ctx = Context::GetInstance();
-    Light light;
-    Vec3f v1, v2;
-    String lightType;
+    LightBuilder builder;
 
-    cfg.Value("position", light.position);
-    cfg.Value("emission", light.emission);
-    cfg.Value("radius", light.radius);
-    cfg.Value("v1", v1);
-    cfg.Value("v2", v2);
-    cfg.Value("type", lightType);
-
-    if (lightType == "quad")
-    {
-        light.type = Light::RECTANGLE;
-        light.u = v1 - light.position;
-        light.v = v2 - light.position;
-        light.area = Vec3f::Length(Vec3f::Cross(light.u, light.v));
-    }
-    else if (lightType == "sphere")
-    {
-        light.type = Light::SPHERE;
-        light.area = 4.f * PI * light.radius * light.radius;
-    }
-    else if (lightType == "distant")
-    {
-        light.type = Light::DISTANT;
-        light.area = 0.f;
-    }
-
-    ctx.scene->AddLight(light);
+    ctx.scene->AddLight(builder.FromConfiguration(cfg).Build());
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 void Loader::ParseSceneMesh(
     const LibConfig::Setting& cfg,
     Map<String, MaterialData>& materials
@@ -351,7 +325,7 @@ bool Loader::LoadScene(const Path& filename)
 
     Map<String, MaterialData> materialMap;
 
-    ctx.scene->AddMaterial(Material());
+    ctx.scene->AddMaterial(Material(), "default");
 
     if (const auto& renderer = config.Lookup("renderer"))
     {
