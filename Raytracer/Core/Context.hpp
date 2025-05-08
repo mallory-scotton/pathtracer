@@ -47,6 +47,8 @@ public:
     Vector<String> availableScenes;     //<!
     bool shutdown;                      //<!
     Vector<Byte> render;                //<!
+    bool hasGui;                        //<!
+    Uint32 renderTextureID;             //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////

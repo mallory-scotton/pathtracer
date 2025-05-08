@@ -28,6 +28,8 @@ Context::Context(void)
     , m_scenesPath(DEFAULT_SCENES_PATH)
     , scene(std::make_unique<Scene>())
     , shutdown(false)
+    , hasGui(false)
+    , renderTextureID(0)
 {
     if (!Fs::Exists(m_shaderPath))
     {
