@@ -289,6 +289,16 @@ void OpenGL::FrameBuffer::Unbind(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+void OpenGL::FrameBuffer::Texture2D(UniquePtr<OpenGL::Texture2D>& texture)
+{
+    Bind();
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D, texture->GetHandler(), 0
+    );
+}
+
+///////////////////////////////////////////////////////////////////////////////
 void OpenGL::UseProgram(GLuint program)
 {
     glUseProgram(program);
