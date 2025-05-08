@@ -187,7 +187,7 @@ public:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    bool Contains(const BoundingBox& a, const BoundingBox& b);
+    static bool Contains(const BoundingBox& a, const BoundingBox& b);
 };
 
 } // namespace Ray

@@ -1,8 +1,8 @@
 renderer:
 {
     resolution = {
-        x: 2560;
-        y: 1532;
+        x: 1280;
+        y: 720;
     };
     windowresolution = {
         x: 1280;
@@ -12,23 +12,13 @@ renderer:
     maxdepth = 2;
     tilewidth = 320;
     tileheight = 180;
-    enableuniformlight = true;
-    uniformlightcolor = {
-        x: 1.0;
-        y: 1.0;
-        z: 1.0;
-    };
-    enablebackground = true;
-    backgroundcolor = {
-        x: 0.184;
-        y: 0.184;
-        z: 0.2;
-    };
+    envmapfile = "Assets/HDR/san_giuseppe_bridge_4k.hdr";
+    envmapintensity = 2.0;
 }
 
 gltfs = (
     {
-        file = "Assets/ramen/scene.gltf";
+        file = "Assets/bistro/scene.gltf";
     }
 )
 

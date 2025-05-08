@@ -35,7 +35,8 @@ public:
     {
         WINDOWING,
         GUI,
-        EXPORTER
+        EXPORTER,
+        SCRIPTS
     };
 
 public:

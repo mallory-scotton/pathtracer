@@ -6,6 +6,7 @@
 #include "Errors/PluginException.hpp"
 #include "Core/Context.hpp"
 #include "Utils/OpenGL.hpp"
+#include <chrono>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -70,15 +71,20 @@ Raytracer::Raytracer(int argc, char *argv[])
 void Raytracer::Run(void)
 {
     Context& ctx = Context::GetInstance();
+    auto start = std::chrono::high_resolution_clock::now();
 
     while (!ctx.shutdown)
     {
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> duration = end - start;
+        start = end;
+
         for (const auto& plugin : m_plugins)
         {
-            plugin->Update(0.f);
+            plugin->Update(duration.count());
         }
 
-        ctx.renderer->Update(0.f);
+        ctx.renderer->Update(duration.count());
 
         for (const auto& plugin : m_plugins)
         {

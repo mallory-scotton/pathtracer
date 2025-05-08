@@ -1,0 +1,93 @@
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 2;
+    tilewidth = 256;
+    tileheight = 144;
+    enableuniformlight = true;
+    uniformlightcolor = {
+        x: 1.0;
+        y: 1.0;
+        z: 1.0;
+    };
+    enablebackground = true;
+    backgroundcolor = {
+        x: 0.0;
+        y: 0.0;
+        z: 0.0;
+    };
+}
+
+materials = (
+    {
+        name = "blue";
+        color = {
+            x: 0.0314;
+            y: 0.2471;
+            z: 0.7137;
+        };
+    },
+    {
+        name = "black";
+        color = {
+            x: 0.0;
+            y: 0.0;
+            z: 0.0;
+        };
+    },
+    {
+        name = "yellow";
+        color = {
+            x: 1.0;
+            y: 1.0;
+            z: 0.0;
+        };
+    },
+)
+
+meshes = (
+    {
+        name = "maze_top";
+        file = "Assets/pacman/maze_top.obj";
+        material = "blue";
+    },
+    {
+        name = "maze_bottom";
+        file = "Assets/pacman/maze_bottom.obj";
+        material = "black";
+    },
+    {
+        name = "pacman";
+        file = "Assets/pacman/pacman.obj";
+        material = "yellow";
+        scale = {
+            x: 0.01;
+            y: 0.01;
+            z: 0.01;
+        };
+        rotation = {
+            x: -0.7071;
+            y: 0.0;
+            z: 0.0;
+            w: 0.7071;
+        }
+    }
+)
+
+camera:
+{
+    position = {
+        x: 0.0;
+        y: 18.82;
+        z: 14.18;
+    };
+    lookat = {
+        x: 0.0;
+        y: 0.0;
+        z: 0.0;
+    };
+    fov = 60.0;
+}
