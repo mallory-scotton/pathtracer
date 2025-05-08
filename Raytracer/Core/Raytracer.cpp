@@ -18,7 +18,6 @@ const Path Raytracer::PLUGIN_DIRECTORY = "./Plugins/";
 
 ///////////////////////////////////////////////////////////////////////////////
 Raytracer::Raytracer(int argc, char *argv[])
-    : m_hasGui(false)
 {
     bool hasWindowingPlugin = false;
     Context& ctx = Context::GetInstance();
@@ -48,7 +47,7 @@ Raytracer::Raytracer(int argc, char *argv[])
         }
         else if (type == IPlugin::Type::GUI)
         {
-            m_hasGui = true;
+            ctx.hasGui = true;
         }
 
         IPlugin::Symbol func = lib.GetSymbol<UniquePtr<IPlugin>>(
@@ -103,7 +102,7 @@ void Raytracer::Run(void)
             plugin->PostRender();
         }
 
-        if (!m_hasGui && ctx.renderer->GetSampleCount() == 200)
+        if (!ctx.hasGui && ctx.renderer->GetSampleCount() == 200)
         {
             ctx.renderer->ExportRender("out.ppm");
         }

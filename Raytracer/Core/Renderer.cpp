@@ -680,27 +680,40 @@ void Renderer::Render(void)
 void Renderer::Present(void)
 {
     Context& ctx = Context::GetInstance();
-    OpenGL::Texture::Active(GL_TEXTURE0);
-    OpenGL::Disable(GL_BLEND);
-    OpenGL::Disable(GL_DEPTH_TEST);
+    bool useTonemapShader = false;
+    GLuint textureID = 0;
 
     if (ctx.scene->dirty || sampleCounter == 1)
     {
-        pathTraceTextureLowRes->Bind();
-        quad.Draw(tonemapShader);
+        textureID = pathTraceTextureLowRes->GetHandler();
+        useTonemapShader = true;
     }
     else
     {
         if (ctx.scene->renderOptions.enableDenoiser && denoised)
         {
-            denoisedTexture->Bind();
+            textureID = denoisedTexture->GetHandler();
         }
         else
         {
-            tileOutputTexture[1 - currentBuffer]->Bind();
+            textureID = tileOutputTexture[1 - currentBuffer]->GetHandler();
         }
+    }
 
-        quad.Draw(outputShader);
+    if (ctx.hasGui)
+    {
+        ctx.renderTextureID = textureID;
+    }
+    else
+    {
+        OpenGL::Texture::Active(GL_TEXTURE0);
+
+        OpenGL::Disable(GL_BLEND);
+        OpenGL::Disable(GL_DEPTH_TEST);
+
+        OpenGL::BindTexture(GL_TEXTURE_2D, textureID);
+        quad.Draw(useTonemapShader ? tonemapShader : outputShader);
+        OpenGL::BindTexture(GL_TEXTURE_2D, 0);
     }
 }
 
