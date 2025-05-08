@@ -10,6 +10,7 @@
 #include "Builders/LightBuilder.hpp"
 #include "Builders/MaterialBuilder.hpp"
 #include "Builders/MeshInstanceBuilder.hpp"
+#include "Builders/RendererOptionsBuilder.hpp"
 #include "Core/Context.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,54 +41,12 @@ void Loader::ParseSceneMaterial(
 void Loader::ParseSceneRendererOptions(const LibConfig::Setting& cfg)
 {
     Context& ctx = Context::GetInstance();
-    Renderer::Options& options = ctx.scene->renderOptions;
-    String envMap;
+    RendererOptionsBuilder builder;
 
-    cfg.Value("envmapfile", envMap);
-    cfg.Value("resolution", options.renderResolution);
-    cfg.Value("windowresolution", options.windowResolution);
-    cfg.Value("envmapintensity", options.envMapIntensity);
-    cfg.Value("maxdepth", options.maxDepth);
-    cfg.Value("maxssp", options.maxSpp);
-    cfg.Value("tilewidth", options.tileWidth);
-    cfg.Value("tileheight", options.tileHeight);
-    cfg.Value("enablerr", options.enableRR);
-    cfg.Value("rrdepth", options.RRDepth);
-    cfg.Value("enabletonemap", options.enableTonemap);
-    cfg.Value("enableaces", options.enableAces);
-    cfg.Value("texarraywidth", options.texArrayWidth);
-    cfg.Value("texarrayheight", options.texArrayHeight);
-    cfg.Value("openglnormalmap", options.openglNormalMap);
-    cfg.Value("hideemitters", options.hideEmitters);
-    cfg.Value("enablebackground", options.enableBackground);
-    cfg.Value("transparentbackground", options.transparentBackground);
-    cfg.Value("backgroundcolor", options.backgroundCol);
-    cfg.Value("independentrendersize", options.independentRenderSize);
-    cfg.Value("envmaprotation", options.envMapRot);
-    cfg.Value("enableroughnessmollification",
-        options.enableRoughnessMollification);
-    cfg.Value("roughnessmollificationamt", options.roughnessMollificationAmt);
-    cfg.Value("enablevolumemis", options.enableVolumeMIS);
-    cfg.Value("enableuniformlight", options.enableUniformLight);
-    cfg.Value("uniformlightcolor", options.uniformLightCol);
-
-    if (!envMap.empty() && envMap != "none")
-    {
-        ctx.scene->AddEnvMap(envMap);
-        options.enableEnvMap = true;
-    }
-    else
-    {
-        options.enableEnvMap = false;
-    }
-
-    if (!options.independentRenderSize)
-    {
-        options.windowResolution = options.renderResolution;
-    }
+    ctx.scene->renderOptions = builder.FromConfiguration(cfg).Build();
 }
 
-// FIXME: C POINTERS
+
 ///////////////////////////////////////////////////////////////////////////////
 void Loader::ParseSceneCamera(const LibConfig::Setting& cfg)
 {
@@ -245,8 +204,6 @@ bool Loader::LoadScene(const Path& filename)
             ParseSceneGLTF(gltfs->At(i));
         }
     }
-    std::cout << "meshesInstance: " << ctx.scene->meshInstances.size() << std::endl;
-    std::cout << "meshes: " << ctx.scene->meshes.size() << std::endl;
     return (true);
 }
 
