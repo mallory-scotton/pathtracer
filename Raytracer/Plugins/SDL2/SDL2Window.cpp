@@ -8,6 +8,7 @@
 #include "Errors/OpenGLException.hpp"
 #include "ImGui/imgui_impl_sdl2.h"
 #include "ImGui/imgui_impl_opengl3.h"
+#include "ImGui/ImGuizmo.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -148,6 +149,8 @@ void SDL2Window::Update(void)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::BeginFrame();
     }
 }
 

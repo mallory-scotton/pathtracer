@@ -7,6 +7,7 @@
 #include "Errors/Exception.hpp"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui-SFML.h"
+#include "ImGui/ImGuizmo.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -111,6 +112,8 @@ void SFMLPlugin::Update(float deltaSeconds)
     if (m_useImGui)
     {
         ImGui::SFML::Update(m_window, m_clock.restart());
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::BeginFrame();
     }
 }
 
