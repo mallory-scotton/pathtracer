@@ -102,6 +102,11 @@ void Raytracer::Run(void)
         {
             plugin->PostRender();
         }
+
+        if (!m_hasGui && ctx.renderer->GetSampleCount() == 200)
+        {
+            ctx.renderer->ExportRender("out.ppm");
+        }
     }
 }
 
