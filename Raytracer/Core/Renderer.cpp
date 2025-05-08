@@ -5,6 +5,7 @@
 #include "Core/Renderer.hpp"
 #include "Components/Scene.h"
 #include "OpenImageDenoise/oidn.hpp"
+#include "Errors/Exception.hpp"
 #include "Utils/OpenGL.hpp"
 #include "Core/Context.hpp"
 
@@ -544,129 +545,135 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
     shader->StopUsing();
 }
 
-    void Renderer::Render()
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::ExportRender(const Path& destination)
+{
+    Context& ctx = Context::GetInstance();
+
+    if (ctx.scene->dirty || sampleCounter == 1)
     {
-        Context& ctx = Context::GetInstance();
+        RAY_ERROR("Cannot export a dirty render");
+        return;
+    }
 
-        if (!ctx.scene->dirty && ctx.scene->renderOptions.maxSpp != -1 && sampleCounter >= ctx.scene->renderOptions.maxSpp)
+    int width = ctx.scene->renderOptions.renderResolution.x;
+    int height = ctx.scene->renderOptions.renderResolution.y;
+    Vector<GLubyte> rgba_pixels(width * height * 4);
+
+    if (ctx.scene->renderOptions.enableDenoiser && denoised)
+    {
+        denoisedTexture->Bind();
+        RAY_SUCCESS("Exporting denoised texture");
+        sampleCounter++;
+    }
+    else
+    {
+        tileOutputTexture[1 - currentBuffer]->Bind();
+        RAY_SUCCESS("Exporting tiled texture");
+    }
+
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba_pixels.data());
+
+    Vector<GLubyte> rgb_pixels(width * height * 3);
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
         {
-            return;
-        }
-
-        OpenGL::Disable(GL_BLEND);
-        OpenGL::Disable(GL_DEPTH_TEST);
-        OpenGL::Texture::Active(GL_TEXTURE0);
-
-        if (ctx.scene->dirty)
-        {
-            // Renders a low res preview if camera/instances are modified
-            pathTraceFBOLowRes->Bind();
-            OpenGL::Viewport(Vec2i(0), Vec2i(Vec2f(windowSize) * pixelRatio));
-            quad.Draw(pathTraceShaderLowRes);
-
-            ctx.scene->instancesModified = false;
-            ctx.scene->dirty = false;
-            ctx.scene->envMapModified = false;
-        }
-        else
-        {
-            pathTraceFBO->Bind();
-            OpenGL::Viewport(Vec2i(0), Vec2i(tileWidth, tileHeight));
-            accumTexture->Bind();
-            quad.Draw(pathTraceShader);
-
-            accumFBO->Bind();
-            OpenGL::Viewport(
-                Vec2i(tileWidth * tile.x, tileHeight * tile.y),
-                Vec2i(tileWidth, tileHeight)
-            );
-            pathTraceTexture->Bind();
-            quad.Draw(outputShader);
-
-            outputFBO->Bind();
-            outputFBO->Texture2D(tileOutputTexture[currentBuffer]);
-            OpenGL::Viewport(Vec2i(0), renderSize);
-            accumTexture->Bind();
-            quad.Draw(tonemapShader);
+            int rgba_idx = ((height - 1 - y) * width + x) * 4;
+            int rgb_idx = (y * width + x) * 3;
+            rgb_pixels[rgb_idx + 0] = rgba_pixels[rgba_idx + 0];
+            rgb_pixels[rgb_idx + 1] = rgba_pixels[rgba_idx + 1];
+            rgb_pixels[rgb_idx + 2] = rgba_pixels[rgba_idx + 2];
         }
     }
 
-    void Renderer::Present()
+    std::ofstream file(destination, std::ios::binary);
+    if (!file)
     {
-        Context& ctx = Context::GetInstance();
-        OpenGL::Texture::Active(GL_TEXTURE0);
-        OpenGL::Disable(GL_BLEND);
-        OpenGL::Disable(GL_DEPTH_TEST);
+        throw Exception("Could not open file for writing");
+    }
 
-        if (ctx.scene->dirty || sampleCounter == 1)
+    file << "P6\n" << width << " " << height << "\n255\n";
+
+    file.write(reinterpret_cast<char*>(rgb_pixels.data()), rgb_pixels.size());
+
+    file.close();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::Render(void)
+{
+    Context& ctx = Context::GetInstance();
+
+    if (!ctx.scene->CanUpdate(sampleCounter))
+    {
+        return;
+    }
+
+    OpenGL::Disable(GL_BLEND);
+    OpenGL::Disable(GL_DEPTH_TEST);
+    OpenGL::Texture::Active(GL_TEXTURE0);
+
+    if (ctx.scene->dirty)
+    {
+        pathTraceFBOLowRes->Bind();
+        OpenGL::Viewport(Vec2i(0), Vec2i(Vec2f(windowSize) * pixelRatio));
+        quad.Draw(pathTraceShaderLowRes);
+
+        ctx.scene->instancesModified = false;
+        ctx.scene->dirty = false;
+        ctx.scene->envMapModified = false;
+    }
+    else
+    {
+        pathTraceFBO->Bind();
+        OpenGL::Viewport(Vec2i(0), Vec2i(tileWidth, tileHeight));
+        accumTexture->Bind();
+        quad.Draw(pathTraceShader);
+
+        accumFBO->Bind();
+        OpenGL::Viewport(
+            Vec2i(tileWidth * tile.x, tileHeight * tile.y),
+            Vec2i(tileWidth, tileHeight)
+        );
+        pathTraceTexture->Bind();
+        quad.Draw(outputShader);
+
+        outputFBO->Bind();
+        outputFBO->Texture2D(tileOutputTexture[currentBuffer]);
+        OpenGL::Viewport(Vec2i(0), renderSize);
+        accumTexture->Bind();
+        quad.Draw(tonemapShader);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::Present(void)
+{
+    Context& ctx = Context::GetInstance();
+    OpenGL::Texture::Active(GL_TEXTURE0);
+    OpenGL::Disable(GL_BLEND);
+    OpenGL::Disable(GL_DEPTH_TEST);
+
+    if (ctx.scene->dirty || sampleCounter == 1)
+    {
+        pathTraceTextureLowRes->Bind();
+        quad.Draw(tonemapShader);
+    }
+    else
+    {
+        if (ctx.scene->renderOptions.enableDenoiser && denoised)
         {
-            pathTraceTextureLowRes->Bind();
-            quad.Draw(tonemapShader);
+            denoisedTexture->Bind();
         }
         else
         {
-            if (ctx.scene->renderOptions.enableDenoiser && denoised)
-            {
-                denoisedTexture->Bind();
-            }
-            else
-            {
-                tileOutputTexture[1 - currentBuffer]->Bind();
-            }
-
-            // FIXME: RETURN AN IMAGE INSTEAD OF DRAWING IT DIRECTLY
-            // THE CODE BELOW EXPORT THE TEXTURE BUFFER AS A PPM FILE AFTER 200
-            // SAMPLES
-
-            if (sampleCounter == 200)
-            {
-                int width = ctx.scene->renderOptions.renderResolution.x;
-                int height = ctx.scene->renderOptions.renderResolution.y;
-                std::vector<GLubyte> rgba_pixels(width * height * 4);
-
-                if (ctx.scene->renderOptions.enableDenoiser && denoised)
-                {
-                    denoisedTexture->Bind();
-                    RAY_SUCCESS("Exporting denoised texture");
-                    sampleCounter++;
-                }
-                else
-                {
-                    tileOutputTexture[1 - currentBuffer]->Bind();
-                    RAY_SUCCESS("Exporting tiled texture");
-                }
-
-                glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba_pixels.data());
-
-                std::vector<GLubyte> rgb_pixels(width * height * 3);
-                for (int y = 0; y < height; ++y) {
-                    for (int x = 0; x < width; ++x) {
-                        int rgba_idx = ((height - 1 - y) * width + x) * 4;
-                        int rgb_idx = (y * width + x) * 3;
-                        rgb_pixels[rgb_idx + 0] = rgba_pixels[rgba_idx + 0]; // R
-                        rgb_pixels[rgb_idx + 1] = rgba_pixels[rgba_idx + 1]; // G
-                        rgb_pixels[rgb_idx + 2] = rgba_pixels[rgba_idx + 2]; // B
-                    }
-                }
-
-                std::ofstream file("out.ppm", std::ios::binary);
-                if (!file)
-                {
-                    throw std::runtime_error("Could not open file for writing");
-                }
-
-                file << "P6\n" << width << " " << height << "\n255\n";
-
-                // Write the RGB pixel data
-                file.write(reinterpret_cast<char*>(rgb_pixels.data()), rgb_pixels.size());
-
-                // Close the file
-                file.close();
-            }
-
-            quad.Draw(outputShader);
+            tileOutputTexture[1 - currentBuffer]->Bind();
         }
+
+        quad.Draw(outputShader);
     }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 float Renderer::GetProgress(void)
@@ -693,9 +700,8 @@ void Renderer::Update(float secondsElapsed)
 {
     RAY_UNUSED(secondsElapsed);
     Context& ctx = Context::GetInstance();
-    Renderer::Options& options = ctx.scene->renderOptions;
 
-    if (ctx.scene->dirty == false && options.maxSpp != -1 && sampleCounter >= options.maxSpp)
+    if (!ctx.scene->CanUpdate(sampleCounter))
     {
         return;
     }
