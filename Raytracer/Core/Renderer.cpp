@@ -242,7 +242,8 @@ void Renderer::ResizeRenderer(void)
     delete[] frameOutputPtr;
 
     InitFBOs();
-    InitShaders();
+    InitializeUniforms(pathTraceShader);
+    InitializeUniforms(pathTraceShaderLowRes);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
