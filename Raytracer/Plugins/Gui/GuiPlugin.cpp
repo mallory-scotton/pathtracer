@@ -5,6 +5,7 @@
 #include "Core/Context.hpp"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
+#include "Maths/Utils.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -18,6 +19,7 @@ const float GuiPlugin::MOUSE_SENSITIVITY = 0.01f;
 ///////////////////////////////////////////////////////////////////////////////
 GuiPlugin::GuiPlugin(void)
     : m_objectMode(false)
+    , m_isViewportImageHovered(false)
 {
     IMGUI_CHECKVERSION();
 
@@ -41,60 +43,87 @@ void GuiPlugin::Update(float deltaSeconds)
     RAY_UNUSED(deltaSeconds);
     Context& ctx = Context::GetInstance();
 
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-    if (!ImGui::GetIO().WantCaptureMouse && ImGui::IsAnyMouseDown())
+    if (m_isViewportImageHovered)
     {
-        if (ImGui::IsMouseDown(0))
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
         {
-            ImVec2 mouseDelta = ImGui::GetMouseDragDelta(0, 0);
-            ctx.scene->camera->OffsetOrientation(mouseDelta.x, mouseDelta.y);
-            ImGui::ResetMouseDragDelta(0);
+            ImVec2 mouseDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, 0.0f);
+            if (ctx.scene && ctx.scene->camera)
+            {
+                ctx.scene->camera->OffsetOrientation(mouseDelta.x, mouseDelta.y);
+                ctx.scene->dirty = true;
+            }
+            ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
         }
-        else if (ImGui::IsMouseDown(1))
+        else if (ImGui::IsMouseDown(ImGuiMouseButton_Right))
         {
-            ImVec2 mouseDelta = ImGui::GetMouseDragDelta(1, 0);
-            ctx.scene->camera->SetRadius(MOUSE_SENSITIVITY * mouseDelta.y);
-            ImGui::ResetMouseDragDelta(1);
+            ImVec2 mouseDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right, 0.0f);
+            if (ctx.scene && ctx.scene->camera)
+            {
+                ctx.scene->camera->SetRadius(MOUSE_SENSITIVITY * mouseDelta.y);
+                ctx.scene->dirty = true;
+            }
+            ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
         }
-        else if (ImGui::IsMouseDown(2))
+        else if (ImGui::IsMouseDown(ImGuiMouseButton_Middle))
         {
-            ImVec2 mouseDelta = ImGui::GetMouseDragDelta(2, 0);
-            ctx.scene->camera->Strafe(
-                MOUSE_SENSITIVITY * mouseDelta.x,
-                MOUSE_SENSITIVITY * mouseDelta.y
-            );
-            ImGui::ResetMouseDragDelta(2);
+            ImVec2 mouseDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Middle, 0.0f);
+            if (ctx.scene && ctx.scene->camera)
+            {
+                ctx.scene->camera->Strafe(
+                    MOUSE_SENSITIVITY * mouseDelta.x,
+                    MOUSE_SENSITIVITY * mouseDelta.y
+                );
+                ctx.scene->dirty = true;
+            }
+            ImGui::ResetMouseDragDelta(ImGuiMouseButton_Middle);
         }
-        ctx.scene->dirty = true;
-    }
-
-    if (ImGui::IsKeyPressed(ImGuiKey_W))
-    {
-        ctx.scene->camera->SetRadius(-1.f);
-        ctx.scene->camera->isMoving = true;
-        ctx.scene->dirty = true;
-    }
-    else if (ImGui::IsKeyPressed(ImGuiKey_S))
-    {
-        ctx.scene->camera->SetRadius(1.f);
-        ctx.scene->camera->isMoving = true;
-        ctx.scene->dirty = true;
-    }
-    else if (ImGui::IsKeyPressed(ImGuiKey_A))
-    {
-        ctx.scene->camera->Strafe(1.f, 0.f);
-        ctx.scene->camera->isMoving = true;
-        ctx.scene->dirty = true;
-    }
-    else if (ImGui::IsKeyPressed(ImGuiKey_D))
-    {
-        ctx.scene->camera->Strafe(-1.f, 0.f);
-        ctx.scene->camera->isMoving = true;
-        ctx.scene->dirty = true;
     }
 
-    if (m_objectMode)
+    if (m_isViewportImageHovered && ctx.scene && ctx.scene->camera)
+    {
+        bool camera_moved_by_keyboard = false;
+        float move_speed_factor = 0.1f;
+
+        if (ImGui::IsKeyDown(ImGuiKey_W))
+        {
+            ctx.scene->camera->SetRadius(-move_speed_factor);
+            camera_moved_by_keyboard = true;
+        }
+        if (ImGui::IsKeyDown(ImGuiKey_S))
+        {
+            ctx.scene->camera->SetRadius(move_speed_factor);
+            camera_moved_by_keyboard = true;
+        }
+        if (ImGui::IsKeyDown(ImGuiKey_A))
+        {
+            ctx.scene->camera->Strafe(move_speed_factor, 0.f);
+            camera_moved_by_keyboard = true;
+        }
+        if (ImGui::IsKeyDown(ImGuiKey_D))
+        {
+            ctx.scene->camera->Strafe(-move_speed_factor, 0.f);
+            camera_moved_by_keyboard = true;
+        }
+        if (ImGui::IsKeyDown(ImGuiKey_E))
+        {
+            ctx.scene->camera->Strafe(0.f, -move_speed_factor);
+            camera_moved_by_keyboard = true;
+        }
+        if (ImGui::IsKeyDown(ImGuiKey_Q))
+        {
+            ctx.scene->camera->Strafe(0.f, move_speed_factor);
+            camera_moved_by_keyboard = true;
+        }
+
+        if (camera_moved_by_keyboard)
+        {
+            ctx.scene->camera->isMoving = true;
+            ctx.scene->dirty = true;
+        }
+    }
+
+    if (m_objectMode && ctx.scene)
     {
         ctx.scene->dirty = true;
     }
@@ -138,6 +167,27 @@ void GuiPlugin::PreRender(void)
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f),
         ImGuiDockNodeFlags_PassthruCentralNode
     );
+
+    static bool dockspace_initialized = false;
+    if (!dockspace_initialized)
+    {
+        dockspace_initialized = true;
+
+        ImGui::DockBuilderRemoveNode(dockspace_id);
+        ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+        ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->WorkSize);
+
+        ImGuiID dock_main_id = dockspace_id;
+        ImGuiID dock_id_left;
+        ImGuiID dock_id_center;
+
+        ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.25f, &dock_id_left, &dock_id_center);
+
+        ImGui::DockBuilderDockWindow("Settings", dock_id_left);
+        ImGui::DockBuilderDockWindow("Viewport", dock_id_center);
+
+        ImGui::DockBuilderFinish(dock_main_id);
+    }
 
     ImGui::End();
 
@@ -222,6 +272,57 @@ void GuiPlugin::PreRender(void)
     {
         ctx.scene->dirty = true;
         ctx.renderer->ReloadShaders();
+    }
+
+    ImGui::End();
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("Viewport", nullptr,
+        ImGuiWindowFlags_NoBackground |
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoCollapse
+    );
+    ImGui::PopStyleVar();
+
+    GLuint textureID = ctx.renderTextureID;
+    if (textureID != 0)
+    {
+        ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+        float imageWidth = static_cast<float>(ctx.scene->renderOptions.renderResolution.x);
+        float imageHeight = static_cast<float>(ctx.scene->renderOptions.renderResolution.y);
+
+        float aspect = imageWidth / imageHeight;
+        float panelWidth = viewportPanelSize.x;
+        float panelHeight = viewportPanelSize.y;
+        float panelAspect = panelWidth / panelHeight;
+
+        ImVec2 displaySize;
+        if (aspect > panelAspect)
+        {
+            displaySize.x = panelWidth;
+            displaySize.y = panelWidth / aspect;
+        } else
+        {
+            displaySize.y = panelHeight;
+            displaySize.x = panelHeight * aspect;
+        }
+
+        ImVec2 cursorPos = ImGui::GetCursorPos();
+        cursorPos.x += (panelWidth - displaySize.x) * 0.5f;
+        cursorPos.y += (panelHeight - displaySize.y) * 0.5f;
+        ImGui::SetCursorPos(cursorPos);
+
+        ImVec2 uv0 = ImVec2(0.0f, 1.0f);
+        ImVec2 uv1 = ImVec2(1.0f, 0.0f);
+
+        ImGui::Image(static_cast<ImTextureID>(textureID), displaySize, uv0, uv1);
+
+        m_isViewportImageHovered = ImGui::IsItemHovered();
+    }
+    else
+    {
+        ImGui::Text("Renderer output not yet available.");
+        m_isViewportImageHovered = false;
     }
 
     ImGui::End();
