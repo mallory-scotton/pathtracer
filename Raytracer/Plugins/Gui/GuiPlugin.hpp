@@ -7,6 +7,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Interfaces/IPlugin.hpp"
+#include "ImGui/imgui.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -33,6 +34,7 @@ private:
     bool m_objectMode;                          //<!
     bool m_isViewportImageHovered;              //<!
     int m_selectedInstance;                     //<!
+    ImVec2 m_lastViewportSize;                  //<!
 
 public:
     ///////////////////////////////////////////////////////////////////////////

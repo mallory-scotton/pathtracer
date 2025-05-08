@@ -376,6 +376,16 @@ void GuiPlugin::PreRender(void)
     );
     ImGui::PopStyleVar();
 
+    ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+
+    if (viewportSize.x != m_lastViewportSize.x || viewportSize.y != m_lastViewportSize.y)
+    {
+        m_lastViewportSize = viewportSize;
+        ctx.scene->renderOptions.renderResolution.x = (int)viewportSize.x;
+        ctx.scene->renderOptions.renderResolution.y = (int)viewportSize.y;
+        ctx.renderer->ResizeRenderer();
+    }
+
     GLuint textureID = ctx.renderTextureID;
     if (textureID != 0)
     {
