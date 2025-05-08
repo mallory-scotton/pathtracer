@@ -606,4 +606,10 @@ void OpenGL::PixelStore(GLenum param, GLint value)
     glPixelStorei(param, value);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+void OpenGL::BindTexture(GLenum target, GLuint texture)
+{
+    glBindTexture(target, texture);
+}
+
 } // namespace Ray
