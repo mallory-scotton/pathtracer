@@ -126,7 +126,7 @@ void SDL2Window::Update(void)
                     &options.windowResolution.y
                 );
 
-                if (!options.independentRenderSize)
+                if (!options.independentRenderSize && !ctx.hasGui)
                 {
                     options.renderResolution.x = options.windowResolution.x;
                     options.renderResolution.y = options.windowResolution.y;
