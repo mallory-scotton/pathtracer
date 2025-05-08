@@ -44,6 +44,7 @@ namespace Ray
         int AddLight(const Light& light);
         int getMaterialID(String name);
         void AddEnvMap(const std::string& filename);
+        bool CanUpdate(int sampleCounter) const;
 
         void ProcessScene();
         void RebuildInstances();

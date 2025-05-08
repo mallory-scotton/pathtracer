@@ -128,6 +128,15 @@ namespace Ray
         return id;
     }
 
+    bool Scene::CanUpdate(int sampleCounter) const
+    {
+        return (!(
+            !dirty &&
+            renderOptions.maxSpp != -1 &&
+            sampleCounter >= renderOptions.maxSpp
+        ));
+    }
+
     void Scene::createTLAS()
     {
         // Loop through all the mesh Instances and build a Top Level BVH
