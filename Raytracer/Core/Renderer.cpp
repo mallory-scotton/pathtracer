@@ -263,107 +263,108 @@ void Renderer::ResizeRenderer(void)
     InitShaders();
 }
 
-    void Renderer::InitFBOs()
-    {
-        Context& ctx = Context::GetInstance();
+///////////////////////////////////////////////////////////////////////////////
+void Renderer::InitFBOs(void)
+{
+    Context& ctx = Context::GetInstance();
 
-        sampleCounter = 1;
-        currentBuffer = 0;
-        frameCounter = 1;
+    sampleCounter = 1;
+    currentBuffer = 0;
+    frameCounter = 1;
 
-        renderSize = ctx.scene->renderOptions.renderResolution;
-        windowSize = ctx.scene->renderOptions.windowResolution;
+    renderSize = ctx.scene->renderOptions.renderResolution;
+    windowSize = ctx.scene->renderOptions.windowResolution;
 
-        tileWidth = ctx.scene->renderOptions.tileWidth;
-        tileHeight = ctx.scene->renderOptions.tileHeight;
+    tileWidth = ctx.scene->renderOptions.tileWidth;
+    tileHeight = ctx.scene->renderOptions.tileHeight;
 
-        invNumTiles.x = (float)tileWidth / renderSize.x;
-        invNumTiles.y = (float)tileHeight / renderSize.y;
+    invNumTiles.x = (float)tileWidth / renderSize.x;
+    invNumTiles.y = (float)tileHeight / renderSize.y;
 
-        numTiles.x = ceil((float)renderSize.x / tileWidth);
-        numTiles.y = ceil((float)renderSize.y / tileHeight);
+    numTiles.x = ceil((float)renderSize.x / tileWidth);
+    numTiles.y = ceil((float)renderSize.y / tileHeight);
 
-        tile.x = -1;
-        tile.y = numTiles.y - 1;
+    tile.x = -1;
+    tile.y = numTiles.y - 1;
 
-        // Create FBOs for path trace shader
-        pathTraceFBO = std::make_unique<OpenGL::FrameBuffer>();
-        pathTraceFBO->Bind();
+    // Create FBOs for path trace shader
+    pathTraceFBO = std::make_unique<OpenGL::FrameBuffer>();
+    pathTraceFBO->Bind();
 
-        // Create Texture for FBO
-        glGenTextures(1, &pathTraceTexture);
-        glBindTexture(GL_TEXTURE_2D, pathTraceTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, tileWidth, tileHeight, 0, GL_RGBA, GL_FLOAT, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTexture, 0);
+    // Create Texture for FBO
+    glGenTextures(1, &pathTraceTexture);
+    glBindTexture(GL_TEXTURE_2D, pathTraceTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, tileWidth, tileHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTexture, 0);
 
-        // Create FBOs for low res preview shader
-        pathTraceFBOLowRes = std::make_unique<OpenGL::FrameBuffer>();
-        pathTraceFBOLowRes->Bind();
+    // Create FBOs for low res preview shader
+    pathTraceFBOLowRes = std::make_unique<OpenGL::FrameBuffer>();
+    pathTraceFBOLowRes->Bind();
 
-        // Create Texture for FBO
-        glGenTextures(1, &pathTraceTextureLowRes);
-        glBindTexture(GL_TEXTURE_2D, pathTraceTextureLowRes);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, windowSize.x * pixelRatio, windowSize.y * pixelRatio, 0, GL_RGBA, GL_FLOAT, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTextureLowRes, 0);
+    // Create Texture for FBO
+    glGenTextures(1, &pathTraceTextureLowRes);
+    glBindTexture(GL_TEXTURE_2D, pathTraceTextureLowRes);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, windowSize.x * pixelRatio, windowSize.y * pixelRatio, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTextureLowRes, 0);
 
-        // Create FBOs for accum buffer
-        accumFBO = std::make_unique<OpenGL::FrameBuffer>();
-        accumFBO->Bind();
+    // Create FBOs for accum buffer
+    accumFBO = std::make_unique<OpenGL::FrameBuffer>();
+    accumFBO->Bind();
 
-        // Create Texture for FBO
-        glGenTextures(1, &accumTexture);
-        glBindTexture(GL_TEXTURE_2D, accumTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, accumTexture, 0);
+    // Create Texture for FBO
+    glGenTextures(1, &accumTexture);
+    glBindTexture(GL_TEXTURE_2D, accumTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, accumTexture, 0);
 
-        // Create FBOs for tile output shader
-        outputFBO = std::make_unique<OpenGL::FrameBuffer>();
-        outputFBO->Bind();
+    // Create FBOs for tile output shader
+    outputFBO = std::make_unique<OpenGL::FrameBuffer>();
+    outputFBO->Bind();
 
-        // Create Texture for FBO
-        glGenTextures(1, &tileOutputTexture[0]);
-        glBindTexture(GL_TEXTURE_2D, tileOutputTexture[0]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    // Create Texture for FBO
+    glGenTextures(1, &tileOutputTexture[0]);
+    glBindTexture(GL_TEXTURE_2D, tileOutputTexture[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-        glGenTextures(1, &tileOutputTexture[1]);
-        glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    glGenTextures(1, &tileOutputTexture[1]);
+    glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tileOutputTexture[currentBuffer], 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tileOutputTexture[currentBuffer], 0);
 
-        // For Denoiser
-        denoiserInputFramePtr = new Vec3f[renderSize.x * renderSize.y];
-        frameOutputPtr = new Vec3f[renderSize.x * renderSize.y];
+    // For Denoiser
+    denoiserInputFramePtr = new Vec3f[renderSize.x * renderSize.y];
+    frameOutputPtr = new Vec3f[renderSize.x * renderSize.y];
 
-        glGenTextures(1, &denoisedTexture);
-        glBindTexture(GL_TEXTURE_2D, denoisedTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, renderSize.x, renderSize.y, 0, GL_RGB, GL_FLOAT, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    glGenTextures(1, &denoisedTexture);
+    glBindTexture(GL_TEXTURE_2D, denoisedTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, renderSize.x, renderSize.y, 0, GL_RGB, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-        RAY_INFO("Window Resolution: " << windowSize);
-        RAY_INFO("Render Resolution: " << renderSize);
-        RAY_INFO("Preview Resolution: " << Vec2i(Vec2f(windowSize) * pixelRatio));
-        RAY_INFO("Tile Size: " << Vec2i(tileWidth, tileHeight));
-    }
+    RAY_INFO("Window Resolution: " << windowSize);
+    RAY_INFO("Render Resolution: " << renderSize);
+    RAY_INFO("Preview Resolution: " << Vec2i(Vec2f(windowSize) * pixelRatio));
+    RAY_INFO("Tile Size: " << Vec2i(tileWidth, tileHeight));
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 void Renderer::ReloadShaders(void)
@@ -868,4 +869,5 @@ void Renderer::Update(float secondsElapsed)
         tonemapShader->Uniform("backgroundCol", ctx.scene->renderOptions.backgroundCol);
         tonemapShader->StopUsing();
     }
-}
+
+} // namespace Ray
