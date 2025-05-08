@@ -16,79 +16,93 @@ Material MaterialBuilder::Build()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void MaterialBuilder::BuildMesh()
-{
-
-    Context& ctx = Context::GetInstance();
-
-    if (m_id == -1)
-    {
-        return;
-    }
-
-    MeshInstance instance(m_instanceName, m_id, m_transform, m_materialID);
-    ctx.scene->AddMeshInstance(instance);
-}
-
-///////////////////////////////////////////////////////////////////////////////
 MaterialBuilder& MaterialBuilder::FromConfiguration(const LibConfig::Setting& config)
 {
-
     Context& ctx = Context::GetInstance();
-    String material;
-    String file, name;
-    Vec3f position, scale;
-    Quaternionf rotation;
-    Mat4x4f matRot, matTrans, matScale;
+    String albedo, metallicRoughness, normal, emission, alpha, medium;
 
-    config.Value("name", name);
-    config.Value("file", file);
+    config.Value("name", m_name);
+    config.Value("color", m_material.baseColor);
+    config.Value("opacity", m_material.opacity);
+    config.Value("alphamode", alpha);
+    config.Value("alphacutoff", m_material.alphaCutoff);
+    config.Value("emission", m_material.emission);
+    config.Value("metallic", m_material.metallic);
+    config.Value("roughness", m_material.roughness);
+    config.Value("subsurface", m_material.subsurface);
+    config.Value("speculartint", m_material.specularTint);
+    config.Value("anisotropic", m_material.anisotropic);
+    config.Value("sheen", m_material.sheen);
+    config.Value("sheentint", m_material.sheenTint);
+    config.Value("clearcoat", m_material.clearcoat);
+    config.Value("clearcoatgloss", m_material.clearcoatGloss);
+    config.Value("spectrans", m_material.specTrans);
+    config.Value("ior", m_material.ior);
+    config.Value("albedotexture", albedo);
+    config.Value("metallicroughnesstexture", metallicRoughness);
+    config.Value("normaltexture", normal);
+    config.Value("emissiontexture", emission);
+    config.Value("mediumtype", medium);
+    config.Value("mediumdensity", m_material.mediumDensity);
+    config.Value("mediumcolor", m_material.mediumColor);
+    config.Value("mediumanisotropy", m_material.mediumAnisotropy);
 
-    if (config.Value("material", material))
+    if (!albedo.empty() && albedo != "none")
     {
-        int index = ctx.scene->getMaterialID(material);
-        if (index == -1)
-        {
-            index = 0;
-        }
-        m_materialID = index;
+        m_material.baseColorTexId = ctx.scene->AddTexture(albedo);
     }
-
-    if (config.Value("position", position))
+    if (!metallicRoughness.empty() && metallicRoughness != "none")
     {
-        matTrans[3][0] = position.x;
-        matTrans[3][1] = position.y;
-        matTrans[3][2] = position.z;
+        m_material.metallicRoughnessTexID = ctx.scene->AddTexture(metallicRoughness);
     }
-
-    if (config.Value("scale", scale))
+    if (!normal.empty() && normal != "none")
     {
-        matScale[0][0] = scale.x;
-        matScale[1][1] = scale.y;
-        matScale[2][2] = scale.z;
+        m_material.normalmapTexID = ctx.scene->AddTexture(normal);
     }
-
-    if (config.Value("rotation", rotation))
+    if (!emission.empty() && emission != "none")
     {
-        matRot = Mat4x4f::QuaternionToMatrix(rotation);
+        m_material.emissionmapTexID = ctx.scene->AddTexture(emission);
     }
 
-    if (!file.empty()){
-        m_id = ctx.scene->AddMesh(file);
-        if (!name.empty() && name != "none")
-        {
-            m_instanceName = name;
-        }
-        else
-        {
-            size_t pos = file.find_last_of("/\\");
-            m_instanceName = file.substr(pos + 1);
-        }
-
-        m_transform = matRot * matScale * matTrans;
-
+    if (alpha == "opaque")
+    {
+        m_material.alphaMode = Material::OPAQUE;
     }
-    return {*this};
+    else if (alpha == "blend")
+    {
+        m_material.alphaMode = Material::BLEND;
+    }
+    else if (alpha == "mask")
+    {
+        m_material.alphaMode = Material::MASK;
+    }
+
+    if (medium == "absorb")
+    {
+        m_material.mediumType = Material::ABSORB;
+    }
+    else if (medium == "scatter")
+    {
+        m_material.mediumType = Material::SCATTER;
+    }
+    else if (medium == "emissive")
+    {
+        m_material.mediumType = Material::EMISSIVE;
+    }
+    return (*this);
+}
+
+///////////////////////////////////////////////////////////////////////////
+MaterialBuilder& MaterialBuilder::SetName(const std::string& name)
+{
+    m_name = name;
+    return (*this);
+}
+
+///////////////////////////////////////////////////////////////////////////
+String MaterialBuilder::GetName(void) const
+{
+    return (m_name);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -226,23 +240,27 @@ MaterialBuilder& MaterialBuilder::SetMediumAnisotropy(float anisotropy)
 // ///////////////////////////////////////////////////////////////////////////////
 MaterialBuilder& MaterialBuilder::SetAlbedoTexturePath(const Path& path)
 {
-    // m_material.texid = path;
+    Context& ctx = Context::GetInstance();
+    m_material.baseColorTexId = ctx.scene->AddTexture(path);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 MaterialBuilder& MaterialBuilder::SetMetallicRoughnessTexturePath(const Path& path)
 {
-
+    Context& ctx = Context::GetInstance();
+    m_material.metallicRoughnessTexID = ctx.scene->AddTexture(path);
 }
 ///////////////////////////////////////////////////////////////////////////////
 MaterialBuilder& MaterialBuilder::SetNormalTexturePath(const Path& path)
 {
-
+    Context& ctx = Context::GetInstance();
+    m_material.normalmapTexID = ctx.scene->AddTexture(path);
 }
 ///////////////////////////////////////////////////////////////////////////////
 MaterialBuilder& MaterialBuilder::SetEmissionTexturePath(const Path& path)
 {
-
+    Context& ctx = Context::GetInstance();
+    m_material.emissionmapTexID = ctx.scene->AddTexture(path);
 }
 
 } // namespace Ray

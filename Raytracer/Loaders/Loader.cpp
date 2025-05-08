@@ -18,6 +18,7 @@
 namespace Ray
 {
 
+
 ///////////////////////////////////////////////////////////////////////////////
 void Loader::ParseSceneMaterial(
     const LibConfig::Setting& cfg,
@@ -25,82 +26,13 @@ void Loader::ParseSceneMaterial(
 )
 {
     Context& ctx = Context::GetInstance();
-    String albedo, metallicRoughness, normal, emission, alpha, medium, name;
-    Material material;
+    MaterialBuilder builder;
+    builder.FromConfiguration(cfg);
 
-    cfg.Value("name", name);
-    cfg.Value("color", material.baseColor);
-    cfg.Value("opacity", material.opacity);
-    cfg.Value("alphamode", alpha);
-    cfg.Value("alphacutoff", material.alphaCutoff);
-    cfg.Value("emission", material.emission);
-    cfg.Value("metallic", material.metallic);
-    cfg.Value("roughness", material.roughness);
-    cfg.Value("subsurface", material.subsurface);
-    cfg.Value("speculartint", material.specularTint);
-    cfg.Value("anisotropic", material.anisotropic);
-    cfg.Value("sheen", material.sheen);
-    cfg.Value("sheentint", material.sheenTint);
-    cfg.Value("clearcoat", material.clearcoat);
-    cfg.Value("clearcoatgloss", material.clearcoatGloss);
-    cfg.Value("spectrans", material.specTrans);
-    cfg.Value("ior", material.ior);
-    cfg.Value("albedotexture", albedo);
-    cfg.Value("metallicroughnesstexture", metallicRoughness);
-    cfg.Value("normaltexture", normal);
-    cfg.Value("emissiontexture", emission);
-    cfg.Value("mediumtype", medium);
-    cfg.Value("mediumdensity", material.mediumDensity);
-    cfg.Value("mediumcolor", material.mediumColor);
-    cfg.Value("mediumanisotropy", material.mediumAnisotropy);
-
-    if (!albedo.empty() && albedo != "none")
+    if (materials.find(builder.GetName()) == materials.end())
     {
-        material.baseColorTexId = ctx.scene->AddTexture(albedo);
-    }
-    if (!metallicRoughness.empty() && metallicRoughness != "none")
-    {
-        material.metallicRoughnessTexID = ctx.scene->AddTexture(metallicRoughness);
-    }
-    if (!normal.empty() && normal != "none")
-    {
-        material.normalmapTexID = ctx.scene->AddTexture(normal);
-    }
-    if (!emission.empty() && emission != "none")
-    {
-        material.emissionmapTexID = ctx.scene->AddTexture(emission);
-    }
-
-    if (alpha == "opaque")
-    {
-        material.alphaMode = Material::OPAQUE;
-    }
-    else if (alpha == "blend")
-    {
-        material.alphaMode = Material::BLEND;
-    }
-    else if (alpha == "mask")
-    {
-        material.alphaMode = Material::MASK;
-    }
-
-    if (medium == "absorb")
-    {
-        material.mediumType = Material::ABSORB;
-    }
-    else if (medium == "scatter")
-    {
-        material.mediumType = Material::SCATTER;
-    }
-    else if (medium == "emissive")
-    {
-        material.mediumType = Material::EMISSIVE;
-    }
-
-    if (materials.find(name) == materials.end())
-    {
-        int id = ctx.scene->AddMaterial(material, name);
-        materials[name] = MaterialData{material, id};
+        int id = ctx.scene->AddMaterial(builder.Build(), builder.GetName());
+        materials[builder.GetName()] = MaterialData{builder.Build(), id};
     }
 }
 
