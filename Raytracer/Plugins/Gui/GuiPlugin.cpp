@@ -378,7 +378,12 @@ void GuiPlugin::PreRender(void)
 
     ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 
-    if (viewportSize.x != m_lastViewportSize.x || viewportSize.y != m_lastViewportSize.y)
+    if (
+        viewportSize.x != m_lastViewportSize.x ||
+        viewportSize.y != m_lastViewportSize.y ||
+        viewportSize.x != ctx.scene->renderOptions.renderResolution.x ||
+        viewportSize.y != ctx.scene->renderOptions.renderResolution.y
+    )
     {
         m_lastViewportSize = viewportSize;
         ctx.scene->renderOptions.renderResolution.x = (int)viewportSize.x;
@@ -440,7 +445,10 @@ void GuiPlugin::PreRender(void)
             const bool isSelected = (m_selectedInstance == i);
             const MeshInstance& instance = ctx.scene->meshInstances[i];
 
-            if (ImGui::Selectable(instance.name.c_str(), isSelected))
+            if (ImGui::Selectable(
+                (instance.name + "##" + std::to_string(i)).c_str(),
+                isSelected
+            ))
             {
                 m_selectedInstance = i;
             }
@@ -511,6 +519,11 @@ void GuiPlugin::PreRender(void)
     {
         ctx.scene->dirty = true;
         ctx.renderer->ReloadShaders();
+    }
+
+    if (optionsChanged || reloadShaders)
+    {
+        ctx.renderer->Update(0.f);
     }
 }
 
