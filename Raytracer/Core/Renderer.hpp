@@ -132,11 +132,11 @@ private:
     UniquePtr<Shader> outputShader;                         //<!
     UniquePtr<Shader> tonemapShader;                        //<!
 
-    GLuint pathTraceTextureLowRes;                          //<!
-    GLuint pathTraceTexture;                                //<!
-    GLuint accumTexture;                                    //<!
-    GLuint tileOutputTexture[2];                            //<!
-    GLuint denoisedTexture;                                 //<!
+    UniquePtr<OpenGL::Texture2D> pathTraceTextureLowRes;    //<!
+    UniquePtr<OpenGL::Texture2D> pathTraceTexture;          //<!
+    UniquePtr<OpenGL::Texture2D> accumTexture;              //<!
+    UniquePtr<OpenGL::Texture2D> tileOutputTexture[2];      //<!
+    UniquePtr<OpenGL::Texture2D> denoisedTexture;           //<!
 
     Vec2i renderSize;                                       //<!
     Vec2i windowSize;                                       //<!

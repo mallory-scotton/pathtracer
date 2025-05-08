@@ -49,11 +49,7 @@ Renderer::Options::Options(void)
 
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::Renderer(void)
-    : pathTraceTextureLowRes(0)
-    , pathTraceTexture(0)
-    , accumTexture(0)
-    , denoisedTexture(0)
-    , currentBuffer(0)
+    : currentBuffer(0)
     , frameCounter(0)
     , sampleCounter(0)
     , pixelRatio(1.0f)
@@ -74,13 +70,6 @@ Renderer::Renderer(void)
 ///////////////////////////////////////////////////////////////////////////////
 Renderer::~Renderer()
 {
-    glDeleteTextures(1, &pathTraceTexture);
-    glDeleteTextures(1, &pathTraceTextureLowRes);
-    glDeleteTextures(1, &accumTexture);
-    glDeleteTextures(1, &tileOutputTexture[0]);
-    glDeleteTextures(1, &tileOutputTexture[1]);
-    glDeleteTextures(1, &denoisedTexture);
-
     delete[] denoiserInputFramePtr;
     delete[] frameOutputPtr;
 }
@@ -247,14 +236,6 @@ void Renderer::InitGPUDataBuffers(void)
 ///////////////////////////////////////////////////////////////////////////////
 void Renderer::ResizeRenderer(void)
 {
-    // Delete textures
-    glDeleteTextures(1, &pathTraceTexture);
-    glDeleteTextures(1, &pathTraceTextureLowRes);
-    glDeleteTextures(1, &accumTexture);
-    glDeleteTextures(1, &tileOutputTexture[0]);
-    glDeleteTextures(1, &tileOutputTexture[1]);
-    glDeleteTextures(1, &denoisedTexture);
-
     // Delete denoiser data
     delete[] denoiserInputFramePtr;
     delete[] frameOutputPtr;
@@ -292,73 +273,67 @@ void Renderer::InitFBOs(void)
     pathTraceFBO->Bind();
 
     // Create Texture for FBO
-    glGenTextures(1, &pathTraceTexture);
-    glBindTexture(GL_TEXTURE_2D, pathTraceTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, tileWidth, tileHeight, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTexture, 0);
+    pathTraceTexture = std::make_unique<OpenGL::Texture2D>();
+    pathTraceTexture->Image2D(0, GL_RGBA32F, tileWidth, tileHeight, 0, GL_RGBA, GL_FLOAT, 0);
+    pathTraceTexture->SetParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    pathTraceTexture->SetParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    pathTraceTexture->Unbind();
+    pathTraceFBO->Texture2D(pathTraceTexture);
 
     // Create FBOs for low res preview shader
     pathTraceFBOLowRes = std::make_unique<OpenGL::FrameBuffer>();
     pathTraceFBOLowRes->Bind();
 
     // Create Texture for FBO
-    glGenTextures(1, &pathTraceTextureLowRes);
-    glBindTexture(GL_TEXTURE_2D, pathTraceTextureLowRes);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, windowSize.x * pixelRatio, windowSize.y * pixelRatio, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pathTraceTextureLowRes, 0);
+    pathTraceTextureLowRes = std::make_unique<OpenGL::Texture2D>();
+    pathTraceTextureLowRes->Image2D(0, GL_RGBA32F, windowSize.x * pixelRatio, windowSize.y * pixelRatio, 0, GL_RGBA, GL_FLOAT, 0);
+    pathTraceTextureLowRes->SetParameter(GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    pathTraceTextureLowRes->SetParameter(GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    pathTraceTextureLowRes->SetParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    pathTraceTextureLowRes->SetParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    pathTraceTextureLowRes->Unbind();
+    pathTraceFBOLowRes->Texture2D(pathTraceTextureLowRes);
 
     // Create FBOs for accum buffer
     accumFBO = std::make_unique<OpenGL::FrameBuffer>();
     accumFBO->Bind();
 
     // Create Texture for FBO
-    glGenTextures(1, &accumTexture);
-    glBindTexture(GL_TEXTURE_2D, accumTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, accumTexture, 0);
+    accumTexture = std::make_unique<OpenGL::Texture2D>();
+    accumTexture->Image2D(0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
+    accumTexture->SetParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    accumTexture->SetParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    accumTexture->Unbind();
+    accumFBO->Texture2D(accumTexture);
 
     // Create FBOs for tile output shader
     outputFBO = std::make_unique<OpenGL::FrameBuffer>();
     outputFBO->Bind();
 
     // Create Texture for FBO
-    glGenTextures(1, &tileOutputTexture[0]);
-    glBindTexture(GL_TEXTURE_2D, tileOutputTexture[0]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    tileOutputTexture[0] = std::make_unique<OpenGL::Texture2D>();
+    tileOutputTexture[0]->Image2D(0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
+    tileOutputTexture[0]->SetParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    tileOutputTexture[0]->SetParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    tileOutputTexture[0]->Unbind();
 
-    glGenTextures(1, &tileOutputTexture[1]);
-    glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    tileOutputTexture[1] = std::make_unique<OpenGL::Texture2D>();
+    tileOutputTexture[1]->Image2D(0, GL_RGBA32F, renderSize.x, renderSize.y, 0, GL_RGBA, GL_FLOAT, 0);
+    tileOutputTexture[1]->SetParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    tileOutputTexture[1]->SetParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    tileOutputTexture[1]->Unbind();
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tileOutputTexture[currentBuffer], 0);
+    outputFBO->Texture2D(tileOutputTexture[currentBuffer]);
 
     // For Denoiser
     denoiserInputFramePtr = new Vec3f[renderSize.x * renderSize.y];
     frameOutputPtr = new Vec3f[renderSize.x * renderSize.y];
 
-    glGenTextures(1, &denoisedTexture);
-    glBindTexture(GL_TEXTURE_2D, denoisedTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, renderSize.x, renderSize.y, 0, GL_RGB, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    denoisedTexture = std::make_unique<OpenGL::Texture2D>();
+    denoisedTexture->Image2D(0, GL_RGB32F, renderSize.x, renderSize.y, 0, GL_RGB, GL_FLOAT, 0);
+    denoisedTexture->SetParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    denoisedTexture->SetParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    denoisedTexture->Unbind();
 
     RAY_INFO("Window Resolution: " << windowSize);
     RAY_INFO("Render Resolution: " << renderSize);
@@ -597,7 +572,7 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
         {
             pathTraceFBO->Bind();
             OpenGL::Viewport(Vec2i(0), Vec2i(tileWidth, tileHeight));
-            glBindTexture(GL_TEXTURE_2D, accumTexture);
+            accumTexture->Bind();
             quad.Draw(pathTraceShader);
 
             accumFBO->Bind();
@@ -605,13 +580,13 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
                 Vec2i(tileWidth * tile.x, tileHeight * tile.y),
                 Vec2i(tileWidth, tileHeight)
             );
-            glBindTexture(GL_TEXTURE_2D, pathTraceTexture);
+            pathTraceTexture->Bind();
             quad.Draw(outputShader);
 
             outputFBO->Bind();
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tileOutputTexture[currentBuffer], 0);
+            outputFBO->Texture2D(tileOutputTexture[currentBuffer]);
             OpenGL::Viewport(Vec2i(0), renderSize);
-            glBindTexture(GL_TEXTURE_2D, accumTexture);
+            accumTexture->Bind();
             quad.Draw(tonemapShader);
         }
     }
@@ -625,18 +600,18 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
 
         if (ctx.scene->dirty || sampleCounter == 1)
         {
-            glBindTexture(GL_TEXTURE_2D, pathTraceTextureLowRes);
+            pathTraceTextureLowRes->Bind();
             quad.Draw(tonemapShader);
         }
         else
         {
             if (ctx.scene->renderOptions.enableDenoiser && denoised)
             {
-                glBindTexture(GL_TEXTURE_2D, denoisedTexture);
+                denoisedTexture->Bind();
             }
             else
             {
-                glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
+                tileOutputTexture[1 - currentBuffer]->Bind();
             }
 
             // FIXME: RETURN AN IMAGE INSTEAD OF DRAWING IT DIRECTLY
@@ -651,13 +626,13 @@ void Renderer::InitializeUniforms(UniquePtr<Shader>& shader)
 
                 if (ctx.scene->renderOptions.enableDenoiser && denoised)
                 {
-                    glBindTexture(GL_TEXTURE_2D, denoisedTexture);
+                    denoisedTexture->Bind();
                     RAY_SUCCESS("Exporting denoised texture");
                     sampleCounter++;
                 }
                 else
                 {
-                    glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
+                    tileOutputTexture[1 - currentBuffer]->Bind();
                     RAY_SUCCESS("Exporting tiled texture");
                 }
 
@@ -763,7 +738,7 @@ void Renderer::Update(float secondsElapsed)
         {
             if (!denoised || (frameCounter % (ctx.scene->renderOptions.denoiserFrameCnt * (numTiles.x * numTiles.y)) == 0))
             {
-                glBindTexture(GL_TEXTURE_2D, tileOutputTexture[1 - currentBuffer]);
+                tileOutputTexture[1 - currentBuffer]->Bind();
                 glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, denoiserInputFramePtr);
 
                 oidn::DeviceRef device = oidn::newDevice();
@@ -797,8 +772,7 @@ void Renderer::Update(float secondsElapsed)
                 {
                     outputBuffer.read(0, bufferByteSize, frameOutputPtr);
 
-                    glBindTexture(GL_TEXTURE_2D, denoisedTexture);
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, renderSize.x, renderSize.y, 0, GL_RGB, GL_FLOAT, frameOutputPtr);
+                    denoisedTexture->Image2D(0, GL_RGB32F, renderSize.x, renderSize.y, 0, GL_RGB, GL_FLOAT, frameOutputPtr);
                 }
 
                 denoised = true;
