@@ -2,9 +2,11 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Plugins/Gui/GuiPlugin.hpp"
+#include "Loaders/Loader.hpp"
 #include "Core/Context.hpp"
 #include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
+#include "ImGui/ImGuiFileDialog.h"
 #include "Maths/Utils.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -20,6 +22,7 @@ const float GuiPlugin::MOUSE_SENSITIVITY = 0.01f;
 GuiPlugin::GuiPlugin(void)
     : m_objectMode(false)
     , m_isViewportImageHovered(false)
+    , m_selectedInstance(-1)
 {
     IMGUI_CHECKVERSION();
 
@@ -141,6 +144,38 @@ void GuiPlugin::PreRender(void)
         return;
     }
 
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            ImGui::MenuItem("New");
+            if (ImGui::MenuItem("Open", "CTRL+O"))
+            {
+                IGFD::FileDialogConfig config;
+                config.path = ".";
+                ImGuiFileDialog::Instance()->OpenDialog(
+                    "ChooseSceneFile", "Choose File", ".scene", config
+                );
+            }
+            ImGui::Separator();
+            ImGui::MenuItem("Save", "CTRL+S");
+            if (ImGui::BeginMenu("Export As..."))
+            {
+                ImGui::MenuItem("Portable Pixmap Format (.ppm)");
+                ImGui::MenuItem("Portable Network Graphics (.png)");
+                ImGui::MenuItem("Joint Photographic Group (.jpg)");
+                ImGui::EndMenu();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Exit", "ALT+F4"))
+            {
+                ctx.Shutdown();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
     ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -174,19 +209,24 @@ void GuiPlugin::PreRender(void)
         dockspace_initialized = true;
 
         ImGui::DockBuilderRemoveNode(dockspace_id);
+
         ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
         ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->WorkSize);
 
-        ImGuiID dock_main_id = dockspace_id;
-        ImGuiID dock_id_left;
-        ImGuiID dock_id_center;
+        ImGuiID dock_id_left = ImGui::DockBuilderSplitNode(dockspace_id,
+            ImGuiDir_Left, 0.25f, nullptr, &dockspace_id);
+        ImGuiID dock_id_right = ImGui::DockBuilderSplitNode(dockspace_id,
+            ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
 
-        ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Left, 0.25f, &dock_id_left, &dock_id_center);
+        ImGuiID dock_id_right_top = ImGui::DockBuilderSplitNode(dock_id_right,
+            ImGuiDir_Up, 0.5f, nullptr, &dock_id_right);
 
         ImGui::DockBuilderDockWindow("Settings", dock_id_left);
-        ImGui::DockBuilderDockWindow("Viewport", dock_id_center);
+        ImGui::DockBuilderDockWindow("Viewport", dockspace_id);
+        ImGui::DockBuilderDockWindow("Scene Hierarchy", dock_id_right_top);
+        ImGui::DockBuilderDockWindow("Mesh Inspector", dock_id_right);
 
-        ImGui::DockBuilderFinish(dock_main_id);
+        ImGui::DockBuilderFinish(dockspace_id);
     }
 
     ImGui::End();
@@ -326,6 +366,49 @@ void GuiPlugin::PreRender(void)
     }
 
     ImGui::End();
+
+    ImGui::Begin("Scene Hierarchy");
+
+    if (ImGui::BeginListBox("##instances", ImGui::GetContentRegionAvail()))
+    {
+        for (int i = 0; i < (int)ctx.scene->meshInstances.size(); i++)
+        {
+            const bool isSelected = (m_selectedInstance == i);
+            const MeshInstance& instance = ctx.scene->meshInstances[i];
+
+            if (ImGui::Selectable(instance.name.c_str(), isSelected))
+            {
+                m_selectedInstance = i;
+            }
+
+            if (isSelected)
+            {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+    }
+    ImGui::EndListBox();
+
+    ImGui::End();
+
+    ImGui::Begin("Mesh Inspector");
+    ImGui::End();
+
+    if (ImGuiFileDialog::Instance()->Display(
+        "ChooseSceneFile", ImGuiWindowFlags_NoDocking, ImVec2(800, 600))
+    )
+    {
+        ImGui::SetNextWindowFocus();
+        if (ImGuiFileDialog::Instance()->IsOk())
+        {
+            ctx.scene = std::make_unique<Scene>();
+            ctx.scene->dirty = true;
+            Loader::LoadScene(ImGuiFileDialog::Instance()->GetFilePathName());
+            ctx.renderer = std::make_unique<Renderer>();
+        }
+
+        ImGuiFileDialog::Instance()->Close();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
