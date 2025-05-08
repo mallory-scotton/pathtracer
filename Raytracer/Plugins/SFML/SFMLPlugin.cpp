@@ -84,7 +84,7 @@ void SFMLPlugin::Update(float deltaSeconds)
 
         options.windowResolution = newSize;
 
-        if (!options.independentRenderSize)
+        if (!options.independentRenderSize && !ctx.hasGui)
         {
             options.renderResolution = options.windowResolution;
         }
