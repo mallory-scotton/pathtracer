@@ -388,7 +388,11 @@ void GuiPlugin::PreRender(void)
         m_lastViewportSize = viewportSize;
         ctx.scene->renderOptions.renderResolution.x = (int)viewportSize.x;
         ctx.scene->renderOptions.renderResolution.y = (int)viewportSize.y;
+        ctx.scene->dirty = true;
         ctx.renderer->ResizeRenderer();
+        ctx.renderer->Update(0.f);
+        ctx.renderer->Render();
+        ctx.renderer->Present();
     }
 
     GLuint textureID = ctx.renderTextureID;
