@@ -145,6 +145,11 @@ void GuiPlugin::PreRender(void)
     ImGui::Text("Samples: %d ", ctx.renderer->GetSampleCount());
     ImGui::Checkbox("Object Mode", &m_objectMode);
 
+    if (ImGui::Button("Export Render"))
+    {
+        ctx.renderer->ExportRender("out.ppm");
+    }
+
     bool optionsChanged = false;
     bool reloadShaders = false;
 
