@@ -18,6 +18,7 @@ const Path Raytracer::PLUGIN_DIRECTORY = "./Plugins/";
 
 ///////////////////////////////////////////////////////////////////////////////
 Raytracer::Raytracer(int argc, char *argv[])
+    : m_hasGui(false)
 {
     bool hasWindowingPlugin = false;
     Context& ctx = Context::GetInstance();
@@ -32,16 +33,22 @@ Raytracer::Raytracer(int argc, char *argv[])
 
         auto getType = lib.GetSymbol<IPlugin::Type>("GetPluginType");
 
-        if (getType() == IPlugin::Type::WINDOWING && hasWindowingPlugin)
+        IPlugin::Type type = getType();
+
+        if (type == IPlugin::Type::WINDOWING && hasWindowingPlugin)
         {
             RAY_WARN(
                 "Multiple Windowing Plugin detected, " << plugin << " ignored"
             );
             continue;
         }
-        else if (getType() ==  IPlugin::Type::WINDOWING)
+        else if (type ==  IPlugin::Type::WINDOWING)
         {
             hasWindowingPlugin = true;
+        }
+        else if (type == IPlugin::Type::GUI)
+        {
+            m_hasGui = true;
         }
 
         IPlugin::Symbol func = lib.GetSymbol<UniquePtr<IPlugin>>(
