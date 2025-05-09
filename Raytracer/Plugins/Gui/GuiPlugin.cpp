@@ -473,11 +473,11 @@ void GuiPlugin::PreRender(void)
     {
         MeshInstance& instance = ctx.scene->meshInstances[m_selectedInstance];
         Mat4x4f& xform = instance.transform;
+        bool instanceHasChanged = false;
 
         if (ImGui::CollapsingHeader("Transformation", ImGuiTreeNodeFlags_DefaultOpen))
         {
             float translation[3], rotation[3], scale[3];
-            bool instanceHasChanged = false;
 
             ImGuizmo::DecomposeMatrixToComponents((float*)&xform, translation, rotation, scale);
 
@@ -486,13 +486,69 @@ void GuiPlugin::PreRender(void)
             instanceHasChanged |= ImGui::DragFloat3("Scale", scale, 0.1f);
 
             ImGuizmo::RecomposeMatrixFromComponents(translation, rotation, scale, (float*)&xform);
+        }
 
-            if (instanceHasChanged)
+        Material& material = ctx.scene->materials[instance.materialID];
+
+        if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            Vec3f albedo = Vec3f::Pow(material.baseColor, 1.0f / 2.2f);
+            instanceHasChanged |= ImGui::ColorEdit3("Albedo (Gamma Corrected)", (float*)&albedo, 0);
+            material.baseColor = Vec3f::Pow(albedo, 2.2f);
+
+            instanceHasChanged |= ImGui::SliderFloat("Metallic", &material.metallic, 0.f, 1.f);
+            instanceHasChanged |= ImGui::SliderFloat("Roughness", &material.roughness, 0.001f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("SpecularTint", &material.specularTint, 0.0f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("Subsurface", &material.subsurface, 0.0f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("Anisotropic", &material.anisotropic, 0.0f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("Sheen", &material.sheen, 0.0f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("SheenTint", &material.sheenTint, 0.0f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("Clearcoat", &material.clearcoat, 0.0f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("ClearcoatGloss", &material.clearcoatGloss, 0.0f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("SpecTrans", &material.specTrans, 0.0f, 1.0f);
+            instanceHasChanged |= ImGui::SliderFloat("Ior", &material.ior, 1.001f, 2.0f);
+
+            int mediumType = (int)material.mediumType;
+            if (ImGui::Combo("Medium Type", &mediumType, "None\0Absorb\0Scatter\0Emissive\0"))
             {
-                ctx.scene->meshInstances[m_selectedInstance].transform = xform;
-                ctx.scene->RebuildInstances();
-                ctx.renderer->Update(0.f);
+                reloadShaders = true;
+                instanceHasChanged = true;
+                material.mediumType = mediumType;
             }
+
+            if (mediumType != Material::MediumType::NONE)
+            {
+                Vec3f mediumColor = Vec3f::Pow(material.mediumColor, 1.0 / 2.2);
+                instanceHasChanged |= ImGui::ColorEdit3("Medium Color (Gamma Corrected)", (float*)(&mediumColor), 0);
+                material.mediumColor = Vec3f::Pow(mediumColor, 2.2);
+
+                instanceHasChanged |= ImGui::SliderFloat("Medium Density", &material.mediumDensity, 0.0f, 5.0f);
+
+                if(mediumType == Material::MediumType::SCATTER)
+                {
+                    instanceHasChanged |= ImGui::SliderFloat("Medium Anisotropy", &material.mediumAnisotropy, -0.9f, 0.9f);
+                }
+            }
+
+            int alphaMode = (int)material.alphaMode;
+            if (ImGui::Combo("Alpha Mode", &alphaMode, "Opaque\0Blend\0Mask\0"))
+            {
+                reloadShaders = true;
+                instanceHasChanged = true;
+                material.alphaMode = alphaMode;
+            }
+
+            if (alphaMode != Material::AlphaMode::OPAQUE)
+            {
+                instanceHasChanged |= ImGui::SliderFloat("Opacity", &material.opacity, 0.0f, 1.0f);
+            }
+        }
+
+        if (instanceHasChanged)
+        {
+            ctx.scene->meshInstances[m_selectedInstance].transform = xform;
+            ctx.scene->RebuildInstances();
+            ctx.renderer->Update(0.f);
         }
     }
 
