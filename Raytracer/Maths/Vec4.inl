@@ -8,6 +8,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Maths/Vec4.hpp"
+#include <math.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -52,6 +53,35 @@ Vec4<T> Vec4<T>::Cross(const Vec4<T>& other) const
         x * other.y - y * other.x,
         T(0)
     ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+T Vec4<T>::Dot(const Vec4<T>& other) const
+{
+    return (x * other.x + y * other.y + z * other.z + w * other.w);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+T Vec4<T>::LengthSquared(void) const
+{
+    return (x * x + y * y + z * z + w * w);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec4<T> Vec4<T>::Normalize(void) const
+{
+    T lengthSquared = LengthSquared();
+
+    if (lengthSquared < static_cast<T>(1e-10))
+    {
+        return (Vec4<T>(T(0)));
+    }
+
+    T invLength = static_cast<T>(1) / std::sqrt(lengthSquared);
+    return ((*this) * invLength);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
