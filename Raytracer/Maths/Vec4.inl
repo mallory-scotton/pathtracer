@@ -44,6 +44,18 @@ Vec4<T>::Vec4(const T& x, const T& y, const T& z, const T& w)
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
+Vec4<T> Vec4<T>::Cross(const Vec4<T>& other) const
+{
+    return (Vec4<T>(
+        y * other.z - z * other.y,
+        z * other.x - x * other.z,
+        x * other.y - y * other.x,
+        T(0)
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
 Vec4<T> operator+(const Vec4<T>& lhs, const Vec4<T>& rhs)
 {
     return (Vec4<T>(
@@ -51,6 +63,54 @@ Vec4<T> operator+(const Vec4<T>& lhs, const Vec4<T>& rhs)
         lhs.y + rhs.y,
         lhs.z + rhs.z,
         lhs.w + rhs.w
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec4<T> operator-(const Vec4<T>& lhs, const Vec4<T>& rhs)
+{
+    return (Vec4<T>(
+        lhs.x - rhs.x,
+        lhs.y - rhs.y,
+        lhs.z - rhs.z,
+        lhs.w - rhs.w
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec4<T> operator*(const Vec4<T>& lhs, const Vec4<T>& rhs)
+{
+    return (Vec4<T>(
+        lhs.x * rhs.x,
+        lhs.y * rhs.y,
+        lhs.z * rhs.z,
+        lhs.w * rhs.w
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec4<T> operator*(const Vec4<T>& lhs, const T& rhs)
+{
+    return (Vec4<T>(
+        lhs.x * rhs,
+        lhs.y * rhs,
+        lhs.z * rhs,
+        lhs.w * rhs
+    ));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec4<T> operator*(const T& lhs, const Vec4<T>& rhs)
+{
+    return (Vec4<T>(
+        lhs * rhs.x,
+        lhs * rhs.y,
+        lhs * rhs.z,
+        lhs * rhs.w
     ));
 }
 
