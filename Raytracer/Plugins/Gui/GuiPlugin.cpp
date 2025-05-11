@@ -463,7 +463,7 @@ void GuiPlugin::DrawViewport(void)
         ImGuizmo::SetRect(imageScreenPos.x, imageScreenPos.y, imageScreenSize.x, imageScreenSize.y);
         if (ImGuizmo::Manipulate(
             view, projection, m_guizmoOperation, m_guizmoMode,
-            (float*)&ctx.scene->meshInstances[m_selectedInstance], nullptr, nullptr
+            (float*)&ctx.scene->instances[m_selectedInstance], nullptr, nullptr
         ))
         {
             
@@ -489,10 +489,10 @@ void GuiPlugin::DrawSceneHierarchy(void)
 
     if (ImGui::BeginListBox("##instances", ImGui::GetContentRegionAvail()))
     {
-        for (int i = 0; i < (int)ctx.scene->meshInstances.size(); i++)
+        for (int i = 0; i < (int)ctx.scene->instances.size(); i++)
         {
             const bool isSelected = (m_selectedInstance == i);
-            const MeshInstance& instance = ctx.scene->meshInstances[i];
+            const Instance& instance = ctx.scene->instances[i];
 
             if (ImGui::Selectable(
                 (instance.name + "##" + std::to_string(i)).c_str(),
@@ -520,9 +520,9 @@ void GuiPlugin::DrawMeshInspector(void)
 
     ImGui::Begin("Mesh Inspector");
 
-    if (m_selectedInstance != -1 && m_selectedInstance < static_cast<int>(ctx.scene->meshInstances.size()))
+    if (m_selectedInstance != -1 && m_selectedInstance < static_cast<int>(ctx.scene->instances.size()))
     {
-        MeshInstance& instance = ctx.scene->meshInstances[m_selectedInstance];
+        Instance& instance = ctx.scene->instances[m_selectedInstance];
         Mat4x4f& xform = instance.transform;
 
         if (ImGui::CollapsingHeader("Transformation", ImGuiTreeNodeFlags_DefaultOpen))

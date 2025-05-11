@@ -7,6 +7,7 @@
 #include "ImGui/tiny_gltf.h"
 #include "Loaders/GLTFLoader.h"
 #include "Maths/Quaternion.hpp"
+#include "Objects/Mesh.hpp"
 
 namespace Ray {
 struct Primitive {
@@ -180,7 +181,7 @@ void LoadMeshes(Scene* scene, tinygltf::Model& gltfModel,
                        (indexAccessor.count * indexStride));
             }
 
-            Mesh* mesh = new Mesh();
+            Objects::Mesh* mesh = new Objects::Mesh();
 
             // Get triangles from vertex indices
             for (int v = 0; v < indices.size(); v++) {
@@ -188,13 +189,13 @@ void LoadMeshes(Scene* scene, tinygltf::Model& gltfModel,
                 Vec3f nrm = normals[indices[v]];
                 Vec2 uv = uvs[indices[v]];
 
-                mesh->verticesUVX.push_back(Vec4(pos.x, pos.y, pos.z, uv.x));
-                mesh->normalsUVY.push_back(Vec4(nrm.x, nrm.y, nrm.z, uv.y));
+                mesh->PushVertex(Vec4(pos.x, pos.y, pos.z, uv.x));
+                mesh->PushNormal(Vec4(nrm.x, nrm.y, nrm.z, uv.y));
             }
 
-            mesh->name = gltfMesh.name;
-            int sceneMeshId = scene->meshes.size();
-            scene->meshes.push_back(mesh);
+            mesh->SetName(gltfMesh.name);
+            int sceneMeshId = scene->objects.size();
+            scene->objects.push_back(mesh);
             // Store a mapping for a gltf mesh and the loaded primitive data
             // This is used for creating instances based on the primitive
             int sceneMatIdx = prim.material + scene->materials.size();
@@ -356,7 +357,7 @@ void TraverseNodes(Scene* scene, tinygltf::Model& gltfModel, int nodeIdx,
                 name = "Mesh " + std::to_string(gltfNode.mesh) + " Prim" +
                        std::to_string(prims[i].primitiveId);
 
-            MeshInstance instance(
+            Instance instance(
                 name, prims[i].primitiveId, xform,
                 prims[i].materialId < 0 ? 0 : prims[i].materialId);
             scene->AddMeshInstance(instance);

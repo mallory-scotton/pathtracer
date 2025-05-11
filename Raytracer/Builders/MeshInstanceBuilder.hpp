@@ -7,11 +7,11 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Config.hpp"
-#include "Components/Mesh.hpp"
+#include "Interfaces/IObject.hpp"
+#include "Objects/Instance.hpp"
 #include "Interfaces/IBuilder.hpp"
 #include "Utils/LibConfig.hpp"
 #include "Raytracer/Core/Context.hpp"
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray
@@ -23,13 +23,13 @@ namespace Ray
 /// \brief
 ///
 ///////////////////////////////////////////////////////////////////////////////
-class MeshInstanceBuilder : public IBuilder<MeshInstance>
+class MeshInstanceBuilder : public IBuilder<Instance>
 {
 private:
     ///////////////////////////////////////////////////////////////////////////
     //
     ///////////////////////////////////////////////////////////////////////////
-    MeshInstance m_mesh;        //<! The mesh object
+    Instance m_mesh;            //<! The mesh object
     Vec3f m_position;           //<! The position
     Vec3f m_scale;              //<! The scale
     Quaternionf m_rotation;     //<! The rotation
@@ -48,7 +48,7 @@ public:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    virtual MeshInstance Build(void) override;
+    virtual Instance Build(void) override;
 
 public:
     ///////////////////////////////////////////////////////////////////////////

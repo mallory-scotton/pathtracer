@@ -8,7 +8,8 @@
 #include "Graphics/EnvironmentMap.hpp"
 #include "Acceleration/bvh.h"
 #include "Core/Renderer.hpp"
-#include "Components/Mesh.hpp"
+#include "Objects/Instance.hpp"
+#include "Interfaces/IObject.hpp"
 #include "Components/Camera.hpp"
 #include "Acceleration/bvh_translator.h"
 #include "Graphics/Texture.hpp"
@@ -40,7 +41,7 @@ namespace Ray
         int AddMesh(const std::string& filename);
         int AddTexture(const std::string& filename);
         int AddMaterial(const Material& material, String name);
-        int AddMeshInstance(const MeshInstance& meshInstance);
+        int AddMeshInstance(const Instance& meshInstance);
         int AddLight(const Light& light);
         int getMaterialID(String name);
         void AddEnvMap(const std::string& filename);
@@ -53,7 +54,7 @@ namespace Ray
         Renderer::Options renderOptions;
 
         // Meshes
-        std::vector<Mesh*> meshes;
+        std::vector<IObject*> objects;
 
         // Scene Mesh Data 
         std::vector<Indices> vertIndices;
@@ -67,7 +68,7 @@ namespace Ray
         std::vector<String> materialsName;
 
         // Instances
-        std::vector<MeshInstance> meshInstances;
+        std::vector<Instance> instances;
 
         // Lights
         std::vector<Light> lights;

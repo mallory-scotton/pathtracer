@@ -10,9 +10,8 @@
 #include "Interfaces/IBuilder.hpp"
 #include "Components/Material.hpp"
 #include "Utils/LibConfig.hpp"
-#include "Raytracer/Maths/Mat4x4.hpp"
-#include "Raytracer/Components/Mesh.hpp"
-#include "Raytracer/Core/Context.hpp"
+#include "Maths/Mat4x4.hpp"
+#include "Core/Context.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Namespace Ray

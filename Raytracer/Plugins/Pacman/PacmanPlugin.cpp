@@ -27,7 +27,7 @@ PacmanPlugin::~PacmanPlugin()
 void PacmanPlugin::CheckForPacmanScene(void)
 {
     Context& ctx = Context::GetInstance();
-    Vector<MeshInstance>& meshes = ctx.scene->meshInstances;
+    Vector<Instance>& meshes = ctx.scene->instances;
 
     for (const auto& mesh : meshes)
     {
@@ -42,10 +42,10 @@ void PacmanPlugin::CheckForPacmanScene(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-MeshInstance& PacmanPlugin::GetInstance(const String& name) const
+Instance& PacmanPlugin::GetInstance(const String& name) const
 {
     Context& ctx = Context::GetInstance();
-    Vector<MeshInstance>& meshes = ctx.scene->meshInstances;
+    Vector<Instance>& meshes = ctx.scene->instances;
 
     for (auto& mesh : meshes)
     {
@@ -54,7 +54,7 @@ MeshInstance& PacmanPlugin::GetInstance(const String& name) const
             return (mesh);
         }
     }
-    return (ctx.scene->meshInstances[0]);
+    return (ctx.scene->instances[0]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ void PacmanPlugin::Update(float deltaSeconds)
         return;
     }
 
-    MeshInstance& pacman = GetInstance("pacman");
+    Instance& pacman = GetInstance("pacman");
     Mat4x4f& xform = pacman.transform;
 
     if (ImGui::IsKeyDown(ImGuiKey_UpArrow) || ImGui::IsKeyDown(ImGuiKey_DownArrow))

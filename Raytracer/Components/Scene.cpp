@@ -8,14 +8,16 @@
 #include "ImGui/stb_image.h"
 #include "Components/Scene.h"
 #include "Components/Camera.hpp"
+#include "Objects/Mesh.hpp"
+#include "Objects/Sphere.hpp"
 
 namespace Ray
 {
     Scene::~Scene()
     {
-        for (int i = 0; i < meshes.size(); i++)
-            delete meshes[i];
-        meshes.clear();
+        for (int i = 0; i < objects.size(); i++)
+            delete objects[i];
+        objects.clear();
 
         for (int i = 0; i < textures.size(); i++)
             delete textures[i];
@@ -32,22 +34,16 @@ namespace Ray
     {
         int id = -1;
         // Check if mesh was already loaded
-        for (int i = 0; i < meshes.size(); i++)
-            if (meshes[i]->name == filename)
+        for (int i = 0; i < objects.size(); i++)
+            if (objects[i]->GetName() == filename)
                 return i;
 
-        id = meshes.size();
-        Mesh* mesh = new Mesh;
+        id = objects.size();
 
         RAY_TRACE("Loading Model: \"" << filename << "\"");
-        if (mesh->LoadFromFile(filename))
-            meshes.push_back(mesh);
-        else
-        {
-            printf("Unable to load model %s\n", filename.c_str());
-            delete mesh;
-            id = -1;
-        }
+        Objects::Mesh* mesh = new Objects::Mesh(filename);
+        objects.push_back(mesh);
+
         return id;
     }
 
@@ -114,10 +110,10 @@ namespace Ray
         dirty = true;
     }
 
-    int Scene::AddMeshInstance(const MeshInstance& meshInstance)
+    int Scene::AddMeshInstance(const Instance& instance)
     {
-        int id = meshInstances.size();
-        meshInstances.push_back(meshInstance);
+        int id = instances.size();
+        instances.push_back(instance);
         return id;
     }
 
@@ -141,12 +137,12 @@ namespace Ray
     {
         // Loop through all the mesh Instances and build a Top Level BVH
         std::vector<Ray::BoundingBox> bounds;
-        bounds.resize(meshInstances.size());
+        bounds.resize(instances.size());
 
-        for (int i = 0; i < meshInstances.size(); i++)
+        for (int i = 0; i < instances.size(); i++)
         {
-            Ray::BoundingBox BoundingBox = meshes[meshInstances[i].meshID]->bvh->Bounds();
-            Mat4x4f matrix = meshInstances[i].transform;
+            Ray::BoundingBox BoundingBox = objects[instances[i].objectID]->GetBVH()->Bounds();
+            Mat4x4f matrix = instances[i].transform;
 
             Vec3f minBound = BoundingBox.min;
             Vec3f maxBound = BoundingBox.max;
@@ -181,11 +177,10 @@ namespace Ray
     void Scene::createBLAS()
     {
         // Loop through all meshes and build BVHs
-#pragma omp parallel for
-        for (int i = 0; i < meshes.size(); i++)
+        for (int i = 0; i < objects.size(); i++)
         {
-            printf("Building BVH for %s\n", meshes[i]->name.c_str());
-            meshes[i]->BuildBVH();
+            printf("Building BVH for %s\n", objects[i]->GetName().c_str());
+            objects[i]->BuildBVH();
         }
     }
 
@@ -195,11 +190,11 @@ namespace Ray
         sceneBvh = new Ray::Bvh(10.0f, 64, false);
 
         createTLAS();
-        bvhTranslator.UpdateTLAS(sceneBvh, meshInstances);
+        bvhTranslator.UpdateTLAS(sceneBvh, instances);
 
         //Copy transforms
-        for (int i = 0; i < meshInstances.size(); i++)
-            transforms[i] = meshInstances[i].transform;
+        for (int i = 0; i < instances.size(); i++)
+            transforms[i] = instances[i].transform;
 
         instancesModified = true;
         dirty = true;
@@ -207,6 +202,9 @@ namespace Ray
 
     void Scene::ProcessScene()
     {
+        objects.push_back(new Objects::Sphere());
+        instances.push_back(Instance("TEST", objects.size() - 1));
+
         printf("Processing scene data\n");
         createBLAS();
 
@@ -215,17 +213,17 @@ namespace Ray
 
         // Flatten BVH
         printf("Flattening BVH\n");
-        bvhTranslator.Process(sceneBvh, meshes, meshInstances);
+        bvhTranslator.Process(sceneBvh, objects, instances);
 
         // Copy mesh data
         int verticesCnt = 0;
         printf("Copying Mesh Data\n");
-        for (int i = 0; i < meshes.size(); i++)
+        for (int i = 0; i < objects.size(); i++)
         {
             // Copy indices from BVH and not from Mesh.
             // Required if splitBVH is used as a triangle can be shared by leaf nodes
-            int numIndices = meshes[i]->bvh->GetNumIndices();
-            const int* triIndices = meshes[i]->bvh->GetIndices();
+            int numIndices = objects[i]->GetBVH()->GetNumIndices();
+            const int* triIndices = objects[i]->GetBVH()->GetIndices();
 
             for (int j = 0; j < numIndices; j++)
             {
@@ -237,17 +235,17 @@ namespace Ray
                 vertIndices.push_back(Indices{ v1, v2, v3 });
             }
 
-            verticesUVX.insert(verticesUVX.end(), meshes[i]->verticesUVX.begin(), meshes[i]->verticesUVX.end());
-            normalsUVY.insert(normalsUVY.end(), meshes[i]->normalsUVY.begin(), meshes[i]->normalsUVY.end());
+            verticesUVX.insert(verticesUVX.end(), objects[i]->GetVertices().begin(), objects[i]->GetVertices().end());
+            normalsUVY.insert(normalsUVY.end(), objects[i]->GetNormals().begin(), objects[i]->GetNormals().end());
 
-            verticesCnt += meshes[i]->verticesUVX.size();
+            verticesCnt += objects[i]->GetVertices().size();
         }
 
         // Copy transforms
         printf("Copying transforms\n");
-        transforms.resize(meshInstances.size());
-        for (int i = 0; i < meshInstances.size(); i++)
-            transforms[i] = meshInstances[i].transform;
+        transforms.resize(instances.size());
+        for (int i = 0; i < instances.size(); i++)
+            transforms[i] = instances[i].transform;
 
         // Copy textures
         if (!textures.empty())

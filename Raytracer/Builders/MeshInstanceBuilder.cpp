@@ -9,7 +9,7 @@
 namespace Ray
 {
 ///////////////////////////////////////////////////////////////////////////////
-MeshInstance MeshInstanceBuilder::Build(void)
+Instance MeshInstanceBuilder::Build(void)
 {
     return (m_mesh);
 }
@@ -56,7 +56,7 @@ MeshInstanceBuilder& MeshInstanceBuilder::FromConfiguration(const LibConfig::Set
     }
 
     if (!file.empty()){
-        m_mesh.meshID = ctx.scene->AddMesh(file);
+        m_mesh.objectID = ctx.scene->AddMesh(file);
         if (!name.empty() && name != "none")
         {
             m_mesh.name = name;
@@ -83,7 +83,7 @@ MeshInstanceBuilder& MeshInstanceBuilder::SetName(const std::string& name)
 ///////////////////////////////////////////////////////////////////////////////
 MeshInstanceBuilder& MeshInstanceBuilder::SetMeshId(int meshId)
 {
-    m_mesh.meshID = meshId;
+    m_mesh.objectID = meshId;
     return (*this);
 }
 
@@ -125,11 +125,11 @@ MeshInstanceBuilder& MeshInstanceBuilder::SetScale(const Vec3f& scale)
 ///////////////////////////////////////////////////////////////////////////////
 bool MeshInstanceBuilder::IDCheck(void)
 {
-    if (m_mesh.meshID == -1)
+    if (m_mesh.objectID == -1)
     {
-        return false;
+        return (false);
     }
-    return true;
+    return (true);
 }
 
 } // namespace Ray

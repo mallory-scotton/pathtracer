@@ -39,7 +39,7 @@ int BvhTranslator::ProcessTLASNodes(const Bvh::Node* node) {
 
     if (node->type == Ray::Bvh::NodeType::kLeaf) {
         int instanceIndex = topLevelBvh->m_packed_indices[node->startidx];
-        int meshIndex = meshInstances[instanceIndex].meshID;
+        int meshIndex = meshInstances[instanceIndex].objectID;
         int materialID = meshInstances[instanceIndex].materialID;
 
         nodes[curNode].LRLeaf.x = bvhRootStartIndices[meshIndex];
@@ -58,7 +58,7 @@ void BvhTranslator::ProcessBLAS() {
     int nodeCnt = 0;
 
     for (int i = 0; i < meshes.size(); i++)
-        nodeCnt += meshes[i]->bvh->m_nodecnt;
+        nodeCnt += meshes[i]->GetBVH()->m_nodecnt;
     topLevelIndex = nodeCnt;
 
     // reserve space for top level nodes
@@ -69,14 +69,14 @@ void BvhTranslator::ProcessBLAS() {
     curTriIndex = 0;
 
     for (int i = 0; i < meshes.size(); i++) {
-        Ray::Mesh* mesh = meshes[i];
+        IObject* mesh = meshes[i];
         curNode = bvhRootIndex;
 
         bvhRootStartIndices.push_back(bvhRootIndex);
-        bvhRootIndex += mesh->bvh->m_nodecnt;
+        bvhRootIndex += mesh->GetBVH()->m_nodecnt;
 
-        ProcessBLASNodes(mesh->bvh->m_root);
-        curTriIndex += mesh->bvh->GetNumIndices();
+        ProcessBLASNodes(mesh->GetBVH()->m_root);
+        curTriIndex += mesh->GetBVH()->GetNumIndices();
     }
 }
 
@@ -87,7 +87,7 @@ void BvhTranslator::ProcessTLAS() {
 
 void BvhTranslator::UpdateTLAS(
     const Bvh* topLevelBvh,
-    const std::vector<Ray::MeshInstance>& sceneInstances) {
+    const std::vector<Instance>& sceneInstances) {
     this->topLevelBvh = topLevelBvh;
     meshInstances = sceneInstances;
     curNode = topLevelIndex;
@@ -95,10 +95,10 @@ void BvhTranslator::UpdateTLAS(
 }
 
 void BvhTranslator::Process(
-    const Bvh* topLevelBvh, const std::vector<Ray::Mesh*>& sceneMeshes,
-    const std::vector<Ray::MeshInstance>& sceneInstances) {
+    const Bvh* topLevelBvh, const std::vector<IObject*>& objects,
+    const std::vector<Instance>& sceneInstances) {
     this->topLevelBvh = topLevelBvh;
-    meshes = sceneMeshes;
+    meshes = objects;
     meshInstances = sceneInstances;
     ProcessBLAS();
     ProcessTLAS();

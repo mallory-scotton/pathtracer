@@ -7,29 +7,30 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "ImGui/tiny_obj_loader.h"
-#include "Components/Mesh.hpp"
+#include "Objects/Mesh.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
-// Namespace Ray
+// Namespacey Ray::Objects
 ///////////////////////////////////////////////////////////////////////////////
-namespace Ray
+namespace Ray::Objects
 {
 
 ///////////////////////////////////////////////////////////////////////////////
 Mesh::Mesh(void)
-    : bvh(std::make_unique<Ray::SplitBvh>(2.0f, 64, 0, 0.001f, 0))
+    : AObject()
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
-Mesh::~Mesh()
+Mesh::Mesh(const Path& filepath)
+    : AObject()
 {
-    bvh.reset();
+    LoadFromFile(filepath);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-bool Mesh::LoadFromFile(const String& filename)
+bool Mesh::LoadFromFile(const Path& filepath)
 {
-    name = filename;
+    m_name = filepath.filename();
     tinyobj::attrib_t attrib;
     Vector<tinyobj::shape_t> shapes;
     Vector<tinyobj::material_t> materials;
@@ -41,20 +42,20 @@ bool Mesh::LoadFromFile(const String& filename)
         &materials,
         &err,
         &err,
-        filename.c_str()
+        filepath.c_str()
     );
 
     if (!ret)
     {
-        RAY_ERROR("Unable to load model: \"" << filename << "\"");
+        RAY_ERROR("Unable to load model: " << filepath);
         return (false);
     }
 
-    for (size_t s = 0; s < shapes.size(); s++)
+    for (Uint64 s = 0; s < shapes.size(); s++)
     {
-        size_t index_offset = 0;
+        Uint64 index_offset = 0;
 
-        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+        for (Uint64 f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
         {
             if (shapes[s].mesh.num_face_vertices[f] != 3) {
                 RAY_WARN(
@@ -64,7 +65,7 @@ bool Mesh::LoadFromFile(const String& filename)
                 continue;
             }
 
-            for (size_t v = 0; v < 3; v++)
+            for (Uint64 v = 0; v < 3; v++)
             {
                 if (index_offset + v >= shapes[s].mesh.indices.size())
                 {
@@ -132,8 +133,8 @@ bool Mesh::LoadFromFile(const String& filename)
                     }
                 }
 
-                verticesUVX.push_back(Vec4f(vx, vy, vz, tx));
-                normalsUVY.push_back(Vec4f(nx, ny, nz, ty));
+                m_vertices.push_back(Vec4f(vx, vy, vz, tx));
+                m_normals.push_back(Vec4f(nx, ny, nz, ty));
             }
 
             index_offset += 3;
@@ -143,45 +144,4 @@ bool Mesh::LoadFromFile(const String& filename)
     return (true);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-void Mesh::BuildBVH(void)
-{
-    const int numTris = verticesUVX.size() / 3;
-    Vector<Ray::BoundingBox> bounds(numTris);
-
-    for (int i = 0; i < numTris; ++i)
-    {
-        const Vec3f v1 = Vec3f(verticesUVX[i * 3 + 0]);
-        const Vec3f v2 = Vec3f(verticesUVX[i * 3 + 1]);
-        const Vec3f v3 = Vec3f(verticesUVX[i * 3 + 2]);
-
-        bounds[i].Grow(v1);
-        bounds[i].Grow(v2);
-        bounds[i].Grow(v3);
-    }
-
-    bvh->Build(&bounds[0], numTris);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-MeshInstance::MeshInstance(void)
-: transform()
-, name("default")
-, materialID(0)
-, meshID(0)
-{}
-
-///////////////////////////////////////////////////////////////////////////////
-MeshInstance::MeshInstance(
-    const String& name,
-    int meshID,
-    Mat4x4f transform,
-    int materialID
-)
-    : transform(transform)
-    , name(name)
-    , materialID(materialID)
-    , meshID(meshID)
-{}
-
-}
+} // namespace Ray::Objects
