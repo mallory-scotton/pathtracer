@@ -4,7 +4,6 @@
 #include "Plugins/Gui/GuiPlugin.hpp"
 #include "Loaders/Loader.hpp"
 #include "Core/Context.hpp"
-#include "ImGui/imgui.h"
 #include "ImGui/imgui_internal.h"
 #include "ImGui/ImGuiFileDialog.h"
 #include "Maths/Utils.hpp"
@@ -86,6 +85,11 @@ GuiPlugin::GuiPlugin(void)
     : m_objectMode(false)
     , m_isViewportImageHovered(false)
     , m_selectedInstance(-1)
+    , m_guizmoOperation(ImGuizmo::TRANSLATE)
+    , m_guizmoMode(ImGuizmo::WORLD)
+    , m_reloadShaders(false)
+    , m_instanceHasChanged(false)
+    , m_optionsChanged(false)
 {
     IMGUI_CHECKVERSION();
 
@@ -196,49 +200,8 @@ void GuiPlugin::Update(float deltaSeconds)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void GuiPlugin::PreRender(void)
+void GuiPlugin::PrepareDocking(void)
 {
-    ImGuiIO& io = ImGui::GetIO();
-    Context& ctx = Context::GetInstance();
-    Renderer::Options& options = ctx.scene->renderOptions;
-
-    if (io.DisplaySize.x <= 0.f || io.DisplaySize.y <= 0.f || ctx.shutdown)
-    {
-        return;
-    }
-
-    if (ImGui::BeginMainMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            ImGui::MenuItem("New");
-            if (ImGui::MenuItem("Open", "CTRL+O"))
-            {
-                IGFD::FileDialogConfig config;
-                config.path = ".";
-                ImGuiFileDialog::Instance()->OpenDialog(
-                    "ChooseSceneFile", "Choose File", ".scene", config
-                );
-            }
-            ImGui::Separator();
-            ImGui::MenuItem("Save", "CTRL+S");
-            if (ImGui::BeginMenu("Export As..."))
-            {
-                ImGui::MenuItem("Portable Pixmap Format (.ppm)");
-                ImGui::MenuItem("Portable Network Graphics (.png)");
-                ImGui::MenuItem("Joint Photographic Group (.jpg)");
-                ImGui::EndMenu();
-            }
-            ImGui::Separator();
-            if (ImGui::MenuItem("Exit", "ALT+F4"))
-            {
-                ctx.Shutdown();
-            }
-            ImGui::EndMenu();
-        }
-        ImGui::EndMainMenuBar();
-    }
-
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
     ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -293,6 +256,51 @@ void GuiPlugin::PreRender(void)
     }
 
     ImGui::End();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void GuiPlugin::DrawMainMenuBar(void)
+{
+    Context& ctx = Context::GetInstance();
+
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            ImGui::MenuItem("New");
+            if (ImGui::MenuItem("Open", "CTRL+O"))
+            {
+                IGFD::FileDialogConfig config;
+                config.path = ".";
+                ImGuiFileDialog::Instance()->OpenDialog(
+                    "ChooseSceneFile", "Choose File", ".scene", config
+                );
+            }
+            ImGui::Separator();
+            ImGui::MenuItem("Save", "CTRL+S");
+            if (ImGui::BeginMenu("Export As..."))
+            {
+                ImGui::MenuItem("Portable Pixmap Format (.ppm)");
+                ImGui::MenuItem("Portable Network Graphics (.png)");
+                ImGui::MenuItem("Joint Photographic Group (.jpg)");
+                ImGui::EndMenu();
+            }
+            ImGui::Separator();
+            if (ImGui::MenuItem("Exit", "ALT+F4"))
+            {
+                ctx.Shutdown();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void GuiPlugin::DrawSettings(void)
+{
+    Context& ctx = Context::GetInstance();
+    Renderer::Options& options = ctx.scene->renderOptions;
 
     ImGui::Begin("Settings");
     ImGui::Text("Samples: %d ", ctx.renderer->GetSampleCount());
@@ -303,35 +311,32 @@ void GuiPlugin::PreRender(void)
         ctx.renderer->ExportRender("out.ppm");
     }
 
-    bool optionsChanged = false;
-    bool reloadShaders = false;
-
     if (ImGui::CollapsingHeader("Render Settings"))
     {
-        optionsChanged |= ImGui::SliderInt("Max Spp", &options.maxSpp, -1, 256);
-        optionsChanged |= ImGui::SliderInt("Max Depth", &options.maxDepth, 1, 10);
-        reloadShaders |= ImGui::Checkbox("Enable Russian Roulette", &options.enableRR);
-        reloadShaders |= ImGui::SliderInt("Russian Roulette Depth", &options.RRDepth, 1, 10);
-        reloadShaders |= ImGui::Checkbox("Enable Roughness Mollification", &options.enableRoughnessMollification);
-        optionsChanged |= ImGui::SliderFloat("Roughness Mollification Amount", &options.roughnessMollificationAmt, 0, 1);
-        reloadShaders |= ImGui::Checkbox("Enable Volume MIS", &options.enableVolumeMIS);
+        m_optionsChanged |= ImGui::SliderInt("Max Spp", &options.maxSpp, -1, 256);
+        m_optionsChanged |= ImGui::SliderInt("Max Depth", &options.maxDepth, 1, 10);
+        m_reloadShaders |= ImGui::Checkbox("Enable Russian Roulette", &options.enableRR);
+        m_reloadShaders |= ImGui::SliderInt("Russian Roulette Depth", &options.RRDepth, 1, 10);
+        m_reloadShaders |= ImGui::Checkbox("Enable Roughness Mollification", &options.enableRoughnessMollification);
+        m_optionsChanged |= ImGui::SliderFloat("Roughness Mollification Amount", &options.roughnessMollificationAmt, 0, 1);
+        m_reloadShaders |= ImGui::Checkbox("Enable Volume MIS", &options.enableVolumeMIS);
     }
 
     if (ImGui::CollapsingHeader("Environment"))
     {
-        reloadShaders |= ImGui::Checkbox("Enable Uniform Light", &options.enableUniformLight);
+        m_reloadShaders |= ImGui::Checkbox("Enable Uniform Light", &options.enableUniformLight);
 
         Vec3f uniformLightCol = Vec3f::Pow(options.uniformLightCol, 1.0 / 2.2);
-        optionsChanged |= ImGui::ColorEdit3("Uniform Light Color (Gamma Corrected)", (float*)(&uniformLightCol), 0);
+        m_optionsChanged |= ImGui::ColorEdit3("Uniform Light Color (Gamma Corrected)", (float*)(&uniformLightCol), 0);
         options.uniformLightCol = Vec3f::Pow(uniformLightCol, 2.2);
 
-        reloadShaders |= ImGui::Checkbox("Enable Environment Map", &options.enableEnvMap);
-        optionsChanged |= ImGui::SliderFloat("Enviornment Map Intensity", &options.envMapIntensity, 0.1f, 10.0f);
-        optionsChanged |= ImGui::SliderFloat("Enviornment Map Rotation", &options.envMapRot, 0.0f, 360.0f);
-        reloadShaders |= ImGui::Checkbox("Hide Emitters", &options.hideEmitters);
-        reloadShaders |= ImGui::Checkbox("Enable Background", &options.enableBackground);
-        optionsChanged |= ImGui::ColorEdit3("Background Color", (float*)&options.backgroundCol, 0);
-        reloadShaders |= ImGui::Checkbox("Transparent Background", &options.transparentBackground);
+        m_reloadShaders |= ImGui::Checkbox("Enable Environment Map", &options.enableEnvMap);
+        m_optionsChanged |= ImGui::SliderFloat("Enviornment Map Intensity", &options.envMapIntensity, 0.1f, 10.0f);
+        m_optionsChanged |= ImGui::SliderFloat("Enviornment Map Rotation", &options.envMapRot, 0.0f, 360.0f);
+        m_reloadShaders |= ImGui::Checkbox("Hide Emitters", &options.hideEmitters);
+        m_reloadShaders |= ImGui::Checkbox("Enable Background", &options.enableBackground);
+        m_optionsChanged |= ImGui::ColorEdit3("Background Color", (float*)&options.backgroundCol, 0);
+        m_reloadShaders |= ImGui::Checkbox("Transparent Background", &options.transparentBackground);
     }
 
     if (ImGui::CollapsingHeader("Tonemapping"))
@@ -358,15 +363,21 @@ void GuiPlugin::PreRender(void)
     {
         float fov = Math::Degrees(ctx.scene->camera->fov);
         float aperture = ctx.scene->camera->aperture * 1000.0f;
-        optionsChanged |= ImGui::SliderFloat("Fov", &fov, 10, 90);
+        m_optionsChanged |= ImGui::SliderFloat("Fov", &fov, 10, 90);
         ctx.scene->camera->SetFov(fov);
-        optionsChanged |= ImGui::SliderFloat("Aperture", &aperture, 0.0f, 10.8f);
+        m_optionsChanged |= ImGui::SliderFloat("Aperture", &aperture, 0.0f, 10.8f);
         ctx.scene->camera->aperture = aperture / 1000.0f;
-        optionsChanged |= ImGui::SliderFloat("Focal Distance", &ctx.scene->camera->focalDist, 0.01f, 50.0f);
+        m_optionsChanged |= ImGui::SliderFloat("Focal Distance", &ctx.scene->camera->focalDist, 0.01f, 50.0f);
         ImGui::Text("Pos: %.2f, %.2f, %.2f", ctx.scene->camera->position.x, ctx.scene->camera->position.y, ctx.scene->camera->position.z);
     }
 
     ImGui::End();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void GuiPlugin::DrawViewport(void)
+{
+    Context& ctx = Context::GetInstance();
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Viewport", nullptr,
@@ -396,6 +407,9 @@ void GuiPlugin::PreRender(void)
     }
 
     GLuint textureID = ctx.renderTextureID;
+    ImVec2 imageScreenPos = ImVec2(0,0);
+    ImVec2 imageScreenSize = ImVec2(0,0);
+
     if (textureID != 0)
     {
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
@@ -429,6 +443,9 @@ void GuiPlugin::PreRender(void)
         ImGui::Image(static_cast<ImTextureID>(textureID), displaySize, uv0, uv1);
 
         m_isViewportImageHovered = ImGui::IsItemHovered();
+
+        imageScreenPos = ImGui::GetItemRectMin();
+        imageScreenSize = ImGui::GetItemRectSize();
     }
     else
     {
@@ -436,7 +453,35 @@ void GuiPlugin::PreRender(void)
         m_isViewportImageHovered = false;
     }
 
+    if (m_selectedInstance != -1)
+    {
+        float view[16], projection[16];
+        ctx.scene->camera->ComputeViewProjectionMatrix(
+            view, projection, imageScreenSize.x / imageScreenSize.y
+        );
+
+        ImGuizmo::SetRect(imageScreenPos.x, imageScreenPos.y, imageScreenSize.x, imageScreenSize.y);
+        if (ImGuizmo::Manipulate(
+            view, projection, m_guizmoOperation, m_guizmoMode,
+            (float*)&ctx.scene->meshInstances[m_selectedInstance], nullptr, nullptr
+        ))
+        {
+            
+        }
+    }
+
+    if (ImGuizmo::IsOver())
+    {
+        m_isViewportImageHovered = false;
+    }
+
     ImGui::End();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void GuiPlugin::DrawSceneHierarchy(void)
+{
+    Context& ctx = Context::GetInstance();
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
     ImGui::Begin("Scene Hierarchy");
@@ -466,6 +511,12 @@ void GuiPlugin::PreRender(void)
     ImGui::EndListBox();
 
     ImGui::End();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void GuiPlugin::DrawMeshInspector(void)
+{
+    Context& ctx = Context::GetInstance();
 
     ImGui::Begin("Mesh Inspector");
 
@@ -473,17 +524,44 @@ void GuiPlugin::PreRender(void)
     {
         MeshInstance& instance = ctx.scene->meshInstances[m_selectedInstance];
         Mat4x4f& xform = instance.transform;
-        bool instanceHasChanged = false;
 
         if (ImGui::CollapsingHeader("Transformation", ImGuiTreeNodeFlags_DefaultOpen))
         {
+            if (ImGui::RadioButton("Translate", m_guizmoOperation == ImGuizmo::TRANSLATE))
+            {
+                m_guizmoOperation = ImGuizmo::TRANSLATE;
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Rotation", m_guizmoOperation == ImGuizmo::ROTATE))
+            {
+                m_guizmoOperation = ImGuizmo::ROTATE;
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Scale", m_guizmoOperation == ImGuizmo::SCALE))
+            {
+                m_guizmoOperation = ImGuizmo::SCALE;
+            }
+
+            if (m_guizmoOperation != ImGuizmo::SCALE)
+            {
+                if (ImGui::RadioButton("Local", m_guizmoMode == ImGuizmo::LOCAL))
+                {
+                    m_guizmoMode = ImGuizmo::LOCAL;
+                }
+                ImGui::SameLine();
+                if (ImGui::RadioButton("World", m_guizmoMode == ImGuizmo::WORLD))
+                {
+                    m_guizmoMode = ImGuizmo::WORLD;
+                }
+            }
+
             float translation[3], rotation[3], scale[3];
 
             ImGuizmo::DecomposeMatrixToComponents((float*)&xform, translation, rotation, scale);
 
-            instanceHasChanged |= ImGui::DragFloat3("Translation", translation, 0.1f);
-            instanceHasChanged |= ImGui::DragFloat3("Rotation", rotation, 1.0f);
-            instanceHasChanged |= ImGui::DragFloat3("Scale", scale, 0.1f);
+            m_instanceHasChanged |= ImGui::DragFloat3("Translation", translation, 0.1f);
+            m_instanceHasChanged |= ImGui::DragFloat3("Rotation", rotation, 1.0f);
+            m_instanceHasChanged |= ImGui::DragFloat3("Scale", scale, 0.1f);
 
             ImGuizmo::RecomposeMatrixFromComponents(translation, rotation, scale, (float*)&xform);
         }
@@ -493,66 +571,65 @@ void GuiPlugin::PreRender(void)
         if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen))
         {
             Vec3f albedo = Vec3f::Pow(material.baseColor, 1.0f / 2.2f);
-            instanceHasChanged |= ImGui::ColorEdit3("Albedo (Gamma Corrected)", (float*)&albedo, 0);
+            m_instanceHasChanged |= ImGui::ColorEdit3("Albedo (Gamma Corrected)", (float*)&albedo, 0);
             material.baseColor = Vec3f::Pow(albedo, 2.2f);
 
-            instanceHasChanged |= ImGui::SliderFloat("Metallic", &material.metallic, 0.f, 1.f);
-            instanceHasChanged |= ImGui::SliderFloat("Roughness", &material.roughness, 0.001f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("SpecularTint", &material.specularTint, 0.0f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("Subsurface", &material.subsurface, 0.0f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("Anisotropic", &material.anisotropic, 0.0f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("Sheen", &material.sheen, 0.0f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("SheenTint", &material.sheenTint, 0.0f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("Clearcoat", &material.clearcoat, 0.0f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("ClearcoatGloss", &material.clearcoatGloss, 0.0f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("SpecTrans", &material.specTrans, 0.0f, 1.0f);
-            instanceHasChanged |= ImGui::SliderFloat("Ior", &material.ior, 1.001f, 2.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("Metallic", &material.metallic, 0.f, 1.f);
+            m_instanceHasChanged |= ImGui::SliderFloat("Roughness", &material.roughness, 0.001f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("SpecularTint", &material.specularTint, 0.0f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("Subsurface", &material.subsurface, 0.0f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("Anisotropic", &material.anisotropic, 0.0f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("Sheen", &material.sheen, 0.0f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("SheenTint", &material.sheenTint, 0.0f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("Clearcoat", &material.clearcoat, 0.0f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("ClearcoatGloss", &material.clearcoatGloss, 0.0f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("SpecTrans", &material.specTrans, 0.0f, 1.0f);
+            m_instanceHasChanged |= ImGui::SliderFloat("Ior", &material.ior, 1.001f, 2.0f);
 
             int mediumType = (int)material.mediumType;
             if (ImGui::Combo("Medium Type", &mediumType, "None\0Absorb\0Scatter\0Emissive\0"))
             {
-                reloadShaders = true;
-                instanceHasChanged = true;
+                m_reloadShaders = true;
+                m_instanceHasChanged = true;
                 material.mediumType = mediumType;
             }
 
             if (mediumType != Material::MediumType::NONE)
             {
                 Vec3f mediumColor = Vec3f::Pow(material.mediumColor, 1.0 / 2.2);
-                instanceHasChanged |= ImGui::ColorEdit3("Medium Color (Gamma Corrected)", (float*)(&mediumColor), 0);
+                m_instanceHasChanged |= ImGui::ColorEdit3("Medium Color (Gamma Corrected)", (float*)(&mediumColor), 0);
                 material.mediumColor = Vec3f::Pow(mediumColor, 2.2);
 
-                instanceHasChanged |= ImGui::SliderFloat("Medium Density", &material.mediumDensity, 0.0f, 5.0f);
+                m_instanceHasChanged |= ImGui::SliderFloat("Medium Density", &material.mediumDensity, 0.0f, 5.0f);
 
                 if(mediumType == Material::MediumType::SCATTER)
                 {
-                    instanceHasChanged |= ImGui::SliderFloat("Medium Anisotropy", &material.mediumAnisotropy, -0.9f, 0.9f);
+                    m_instanceHasChanged |= ImGui::SliderFloat("Medium Anisotropy", &material.mediumAnisotropy, -0.9f, 0.9f);
                 }
             }
 
             int alphaMode = (int)material.alphaMode;
             if (ImGui::Combo("Alpha Mode", &alphaMode, "Opaque\0Blend\0Mask\0"))
             {
-                reloadShaders = true;
-                instanceHasChanged = true;
+                m_reloadShaders = true;
+                m_instanceHasChanged = true;
                 material.alphaMode = alphaMode;
             }
 
             if (alphaMode != Material::AlphaMode::OPAQUE)
             {
-                instanceHasChanged |= ImGui::SliderFloat("Opacity", &material.opacity, 0.0f, 1.0f);
+                m_instanceHasChanged |= ImGui::SliderFloat("Opacity", &material.opacity, 0.0f, 1.0f);
             }
-        }
-
-        if (instanceHasChanged)
-        {
-            ctx.scene->meshInstances[m_selectedInstance].transform = xform;
-            ctx.scene->RebuildInstances();
-            ctx.renderer->Update(0.f);
         }
     }
 
     ImGui::End();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void GuiPlugin::DrawFileExplorer(void)
+{
+    Context& ctx = Context::GetInstance();
 
     if (ImGuiFileDialog::Instance()->Display(
         "ChooseSceneFile", ImGuiWindowFlags_NoDocking, ImVec2(800, 600))
@@ -569,22 +646,47 @@ void GuiPlugin::PreRender(void)
 
         ImGuiFileDialog::Instance()->Close();
     }
+}
 
-    if (optionsChanged)
+///////////////////////////////////////////////////////////////////////////////
+void GuiPlugin::PreRender(void)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    Context& ctx = Context::GetInstance();
+    Renderer::Options& options = ctx.scene->renderOptions;
+
+    if (io.DisplaySize.x <= 0.f || io.DisplaySize.y <= 0.f || ctx.shutdown)
     {
-        ctx.scene->dirty = true;
+        return;
     }
 
-    if (reloadShaders)
+    PrepareDocking();
+    DrawMainMenuBar();
+    DrawSettings();
+    DrawViewport();
+    DrawSceneHierarchy();
+    DrawMeshInspector();
+    DrawFileExplorer();
+
+    if (m_reloadShaders)
     {
-        ctx.scene->dirty = true;
         ctx.renderer->ReloadShaders();
     }
 
-    if (optionsChanged || reloadShaders)
+    if (m_instanceHasChanged)
     {
+        ctx.scene->RebuildInstances();
+    }
+
+    if (m_optionsChanged || m_reloadShaders || m_instanceHasChanged)
+    {
+        ctx.scene->dirty = true;
         ctx.renderer->Update(0.f);
     }
+
+    m_optionsChanged = false;
+    m_reloadShaders = false;
+    m_instanceHasChanged = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
