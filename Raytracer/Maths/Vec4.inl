@@ -42,4 +42,16 @@ Vec4<T>::Vec4(const T& x, const T& y, const T& z, const T& w)
     , w(w)
 {}
 
+///////////////////////////////////////////////////////////////////////////////
+template <typename T>
+Vec4<T> operator+(const Vec4<T>& lhs, const Vec4<T>& rhs)
+{
+    return (Vec4<T>(
+        lhs.x + rhs.x,
+        lhs.y + rhs.y,
+        lhs.z + rhs.z,
+        lhs.w + rhs.w
+    ));
+}
+
 } // namespace Ray
