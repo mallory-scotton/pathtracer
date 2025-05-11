@@ -42,8 +42,8 @@ void Sphere::GenerateGeometry(void)
         return;
     }
 
-    Ray::Vector<Vec4f> unique_vertices_temp;
-    Ray::Vector<Vec4f> unique_normals_temp;
+    Vector<Vec4f> unique_vertices_temp;
+    Vector<Vec4f> unique_normals_temp;
 
     for (int stack_idx = 0; stack_idx <= m_rings; ++stack_idx)
     {
