@@ -11,7 +11,7 @@ namespace Ray::Objects
 
 ///////////////////////////////////////////////////////////////////////////////
 InfinitePlane::InfinitePlane(void)
-    : APrimitiveObject("plane")
+    : APrimitiveObject("infinite_plane")
 {
     GenerateGeometry();
 }
