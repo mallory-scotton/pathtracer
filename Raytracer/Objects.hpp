@@ -20,3 +20,4 @@
 #include "Objects/InfinitePlane.hpp"
 #include "Objects/Cylinder.hpp"
 #include "Objects/Sphere.hpp"
+#include "Objects/Torus.hpp"
