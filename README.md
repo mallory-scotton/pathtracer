@@ -14,6 +14,18 @@ This project builds upon knowledge gained in core computer science fundamentals 
 
 ## 💡 Features
 
+### Built-in Primitives
+
+- Complete set of parameterizable geometric shapes:
+    - Sphere (perfect or deformed)
+    - Cube (with adjustable dimensions)
+    - Plane and infinite plane
+    - Cylinder (capped or uncapped)
+    - Cone (with variable apex angle)
+    - Torus (with configurable inner/outer radius)
+    - Tangle cube (fourth-order algebraic surface)
+- Instanced primitives with individual transforms
+
 ### Core Rendering Technology
 
 - Advanced unidirectional path tracer with physically-based rendering
