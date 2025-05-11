@@ -37,7 +37,7 @@ public:
     /// \param segments
     ///
     ///////////////////////////////////////////////////////////////////////////
-    Cylinder(float radius = 1.0f, float height = 2.0f, int segments = 32);
+    Cylinder(float radius = 0.5f, float height = 1.0f, int segments = 32);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
