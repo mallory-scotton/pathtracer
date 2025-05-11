@@ -23,7 +23,8 @@ This project builds upon knowledge gained in core computer science fundamentals 
     - Cylinder (capped or uncapped)
     - Cone (with variable apex angle)
     - Torus (with configurable inner/outer radius)
-    - Tangle cube (fourth-order algebraic surface)
+    - Morbius Strip (with configurable radius and half width)
+    - Sierpinski Fractal (with adjustable dimensions)
 - Instanced primitives with individual transforms
 
 ### Core Rendering Technology
