@@ -22,3 +22,4 @@
 #include "Objects/Sphere.hpp"
 #include "Objects/Torus.hpp"
 #include "Objects/Fractal.hpp"
+#include "Objects/MobiusStrip.hpp"
