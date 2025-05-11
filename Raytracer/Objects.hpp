@@ -21,3 +21,4 @@
 #include "Objects/Cylinder.hpp"
 #include "Objects/Sphere.hpp"
 #include "Objects/Torus.hpp"
+#include "Objects/Fractal.hpp"
