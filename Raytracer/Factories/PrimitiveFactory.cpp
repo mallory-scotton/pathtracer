@@ -13,6 +13,9 @@ namespace Ray
 PrimitiveFactory::PrimitiveFactory(void)
 {
     Register("cube", Objects::Cube::Constructor);
+    Register("plane", Objects::Plane::Constructor);
+    Register("sphere", Objects::Sphere::Constructor);
+    Register("torus", Objects::Torus::Constructor);
 }
 
 } // namespace Ray
