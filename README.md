@@ -25,6 +25,17 @@ This project builds upon knowledge gained in core computer science fundamentals 
     - Torus (with configurable inner/outer radius)
     - Morbius Strip (with configurable radius and half width)
     - Sierpinski Fractal (with adjustable dimensions)
+    - Capsule (with configurable radius and height)
+    - Disc (with configurable radius)
+    - Ellipsoid (with configurable radii)
+    - Pyramid (with adjustable base and height)
+    - Tetrahedron
+    - Octahedron
+    - Dodecahedron
+    - Icosahedron
+    - Prism (with configurable base and height)
+    - Helix (with configurable parameters)
+    - Mesh (imported from file formats)
 - Instanced primitives with individual transforms
 
 ### Core Rendering Technology
