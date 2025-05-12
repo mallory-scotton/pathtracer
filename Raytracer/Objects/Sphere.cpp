@@ -46,6 +46,11 @@ Sphere::Sphere(float radius, int segments, int rings)
         m_rings = 2;
     }
 
+    m_hash = m_name +
+        std::to_string(m_radius) +
+        std::to_string(m_segments) +
+        std::to_string(m_rings);
+
     GenerateGeometry();
 }
 
