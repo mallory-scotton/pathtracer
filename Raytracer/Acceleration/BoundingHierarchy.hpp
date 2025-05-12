@@ -26,48 +26,59 @@ namespace Ray
 class BoundingHierarchy
 {
 public:
-protected:
     ///////////////////////////////////////////////////////////////////////////
     //
     ///////////////////////////////////////////////////////////////////////////
-    enum NodeType { kInternal, kLeaf }; //<!
-    struct Node {
+    enum NodeType
+    {
+        kInternal,
+        kLeaf
+    }; //<!
+    struct Node
+    {
         BoundingBox bounds;
         NodeType type;
         int index;
-        union {
-            struct {
-                Node* lc;
-                Node* rc;
+        union
+        {
+            struct
+            {
+                int left_child_idx;
+                int right_child_idx;
             };
-            struct {
+            struct
+            {
                 int startidx;
                 int numprims;
             };
         };
     };
 
-    struct SplitRequest {
+    struct SplitRequest
+    {
         int startidx;                   //<!
         int numprims;                   //<!
-        Node** ptr;                     //<!
+        int* node_idx;                  // Changed: Store index instead of pointer
         BoundingBox bounds;             //<!
         BoundingBox centroid_bounds;    //<!
         int level;                      //<!
         int index;                      //<!
     };
-    struct SahSplit {
+    struct SahSplit
+    {
         int dim;                        //<!
         float split;                    //<!
         float sah;                      //<!
         float overlap;                  //<!
     };
+    int m_root_idx;                     //<!
     std::vector<Node> m_nodes;          //<!
+    std::vector<int> m_packed_indices;  //<!
+
+protected:
     std::vector<int> m_indices;         //<!
     std::atomic<int> m_nodecnt;         //<!
-    std::vector<int> m_packed_indices;  //<!
     BoundingBox m_bounds;               //<!
-    Node* m_root;                       //<!
     bool m_usesah;                      //<!
     int m_height;                       //<!
     float m_traversal_cost;             //<!
@@ -110,7 +121,7 @@ public:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    void Build(BoundingBox const* bounds, int numbounds);
+    void Build(const std::vector<BoundingBox>& bounds, int numbounds);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -144,7 +155,7 @@ public:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    bool is_nan(float v) const;
+    bool IsNan(float v) const;
 
 protected:
 
@@ -157,7 +168,7 @@ protected:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    virtual void BuildImpl(BoundingBox const* bounds, int numbounds);
+    virtual void BuildImpl(const std::vector<BoundingBox> bounds, int numbounds);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -165,7 +176,7 @@ protected:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    virtual Node& AllocateNode();
+    virtual int AllocateNode(); // Changed: Return index instead of reference
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -186,8 +197,8 @@ protected:
     /// \param primindices
     ///
     ///////////////////////////////////////////////////////////////////////////
-    void BuildNode(SplitRequest const& req, BoundingBox const* bounds,
-                   Vec3f const* centroids, int* primindices);
+    void BuildNode(SplitRequest const& req, const std::vector<BoundingBox> bounds,
+                   const std::vector<Vec3f> centroids, std::vector<int> primindices);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -200,8 +211,8 @@ protected:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    SahSplit FindSahSplit(SplitRequest const& req, BoundingBox const* bounds,
-        Vec3f const* centroids, int* primindices) const;
+    SahSplit FindSahSplit(SplitRequest const& req, const std::vector<BoundingBox> bounds,
+        const std::vector<Vec3f> centroids, std::vector<int> primindices) const;
 };
 
 }  // namespace Ray

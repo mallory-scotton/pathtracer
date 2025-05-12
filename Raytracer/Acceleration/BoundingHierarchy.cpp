@@ -19,7 +19,7 @@ static int constexpr kMaxPrimitivesPerLeaf = 1;
 
 ///////////////////////////////////////////////////////////////////////////////
 BoundingHierarchy::BoundingHierarchy(float traversal_cost, int num_bins, bool usesah)
-    : m_root(nullptr)
+    : m_root_idx(-1)  // Changed: Initialize with invalid index
     , m_usesah(usesah)
     , m_height(0)
     , m_traversal_cost(traversal_cost)
@@ -37,10 +37,9 @@ BoundingBox const& BoundingHierarchy::Bounds(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void BoundingHierarchy::Build(BoundingBox const* bounds, int numbounds)
+void BoundingHierarchy::Build(const std::vector<BoundingBox>& bounds, int numbounds)
 {
     for (int i = 0; i < numbounds; ++i) {
-        // Calc BoundingBox
         m_bounds.Grow(bounds[i]);
     }
 
@@ -66,13 +65,13 @@ size_t BoundingHierarchy::GetNumIndices(void) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-bool BoundingHierarchy::is_nan(float v) const
+bool BoundingHierarchy::IsNan(float v) const
 {
     return v != v;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void BoundingHierarchy::BuildImpl(BoundingBox const* bounds, int numbounds)
+void BoundingHierarchy::BuildImpl(const std::vector<BoundingBox> bounds, int numbounds)
 {
     InitNodeAllocator(2 * numbounds - 1);
 
@@ -89,18 +88,21 @@ void BoundingHierarchy::BuildImpl(BoundingBox const* bounds, int numbounds)
         centroids[i] = c;
     }
 
-    SplitRequest init = {0, numbounds, nullptr, m_bounds, centroid_bounds,
+    // Changed: Use node index instead of pointer
+    int root_idx = -1;
+    SplitRequest init = {0, numbounds, &root_idx, m_bounds, centroid_bounds,
                          0, 1};
 
-    BuildNode(init, bounds, &centroids[0], &m_indices[0]);
+    BuildNode(init, bounds, centroids, m_indices);
 
-    m_root = &m_nodes[0];
+    m_root_idx = root_idx;  // Store the root index
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-BoundingHierarchy::Node& BoundingHierarchy::AllocateNode()
+int BoundingHierarchy::AllocateNode()  // Changed: Return index instead of reference
 {
-    return m_nodes[m_nodecnt++];
+    int idx = m_nodecnt++;
+    return idx;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,11 +113,12 @@ void BoundingHierarchy::InitNodeAllocator(size_t maxnum)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void BoundingHierarchy::BuildNode(SplitRequest const& req, BoundingBox const* bounds,
-                   Vec3f const* centroids, int* primindices)
+void BoundingHierarchy::BuildNode(SplitRequest const& req, const std::vector<BoundingBox> bounds,
+                   const std::vector<Vec3f> centroids, std::vector<int> primindices)
 {
     m_height = std::max(m_height, req.level);
-    Node node = AllocateNode();
+    int node_idx = AllocateNode();
+    Node& node = m_nodes[node_idx];  // Get reference to the node from index
     node.bounds = req.bounds;
     node.index = req.index;
 
@@ -138,7 +141,7 @@ void BoundingHierarchy::BuildNode(SplitRequest const& req, BoundingBox const* bo
         if (m_usesah) {
             SahSplit ss = FindSahSplit(req, bounds, centroids, primindices);
 
-            if (!is_nan(ss.split)) {
+            if (!IsNan(ss.split)) {
                 axis = ss.dim;
                 border = ss.split;
 
@@ -153,7 +156,7 @@ void BoundingHierarchy::BuildNode(SplitRequest const& req, BoundingBox const* bo
                             primindices[req.startidx + i]);
                     }
 
-                    if (req.ptr) *req.ptr = &node;
+                    if (req.node_idx) *req.node_idx = node_idx;  // Store node index
                     return;
                 }
             }
@@ -247,38 +250,50 @@ void BoundingHierarchy::BuildNode(SplitRequest const& req, BoundingBox const* bo
             }
         }
 
+        // Changed: Use int pointers for child indices
+        int left_child_idx = -1;
+        int right_child_idx = -1;
+
         // Left request
         SplitRequest leftrequest = {
-            req.startidx,    splitidx - req.startidx, &node.lc,
+            req.startidx,    splitidx - req.startidx, &left_child_idx,
             leftbounds,      leftcentroid_bounds,     req.level + 1,
             (req.index << 1)};
+
         // Right request
-        SplitRequest rightrequest = {splitidx,
-                                     req.numprims - (splitidx - req.startidx),
-                                     &node.rc,
-                                     rightbounds,
-                                     rightcentroid_bounds,
-                                     req.level + 1,
-                                     (req.index << 1) + 1};
+        SplitRequest rightrequest = {
+            splitidx,
+            req.numprims - (splitidx - req.startidx),
+            &right_child_idx,
+            rightbounds,
+            rightcentroid_bounds,
+            req.level + 1,
+            (req.index << 1) + 1};
 
         {
             // Put those to stack
             BuildNode(leftrequest, bounds, centroids, primindices);
         }
 
-        { BuildNode(rightrequest, bounds, centroids, primindices); }
+        {
+            BuildNode(rightrequest, bounds, centroids, primindices);
+        }
+
+        // Store child indices in the node
+        node.left_child_idx = left_child_idx;
+        node.right_child_idx = right_child_idx;
     }
 
-    // Set parent ptr if any
-    if (req.ptr) *req.ptr = &node;
+    // Set node index if parent requested it
+    if (req.node_idx) *req.node_idx = node_idx;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 BoundingHierarchy::SahSplit BoundingHierarchy::FindSahSplit(SplitRequest const& req,
-                                BoundingBox const* bounds,
-                                Vec3f const* centroids,
-                                int* primindices) const {
+                                const std::vector<BoundingBox> bounds,
+                                const std::vector<Vec3f> centroids,
+                                std::vector<int> primindices) const {
     // SAH implementation
     // calc centroids histogram
     // int const kNumBins = 128;
