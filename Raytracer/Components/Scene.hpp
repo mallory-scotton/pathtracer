@@ -53,8 +53,8 @@ public:
     Vector<unsigned char> textureMapsArray;     //<!
     bool initialized;                           //<!
     bool dirty;                                 //<!
-    bool instancesModified = false;             //<!
-    bool envMapModified = false;                //<!
+    bool instancesModified;                     //<!
+    bool envMapModified;                        //<!
 
 private:
     ///////////////////////////////////////////////////////////////////////////

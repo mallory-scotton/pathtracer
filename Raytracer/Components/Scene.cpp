@@ -27,6 +27,8 @@ Scene::Scene(void)
     , camera(nullptr)
     , initialized(false)
     , dirty(true)
+    , instancesModified(false)
+    , envMapModified(false)
 {
     sceneBvh = std::make_unique<Ray::Bvh>(10.0f, 64, false);
 }
