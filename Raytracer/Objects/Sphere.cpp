@@ -12,6 +12,24 @@ namespace Ray::Objects
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+const Sphere::ConstructorType& Sphere::Constructor =
+    [](const Optional<LibConfig::Setting>& config) -> UniquePtr<IObject>
+{
+    float radius = 1.0f;
+    int segments = 32;
+    int rings = 16;
+
+    if (config.has_value())
+    {
+        config->Value("radius", radius);
+        config->Value("segments", segments);
+        config->Value("rings", rings);
+    }
+
+    return (std::make_unique<Objects::Sphere>(radius, segments, rings));
+};
+
+///////////////////////////////////////////////////////////////////////////////
 Sphere::Sphere(float radius, int segments, int rings)
     : APrimitiveObject("sphere")
     , m_radius(radius)
