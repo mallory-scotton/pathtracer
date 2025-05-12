@@ -10,6 +10,14 @@ namespace Ray::Objects
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+const Plane::ConstructorType& Plane::Constructor =
+    [](const Optional<LibConfig::Setting>& config) -> UniquePtr<IObject>
+{
+    RAY_UNUSED(config);
+    return (std::make_unique<Objects::Plane>());
+};
+
+///////////////////////////////////////////////////////////////////////////////
 Plane::Plane(void)
     : APrimitiveObject("plane")
 {
