@@ -11,6 +11,26 @@ namespace Ray::Objects
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+const MobiusStrip::ConstructorType& MobiusStrip::Constructor =
+    [](const Optional<LibConfig::Setting>& config) -> UniquePtr<IObject>
+{
+    float radius = 1.0f;
+    float halfWidth = 0.2f;
+    int segments = 128;
+
+    if (config.has_value())
+    {
+        config->Value("radius", radius);
+        config->Value("halfWidth", halfWidth);
+        config->Value("segments", segments);
+    }
+    
+    return (std::make_unique<Objects::MobiusStrip>(
+        radius, halfWidth, segments
+    ));
+};
+
+///////////////////////////////////////////////////////////////////////////////
 MobiusStrip::MobiusStrip(float radius, float halfWidth, int segments)
     : APrimitiveObject("mobius_strip")
     , m_radius(radius)
@@ -31,6 +51,11 @@ MobiusStrip::MobiusStrip(float radius, float halfWidth, int segments)
     {
         m_segments = 3;
     }
+
+    m_hash = m_name +
+        std::to_string(m_radius) +
+        std::to_string(m_halfWidth) +
+        std::to_string(m_segments);
 
     GenerateGeometry();
 }
