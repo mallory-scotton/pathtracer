@@ -16,6 +16,8 @@ PrimitiveFactory::PrimitiveFactory(void)
     Register("plane", Objects::Plane::Constructor);
     Register("sphere", Objects::Sphere::Constructor);
     Register("torus", Objects::Torus::Constructor);
+    Register("infinite_plane", Objects::InfinitePlane::Constructor);
+    Register("fractal", Objects::Fractal::Constructor);
 }
 
 } // namespace Ray
