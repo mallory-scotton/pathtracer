@@ -21,6 +21,7 @@ const Plane::ConstructorType& Plane::Constructor =
 Plane::Plane(void)
     : APrimitiveObject("plane")
 {
+    m_hash = m_name;
     GenerateGeometry();
 }
 
