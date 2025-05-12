@@ -11,6 +11,22 @@ namespace Ray::Objects
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+const Fractal::ConstructorType& Fractal::Constructor =
+    [](const Optional<LibConfig::Setting>& config) -> UniquePtr<IObject>
+{
+    int iterations = 3;
+    float size = 1.0f;
+
+    if (config.has_value())
+    {
+        config->Value("iterations", iterations);
+        config->Value("size", size);
+    }
+
+    return (std::make_unique<Objects::Fractal>(iterations, size));
+};
+
+///////////////////////////////////////////////////////////////////////////////
 Fractal::Fractal(int iterations, float size)
     : APrimitiveObject("fractal")
     , m_iterations(iterations)
