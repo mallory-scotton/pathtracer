@@ -71,7 +71,7 @@ protected:
     /// \param numbounds
     ///
     ///////////////////////////////////////////////////////////////////////////
-    void BuildImpl(std::vector<BoundingBox> bounds, int numbounds) override;
+    void BuildImpl(const std::vector<BoundingBox>& bounds, int numbounds) override;
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -111,8 +111,8 @@ protected:
     /// \param extra_refs
     ///
     ///////////////////////////////////////////////////////////////////////////
-    void SplitPrimRefs(const SahSplit& split, const SplitRequest& req,
-                       PrimRefArray refs, int extra_refs);
+    int SplitPrimRefs(const SahSplit& split, const SplitRequest& req,
+                       PrimRefArray refs);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief

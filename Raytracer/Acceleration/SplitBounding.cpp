@@ -32,7 +32,7 @@ SplitBounding::~SplitBounding()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void SplitBounding::BuildImpl(std::vector<BoundingBox> bounds, int numbounds)
+void SplitBounding::BuildImpl(const std::vector<BoundingBox>& bounds, int numbounds)
 {
     // Initialize prim refs structures
     PrimRefArray primrefs(numbounds);
@@ -54,7 +54,7 @@ void SplitBounding::BuildImpl(std::vector<BoundingBox> bounds, int numbounds)
 
     InitNodeAllocator(m_num_nodes_required);
 
-    SplitRequest init = {0, numbounds, nullptr, m_bounds, centroid_bounds, 0};
+    SplitRequest init = {0, numbounds, nullptr, m_bounds, centroid_bounds, 0, 1};
 
     // Start from the top
     BuildNode(init, primrefs);
@@ -114,8 +114,7 @@ void SplitBounding::BuildNode(SplitRequest& req, PrimRefArray primrefs) {
             }
 
             // Split prim refs and add extra refs to request
-            int extra_refs = 0;
-            SplitPrimRefs(ss, req, primrefs, extra_refs);
+            int extra_refs = SplitPrimRefs(ss, req, primrefs);
             req.numprims += extra_refs;
             border = ss.split;
             axis = ss.dim;
@@ -503,8 +502,8 @@ bool SplitBounding::SplitPrimRef(const PrimRef& ref, int axis, float split,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void SplitBounding::SplitPrimRefs(const SahSplit& split, const SplitRequest& req,
-                             PrimRefArray refs, int extra_refs)
+int SplitBounding::SplitPrimRefs(const SahSplit& split, const SplitRequest& req,
+                             PrimRefArray refs)
 {
     // We are going to append new primitives at the end of the array
     int appendprims = req.numprims;
@@ -521,9 +520,7 @@ void SplitBounding::SplitPrimRefs(const SahSplit& split, const SplitRequest& req
             refs[req.startidx + appendprims++] = rightref;
         }
     }
-
-    // Return number of primitives after this operation
-    extra_refs = appendprims - req.numprims;
+    return (appendprims - req.numprims);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

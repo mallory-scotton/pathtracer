@@ -74,10 +74,13 @@ public:
     int m_root_idx;                     //<!
     std::vector<Node> m_nodes;          //<!
     std::vector<int> m_packed_indices;  //<!
+    std::atomic<int> m_nodecnt;         //<!
 
 protected:
+    ///////////////////////////////////////////////////////////////////////////
+    ///
+    ///////////////////////////////////////////////////////////////////////////
     std::vector<int> m_indices;         //<!
-    std::atomic<int> m_nodecnt;         //<!
     BoundingBox m_bounds;               //<!
     bool m_usesah;                      //<!
     int m_height;                       //<!
@@ -168,7 +171,7 @@ protected:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    virtual void BuildImpl(const std::vector<BoundingBox> bounds, int numbounds);
+    virtual void BuildImpl(const std::vector<BoundingBox>& bounds, int numbounds);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -197,8 +200,10 @@ protected:
     /// \param primindices
     ///
     ///////////////////////////////////////////////////////////////////////////
-    void BuildNode(SplitRequest const& req, const std::vector<BoundingBox> bounds,
-                   const std::vector<Vec3f> centroids, std::vector<int> primindices);
+    void BuildNode(const SplitRequest& req,
+        const std::vector<BoundingBox>& bounds,
+        const std::vector<Vec3f>& centroids,
+        std::vector<int>& primindices);
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
@@ -211,8 +216,10 @@ protected:
     /// \return
     ///
     ///////////////////////////////////////////////////////////////////////////
-    SahSplit FindSahSplit(SplitRequest const& req, const std::vector<BoundingBox> bounds,
-        const std::vector<Vec3f> centroids, std::vector<int> primindices) const;
+    SahSplit FindSahSplit(const SplitRequest& req,
+        const std::vector<BoundingBox>& bounds,
+        const std::vector<Vec3f>& centroids,
+        std::vector<int>& primindices) const;
 };
 
 }  // namespace Ray
