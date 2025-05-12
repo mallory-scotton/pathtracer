@@ -28,6 +28,7 @@ Cube::Cube(float size)
     : APrimitiveObject("cube")
     , m_size(size)
 {
+    m_hash = m_name + std::to_string(size);
     GenerateGeometry();
 }
 
