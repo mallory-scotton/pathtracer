@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Config.hpp"
 #include "Core/Renderer.hpp"
-#include "Components/Scene.h"
+#include "Components/Scene.hpp"
 #include "OpenImageDenoise/oidn.hpp"
 #include "Errors/Exception.hpp"
 #include "Utils/OpenGL.hpp"
@@ -125,7 +125,7 @@ void Renderer::InitGPUDataBuffers(void)
 
     vertexIndicesBuffer = std::make_unique<OpenGL::Buffer>(GL_TEXTURE_BUFFER);
     vertexIndicesBuffer->SetData(
-        sizeof(Indices) * scene->vertIndices.size(),
+        sizeof(Index) * scene->vertIndices.size(),
         &scene->vertIndices[0],
         GL_STATIC_DRAW
     );

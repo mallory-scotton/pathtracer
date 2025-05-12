@@ -1,7 +1,7 @@
 // FIXME: THE WHOLE FILE
 #pragma once
 
-#include "Components/Scene.h"
+#include "Components/Scene.hpp"
 
 namespace Ray {
 class Scene;
