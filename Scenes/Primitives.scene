@@ -43,6 +43,7 @@ primitives = (
     {
         type = "fractal";
         material = "blue";
+        iterations = 5;
         position = { x: 0.0; y: 1.0; z: 10.0 };
     },
     {
