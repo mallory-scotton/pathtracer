@@ -54,6 +54,12 @@ Torus::Torus(
         m_tubeSegments = 3;
     }
 
+    m_hash = m_name +
+        std::to_string(m_mainRadius) +
+        std::to_string(m_tubeRadius) +
+        std::to_string(m_mainSegments) +
+        std::to_string(m_tubeSegments);
+
     GenerateGeometry();
 }
 
