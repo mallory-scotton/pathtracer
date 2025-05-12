@@ -10,6 +10,7 @@
 #include "Builders/LightBuilder.hpp"
 #include "Builders/MaterialBuilder.hpp"
 #include "Builders/MeshInstanceBuilder.hpp"
+#include "Builders/PrimitiveBuilder.hpp"
 #include "Builders/RendererOptionsBuilder.hpp"
 #include "Core/Context.hpp"
 
@@ -18,7 +19,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace Ray
 {
-
 
 ///////////////////////////////////////////////////////////////////////////////
 void Loader::ParseSceneMaterial(
@@ -68,10 +68,7 @@ void Loader::ParseSceneLight(const LibConfig::Setting& cfg)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-void Loader::ParseSceneMesh(
-    const LibConfig::Setting& cfg,
-    Map<String, MaterialData>& materials
-)
+void Loader::ParseSceneMesh(const LibConfig::Setting& cfg)
 {
     Context& ctx = Context::GetInstance();
     MeshInstanceBuilder builder;
@@ -80,9 +77,22 @@ void Loader::ParseSceneMesh(
 
     if (builder.IDCheck())
     {
-    ctx.scene->AddMeshInstance(builder.Build());
+        ctx.scene->AddMeshInstance(builder.Build());
     }
+}
 
+/////////////////////////////////////////////////////////////////////////////
+void Loader::ParseScenePrimitive(const LibConfig::Setting& cfg)
+{
+    Context& ctx = Context::GetInstance();
+    PrimitiveBuilder builder;
+
+    builder.FromConfiguration(cfg);
+
+    if (builder.IDCheck())
+    {
+        ctx.scene->AddMeshInstance(builder.Build());
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -185,7 +195,15 @@ bool Loader::LoadScene(const Path& filename)
     {
         for (int i = 0; i < meshes->Length(); i++)
         {
-            ParseSceneMesh(meshes->At(i), materialMap);
+            ParseSceneMesh(meshes->At(i));
+        }
+    }
+
+    if (const auto& primitives = config.Lookup("primitives"))
+    {
+        for (int i = 0; i < primitives->Length(); i++)
+        {
+            ParseScenePrimitive(primitives->At(i));
         }
     }
 
