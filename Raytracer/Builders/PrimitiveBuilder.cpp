@@ -2,6 +2,7 @@
 // Dependencies
 ///////////////////////////////////////////////////////////////////////////////
 #include "Builders/PrimitiveBuilder.hpp"
+#include "Factories/PrimitiveFactory.hpp"
 #include "Core/Context.hpp"
 #include "Objects.hpp"
 
@@ -60,7 +61,29 @@ PrimitiveBuilder& PrimitiveBuilder::FromConfiguration(
     }
 
     if (!type.empty()) {
-        m_instance.objectID; // TODO: Add the primitive mesh if not already
+        PrimitiveFactory& factory = PrimitiveFactory::GetInstance();
+
+        if (!factory.HasConstructor(type))
+        {
+            RAY_ERROR("Primitive " << type << " doesn't exists.");
+            return (*this);
+        }
+
+        for (Uint64 i = 0; i < ctx.scene->objects.size(); i++)
+        {
+            if (ctx.scene->objects[i]->GetName() == type)
+            {
+                m_instance.objectID = static_cast<int>(i);
+            }
+        }
+
+        if (m_instance.objectID == -1)
+        {
+            m_instance.objectID = static_cast<int>(ctx.scene->objects.size());
+            ctx.scene->objects.push_back(std::move(
+                factory.Create(type, config).value()
+            ));
+        }
 
         if (!name.empty() && name != "none")
         {
@@ -124,6 +147,16 @@ PrimitiveBuilder& PrimitiveBuilder::SetScale(const Vec3f& scale)
 {
     m_scale = scale;
     return (*this);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+bool PrimitiveBuilder::IDCheck(void) const
+{
+    if (m_instance.objectID == -1)
+    {
+        return (false);
+    }
+    return (true);
 }
 
 } // namespace Ray
