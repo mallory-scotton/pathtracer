@@ -31,6 +31,7 @@ Mesh::Mesh(const Path& filepath)
 bool Mesh::LoadFromFile(const Path& filepath)
 {
     m_name = filepath.filename();
+    m_hash = filepath;
     tinyobj::attrib_t attrib;
     Vector<tinyobj::shape_t> shapes;
     Vector<tinyobj::material_t> materials;
