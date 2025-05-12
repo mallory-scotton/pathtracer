@@ -54,7 +54,7 @@ int BvhTranslator::ProcessTLASNodes(const Bvh::Node* node) {
     return index;
 }
 
-void BvhTranslator::ProcessBLAS() {
+void BvhTranslator::ProcessBLAS(std::vector<UniquePtr<IObject>>& meshes) {
     int nodeCnt = 0;
 
     for (int i = 0; i < meshes.size(); i++)
@@ -69,7 +69,7 @@ void BvhTranslator::ProcessBLAS() {
     curTriIndex = 0;
 
     for (int i = 0; i < meshes.size(); i++) {
-        IObject* mesh = meshes[i];
+        IObject* mesh = meshes[i].get();
         curNode = bvhRootIndex;
 
         bvhRootStartIndices.push_back(bvhRootIndex);
@@ -80,7 +80,7 @@ void BvhTranslator::ProcessBLAS() {
     }
 }
 
-void BvhTranslator::ProcessTLAS() {
+void BvhTranslator::ProcessTLAS(void) {
     curNode = topLevelIndex;
     ProcessTLASNodes(topLevelBvh->m_root);
 }
@@ -95,12 +95,11 @@ void BvhTranslator::UpdateTLAS(
 }
 
 void BvhTranslator::Process(
-    const Bvh* topLevelBvh, const std::vector<IObject*>& objects,
+    const Bvh* topLevelBvh, std::vector<UniquePtr<IObject>>& objects,
     const std::vector<Instance>& sceneInstances) {
     this->topLevelBvh = topLevelBvh;
-    meshes = objects;
     meshInstances = sceneInstances;
-    ProcessBLAS();
+    ProcessBLAS(objects);
     ProcessTLAS();
 }
 }  // namespace Ray
