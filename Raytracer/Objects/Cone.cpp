@@ -10,6 +10,24 @@ namespace Ray::Objects
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+const Cone::ConstructorType& Cone::Constructor =
+    [](const Optional<LibConfig::Setting>& config) -> UniquePtr<IObject>
+{
+    float radius = 0.5f;
+    float height = 1.0f;
+    int segments = 32;
+
+    if (config.has_value())
+    {
+        config->Value("radius", radius);
+        config->Value("height", height);
+        config->Value("segments", segments);
+    }
+
+    return (std::make_unique<Objects::Cone>(radius, height, segments));
+};
+
+///////////////////////////////////////////////////////////////////////////////
 Cone::Cone(float radius, float height, int segments)
     : APrimitiveObject("cone")
     , m_radius(radius)
@@ -20,6 +38,11 @@ Cone::Cone(float radius, float height, int segments)
     {
         m_segments = 3;
     }
+
+    m_hash = m_name +
+        std::to_string(m_radius) +
+        std::to_string(m_height) +
+        std::to_string(m_segments);
 
     GenerateGeometry();
 }
