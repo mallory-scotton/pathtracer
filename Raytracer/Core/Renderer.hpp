@@ -151,8 +151,8 @@ private:
     int sampleCounter;                                      //<!
     float pixelRatio;                                       //<!
 
-    Vec3f* denoiserInputFramePtr;                           //<!
-    Vec3f* frameOutputPtr;                                  //<!
+    Vector<Vec3f> denoiserInputFramePtr;                    //<!
+    Vector<Vec3f> frameOutputPtr;                           //<!
     bool denoised;                                          //<!
 
 public:
@@ -166,7 +166,7 @@ public:
     /// \brief
     ///
     ///////////////////////////////////////////////////////////////////////////
-    ~Renderer();
+    virtual ~Renderer() = default;
 
 private:
     ///////////////////////////////////////////////////////////////////////////

@@ -69,13 +69,6 @@ Renderer::Renderer(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-Renderer::~Renderer()
-{
-    delete[] denoiserInputFramePtr;
-    delete[] frameOutputPtr;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 void Renderer::ActivateTextures(void)
 {
     Context& ctx = Context::GetInstance();
@@ -237,10 +230,6 @@ void Renderer::InitGPUDataBuffers(void)
 ///////////////////////////////////////////////////////////////////////////////
 void Renderer::ResizeRenderer(void)
 {
-    // Delete denoiser data
-    delete[] denoiserInputFramePtr;
-    delete[] frameOutputPtr;
-
     InitFBOs();
     InitializeUniforms(pathTraceShader);
     InitializeUniforms(pathTraceShaderLowRes);
@@ -343,8 +332,8 @@ void Renderer::InitFBOs(void)
     outputFBO->Texture2D(tileOutputTexture[currentBuffer]);
 
     // For Denoiser
-    denoiserInputFramePtr = new Vec3f[renderSize.x * renderSize.y];
-    frameOutputPtr = new Vec3f[renderSize.x * renderSize.y];
+    denoiserInputFramePtr.resize(renderSize.x * renderSize.y);
+    frameOutputPtr.resize(renderSize.x * renderSize.y);
 
     denoisedTexture = std::make_unique<OpenGL::Texture2D>();
     denoisedTexture->Image2D(
@@ -870,7 +859,7 @@ void Renderer::DenoiseRender(void)
     }
 
     tileOutputTexture[1 - currentBuffer]->Bind();
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, denoiserInputFramePtr);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, denoiserInputFramePtr.data());
 
     oidn::DeviceRef device = oidn::newDevice();
     device.commit();
@@ -883,7 +872,7 @@ void Renderer::DenoiseRender(void)
     oidn::BufferRef colorBuffer = device.newBuffer(size);
     oidn::BufferRef outputBuffer = device.newBuffer(size);
 
-    colorBuffer.write(0, size, denoiserInputFramePtr);
+    colorBuffer.write(0, size, denoiserInputFramePtr.data());
 
     oidn::FilterRef filter = device.newFilter("RT");
 
@@ -909,10 +898,10 @@ void Renderer::DenoiseRender(void)
     }
     else
     {
-        outputBuffer.read(0, size, frameOutputPtr);
+        outputBuffer.read(0, size, frameOutputPtr.data());
         denoisedTexture->Image2D(
             0, GL_RGB32F, renderSize.x, renderSize.y,
-            0, GL_RGB, GL_FLOAT, frameOutputPtr
+            0, GL_RGB, GL_FLOAT, frameOutputPtr.data()
         );
     }
 
