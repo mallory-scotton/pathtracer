@@ -42,6 +42,8 @@ Fractal::Fractal(int iterations, float size)
         m_iterations = 5;
     }
 
+    m_hash = m_name + std::to_string(m_iterations) + std::to_string(m_size);
+
     GenerateGeometry();
 }
 
