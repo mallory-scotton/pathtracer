@@ -36,89 +36,112 @@ Scene::Scene(void)
 ///////////////////////////////////////////////////////////////////////////////
 Scene::~Scene()
 {
-    for (int i = 0; i < textures.size(); i++)
+    for (int i = 0; i < static_cast<int>(textures.size()); i++)
+    {
         delete textures[i];
+    }
+
     textures.clear();
 
     if (envMap)
+    {
         delete envMap;
+    }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-int Scene::AddMesh(const std::string& filename)
+int Scene::AddMesh(const Path& filename)
 {
     int id = -1;
-    // Check if mesh was already loaded
-    for (int i = 0; i < objects.size(); i++)
+
+    for (int i = 0; i < static_cast<int>(objects.size()); i++)
+    {
         if (objects[i]->GetName() == filename)
-            return i;
+        {
+            return (i);
+        }
+    }
 
-    id = objects.size();
+    id = static_cast<int>(objects.size());
 
-    RAY_TRACE("Loading Model: \"" << filename << "\"");
+    RAY_TRACE("Loading Model: " << filename);
     objects.push_back(std::make_unique<Objects::Mesh>(filename));
 
-    return id;
+    return (id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int Scene::AddTexture(const std::string& filename)
+int Scene::AddTexture(const Path& filename)
 {
     int id = -1;
-    // Check if texture was already loaded
-    for (int i = 0; i < textures.size(); i++)
-        if (textures[i]->name == filename)
-            return i;
 
-    id = textures.size();
+    for (int i = 0; i < static_cast<int>(textures.size()); i++)
+    {
+        if (textures[i]->name == filename)
+        {
+            return (i);
+        }
+    }
+
+    id = static_cast<int>(textures.size());
     Texture* texture = new Texture;
 
-    printf("Loading texture %s\n", filename.c_str());
+    RAY_TRACE("Loading texture " << filename);
     if (texture->LoadTexture(filename))
+    {
         textures.push_back(texture);
+    }
     else
     {
-        printf("Unable to load texture %s\n", filename.c_str());
+        RAY_WARN("Unable to load texture " << filename);
         delete texture;
         id = -1;
     }
 
-    return id;
+    return (id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int Scene::AddMaterial(const Material& material, String name)
 {
-    int id = materials.size();
+    int id = static_cast<int>(materials.size());
     materials.push_back(material);
     materialsName.push_back(name);
-    return id;
+    return (id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int Scene::getMaterialID(String name)
+int Scene::getMaterialID(const String& name)
 {
     auto it = std::find(materialsName.begin(), materialsName.end(), name);
-    if (it != materialsName.end()) {
-        int index = std::distance(materialsName.begin(), it);
-        return index;
-    } else {
+
+    if (it != materialsName.end())
+    {
+        return (static_cast<int>(std::distance(materialsName.begin(), it)));
+    }
+    else
+    {
         RAY_WARN("Could not find material " << name);
-        return -1;
+        return (-1);
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Scene::AddEnvMap(const std::string& filename)
+void Scene::AddEnvMap(const Path& filename)
 {
     if (envMap)
+    {
         delete envMap;
+    }
+
     envMap = new EnvironmentMap;
-    if (envMap->LoadMap(filename.c_str()))
-        printf("HDR %s loaded\n", filename.c_str());
+    if (envMap->LoadMap(filename))
+    {
+        RAY_TRACE("HDR " << filename << " loaded");
+    }
     else
     {
-        printf("Unable to load HDR\n");
+        RAY_WARN("Unable to load HDR " << filename);
         delete envMap;
         envMap = nullptr;
     }
@@ -129,17 +152,17 @@ void Scene::AddEnvMap(const std::string& filename)
 ///////////////////////////////////////////////////////////////////////////////
 int Scene::AddMeshInstance(const Instance& instance)
 {
-    int id = instances.size();
+    int id = static_cast<int>(instances.size());
     instances.push_back(instance);
-    return id;
+    return (id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 int Scene::AddLight(const Light& light)
 {
-    int id = lights.size();
+    int id = static_cast<int>(lights.size());
     lights.push_back(light);
-    return id;
+    return (id);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -153,13 +176,12 @@ bool Scene::CanUpdate(int sampleCounter) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Scene::createTLAS()
+void Scene::createTLAS(void)
 {
-    // Loop through all the mesh Instances and build a Top Level BVH
     std::vector<Ray::BoundingBox> bounds;
     bounds.resize(instances.size());
 
-    for (int i = 0; i < instances.size(); i++)
+    for (Uint64 i = 0; i < instances.size(); i++)
     {
         Ray::BoundingBox BoundingBox = objects[instances[i].objectID]->GetBVH()->Bounds();
         Mat4x4f matrix = instances[i].transform;
@@ -197,25 +219,25 @@ void Scene::createTLAS()
 ///////////////////////////////////////////////////////////////////////////////
 void Scene::createBLAS()
 {
-    // Loop through all meshes and build BVHs
-    for (int i = 0; i < objects.size(); i++)
+    for (Uint64 i = 0; i < objects.size(); i++)
     {
-        printf("Building BVH for %s\n", objects[i]->GetName().c_str());
+        RAY_TRACE("Building BVH for " << objects[i]->GetName());
         objects[i]->BuildBVH();
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void Scene::RebuildInstances()
+void Scene::RebuildInstances(void)
 {
     sceneBvh = std::make_unique<Ray::Bvh>(10.0f, 64, false);
 
     createTLAS();
     bvhTranslator.UpdateTLAS(sceneBvh.get(), instances);
 
-    //Copy transforms
-    for (int i = 0; i < instances.size(); i++)
+    for (Uint64 i = 0; i < instances.size(); i++)
+    {
         transforms[i] = instances[i].transform;
+    }
 
     instancesModified = true;
     dirty = true;
@@ -224,27 +246,25 @@ void Scene::RebuildInstances()
 ///////////////////////////////////////////////////////////////////////////////
 void Scene::ProcessScene()
 {
-    printf("Processing scene data\n");
+    RAY_TRACE("Processing scene data");
     createBLAS();
 
-    printf("Building scene BVH\n");
+    RAY_TRACE("Building scene BVH");
     createTLAS();
 
     // Flatten BVH
-    printf("Flattening BVH\n");
+    RAY_TRACE("Flattening BVH");
     bvhTranslator.Process(sceneBvh.get(), objects, instances);
 
     // Copy mesh data
     int verticesCnt = 0;
-    printf("Copying Mesh Data\n");
-    for (int i = 0; i < objects.size(); i++)
+    RAY_TRACE("Copying Mesh Data");
+    for (Uint64 i = 0; i < objects.size(); i++)
     {
-        // Copy indices from BVH and not from Mesh.
-        // Required if splitBVH is used as a triangle can be shared by leaf nodes
-        int numIndices = objects[i]->GetBVH()->GetNumIndices();
+        Uint64 numIndices = objects[i]->GetBVH()->GetNumIndices();
         const int* triIndices = objects[i]->GetBVH()->GetIndices();
 
-        for (int j = 0; j < numIndices; j++)
+        for (Uint64 j = 0; j < numIndices; j++)
         {
             int index = triIndices[j];
             int v1 = (index * 3 + 0) + verticesCnt;
@@ -261,26 +281,28 @@ void Scene::ProcessScene()
     }
 
     // Copy transforms
-    printf("Copying transforms\n");
+    RAY_TRACE("Copying transforms");
     transforms.resize(instances.size());
-    for (int i = 0; i < instances.size(); i++)
+    for (Uint64 i = 0; i < instances.size(); i++)
+    {
         transforms[i] = instances[i].transform;
+    }
 
-    // Copy textures
     if (!textures.empty())
-        printf("Copying and resizing textures\n");
+    {
+        RAY_TRACE("Copying and resizing textures");
+    }
 
     int reqWidth = renderOptions.texArrayWidth;
     int reqHeight = renderOptions.texArrayHeight;
     int texBytes = reqWidth * reqHeight * 4;
     textureMapsArray.resize(texBytes * textures.size());
 
-    for (int i = 0; i < textures.size(); i++)
+    for (Uint64 i = 0; i < textures.size(); i++)
     {
         int texWidth = textures[i]->width;
         int texHeight = textures[i]->height;
 
-        // Resize textures to fit 2D texture array
         if (texWidth != reqWidth || texHeight != reqHeight)
         {
             unsigned char* resizedTex = new unsigned char[texBytes];
@@ -289,10 +311,11 @@ void Scene::ProcessScene()
             delete[] resizedTex;
         }
         else
+        {
             std::copy(textures[i]->texData.begin(), textures[i]->texData.end(), &textureMapsArray[i * texBytes]);
+        }
     }
 
-    // Add a default camera
     if (!camera)
     {
         Ray::BoundingBox bounds = sceneBvh->Bounds();
