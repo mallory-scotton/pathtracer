@@ -21,6 +21,7 @@ const InfinitePlane::ConstructorType& InfinitePlane::Constructor =
 InfinitePlane::InfinitePlane(void)
     : APrimitiveObject("infinite_plane")
 {
+    m_hash = m_name;
     GenerateGeometry();
 }
 
