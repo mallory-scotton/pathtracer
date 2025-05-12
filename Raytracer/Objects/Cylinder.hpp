@@ -26,6 +26,7 @@ private:
     ///////////////////////////////////////////////////////////////////////////
     float m_radius;     //<!
     float m_height;     //<!
+    bool m_capped;      //<!
     int m_segments;     //<!
 
 public:
@@ -34,10 +35,16 @@ public:
     ///
     /// \param radius
     /// \param heights
+    /// \param capped
     /// \param segments
     ///
     ///////////////////////////////////////////////////////////////////////////
-    Cylinder(float radius = 0.5f, float height = 1.0f, int segments = 32);
+    Cylinder(
+        float radius = 0.5f,
+        float height = 1.0f,
+        bool capped = true,
+        int segments = 32
+    );
 
     ///////////////////////////////////////////////////////////////////////////
     /// \brief
