@@ -13,7 +13,7 @@ namespace Ray
 {
 
 ///////////////////////////////////////////////////////////////////////////////
-SplitBvh::SplitBvh(float traversal_cost, int num_bins, int max_split_depth,
+SplitBounding::SplitBounding(float traversal_cost, int num_bins, int max_split_depth,
                    float min_overlap, float extra_refs_budget)
     : BoundingHierarchy(traversal_cost, num_bins, true)
     , m_max_split_depth(max_split_depth)
@@ -23,7 +23,7 @@ SplitBvh::SplitBvh(float traversal_cost, int num_bins, int max_split_depth,
 {}
 
 ///////////////////////////////////////////////////////////////////////////////
-SplitBvh::~SplitBvh()
+SplitBounding::~SplitBounding()
 {
     for (auto& nodes : m_node_archive) {
         nodes.clear();
@@ -32,7 +32,7 @@ SplitBvh::~SplitBvh()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void SplitBvh::BuildImpl(std::vector<BoundingBox> bounds, int numbounds)
+void SplitBounding::BuildImpl(std::vector<BoundingBox> bounds, int numbounds)
 {
     // Initialize prim refs structures
     PrimRefArray primrefs(numbounds);
@@ -61,7 +61,7 @@ void SplitBvh::BuildImpl(std::vector<BoundingBox> bounds, int numbounds)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void SplitBvh::BuildNode(SplitRequest& req, PrimRefArray primrefs) {
+void SplitBounding::BuildNode(SplitRequest& req, PrimRefArray primrefs) {
     // Update current height
     m_height = std::max(m_height, req.level);
 
@@ -231,7 +231,7 @@ void SplitBvh::BuildNode(SplitRequest& req, PrimRefArray primrefs) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-SplitBvh::SahSplit SplitBvh::FindObjectSahSplit(
+SplitBounding::SahSplit SplitBounding::FindObjectSahSplit(
     const SplitRequest& req, const PrimRefArray refs) const
 {
     // SAH implementation
@@ -353,7 +353,7 @@ SplitBvh::SahSplit SplitBvh::FindObjectSahSplit(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-SplitBvh::SahSplit SplitBvh::FindSpatialSahSplit(
+SplitBounding::SahSplit SplitBounding::FindSpatialSahSplit(
     const SplitRequest& req, const PrimRefArray refs) const
 {
     // SAH implementation
@@ -483,7 +483,7 @@ SplitBvh::SahSplit SplitBvh::FindSpatialSahSplit(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-bool SplitBvh::SplitPrimRef(const PrimRef& ref, int axis, float split,
+bool SplitBounding::SplitPrimRef(const PrimRef& ref, int axis, float split,
                             PrimRef& leftref, PrimRef& rightref) const
 {
     // Start with left and right refs equal to original ref
@@ -503,7 +503,7 @@ bool SplitBvh::SplitPrimRef(const PrimRef& ref, int axis, float split,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void SplitBvh::SplitPrimRefs(const SahSplit& split, const SplitRequest& req,
+void SplitBounding::SplitPrimRefs(const SahSplit& split, const SplitRequest& req,
                              PrimRefArray refs, int extra_refs)
 {
     // We are going to append new primitives at the end of the array
@@ -527,7 +527,7 @@ void SplitBvh::SplitPrimRefs(const SahSplit& split, const SplitRequest& req,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-int SplitBvh::AllocateNode() {
+int SplitBounding::AllocateNode() {
     if (m_nodecnt - m_num_nodes_archived >= m_num_nodes_for_regular) {
         m_node_archive.push_back(std::move(m_nodes));
         m_num_nodes_archived += m_num_nodes_for_regular;
@@ -538,7 +538,7 @@ int SplitBvh::AllocateNode() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-void SplitBvh::InitNodeAllocator(size_t maxnum)
+void SplitBounding::InitNodeAllocator(size_t maxnum)
 {
     m_node_archive.clear();
     m_nodecnt = 0;
