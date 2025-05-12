@@ -77,4 +77,10 @@ void AObject::SetName(const String& name)
     m_name = name;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+const String& AObject::GetHash(void) const
+{
+    return (m_hash);
+}
+
 } // namespace Ray
