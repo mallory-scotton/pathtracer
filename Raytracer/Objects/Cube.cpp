@@ -10,6 +10,20 @@ namespace Ray::Objects
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+const Cube::ConstructorType& Cube::Constructor =
+    [](const Optional<LibConfig::Setting>& config) -> UniquePtr<IObject>
+{
+    float size = 1.f;
+
+    if (config.has_value())
+    {
+        config->Value("size", size);
+    }
+
+    return (std::make_unique<Objects::Cube>(size));
+};
+
+///////////////////////////////////////////////////////////////////////////////
 Cube::Cube(float size)
     : APrimitiveObject("cube")
     , m_size(size)
