@@ -45,11 +45,11 @@ public:
     Vector<String> materialsName;               //<!
     Vector<Instance> instances;                 //<!
     Vector<Light> lights;                       //<!
-    EnvironmentMap* envMap;                     //<!
+    UniquePtr<EnvironmentMap> envMap;           //<!
     UniquePtr<Camera> camera;                   //<!
     BvhTranslator bvhTranslator;                //<!
     BoundingBox sceneBounds;                    //<!
-    Vector<Texture*> textures;                  //<!
+    Vector<UniquePtr<Texture>> textures;        //<!
     Vector<unsigned char> textureMapsArray;     //<!
     bool initialized;                           //<!
     bool dirty;                                 //<!
@@ -73,7 +73,7 @@ public:
     /// \brief
     ///
     ///////////////////////////////////////////////////////////////////////////
-    ~Scene();
+    virtual ~Scene() = default;
 
 public:
     ///////////////////////////////////////////////////////////////////////////

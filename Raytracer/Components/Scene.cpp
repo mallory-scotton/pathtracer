@@ -34,22 +34,6 @@ Scene::Scene(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-Scene::~Scene()
-{
-    for (int i = 0; i < static_cast<int>(textures.size()); i++)
-    {
-        delete textures[i];
-    }
-
-    textures.clear();
-
-    if (envMap)
-    {
-        delete envMap;
-    }
-};
-
-///////////////////////////////////////////////////////////////////////////////
 int Scene::AddMesh(const Path& filename)
 {
     int id = -1;
@@ -84,17 +68,16 @@ int Scene::AddTexture(const Path& filename)
     }
 
     id = static_cast<int>(textures.size());
-    Texture* texture = new Texture;
+    UniquePtr<Texture> texture = std::make_unique<Texture>();
 
     RAY_TRACE("Loading texture " << filename);
     if (texture->LoadTexture(filename))
     {
-        textures.push_back(texture);
+        textures.push_back(std::move(texture));
     }
     else
     {
         RAY_WARN("Unable to load texture " << filename);
-        delete texture;
         id = -1;
     }
 
@@ -129,12 +112,7 @@ int Scene::getMaterialID(const String& name)
 ///////////////////////////////////////////////////////////////////////////////
 void Scene::AddEnvMap(const Path& filename)
 {
-    if (envMap)
-    {
-        delete envMap;
-    }
-
-    envMap = new EnvironmentMap;
+    envMap = std::make_unique<EnvironmentMap>();
     if (envMap->LoadMap(filename))
     {
         RAY_TRACE("HDR " << filename << " loaded");
@@ -142,8 +120,7 @@ void Scene::AddEnvMap(const Path& filename)
     else
     {
         RAY_WARN("Unable to load HDR " << filename);
-        delete envMap;
-        envMap = nullptr;
+        envMap.reset();
     }
     envMapModified = true;
     dirty = true;

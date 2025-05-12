@@ -211,9 +211,9 @@ void LoadTextures(Scene* scene, tinygltf::Model& gltfModel) {
         tinygltf::Image& image = gltfModel.images[gltfTex.source];
         std::string texName = gltfTex.name;
         if (strcmp(gltfTex.name.c_str(), "") == 0) texName = image.uri;
-        Texture* texture = new Texture(texName, image.image.data(), image.width,
+        UniquePtr<Texture> texture = std::make_unique<Texture>(texName, image.image.data(), image.width,
                                        image.height, image.component);
-        scene->textures.push_back(texture);
+        scene->textures.push_back(std::move(texture));
     }
 }
 
