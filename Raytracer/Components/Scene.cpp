@@ -10,15 +10,12 @@
 #include "Components/Camera.hpp"
 #include "Objects/Mesh.hpp"
 #include "Objects.hpp"
+#include "Factories/PrimitiveFactory.hpp"
 
 namespace Ray
 {
     Scene::~Scene()
     {
-        for (int i = 0; i < objects.size(); i++)
-            delete objects[i];
-        objects.clear();
-
         for (int i = 0; i < textures.size(); i++)
             delete textures[i];
         textures.clear();
@@ -41,8 +38,7 @@ namespace Ray
         id = objects.size();
 
         RAY_TRACE("Loading Model: \"" << filename << "\"");
-        Objects::Mesh* mesh = new Objects::Mesh(filename);
-        objects.push_back(mesh);
+        objects.push_back(std::make_unique<Objects::Mesh>(filename));
 
         return id;
     }
@@ -202,6 +198,15 @@ namespace Ray
 
     void Scene::ProcessScene()
     {
+        PrimitiveFactory& factory = PrimitiveFactory::GetInstance();
+
+        if (factory.HasConstructor("cube"))
+        {
+            RAY_SUCCESS("Factory has constructor for cube");
+            objects.push_back(std::move(factory.Create("cube").value()));
+            instances.push_back(Instance("TEST_CUBE", objects.size() - 1));
+        }
+
         printf("Processing scene data\n");
         createBLAS();
 

@@ -54,7 +54,7 @@ namespace Ray
         Renderer::Options renderOptions;
 
         // Meshes
-        std::vector<IObject*> objects;
+        std::vector<UniquePtr<IObject>> objects;
 
         // Scene Mesh Data 
         std::vector<Indices> vertIndices;
