@@ -199,26 +199,6 @@ namespace Ray
 
     void Scene::ProcessScene()
     {
-        // ###### TEMPORARY
-        PrimitiveFactory& factory = PrimitiveFactory::GetInstance();
-
-        Vector<String> tests = {"cube", "plane", "infinite_plane", "torus", "sphere", "fractal", "cone"};
-
-        for (const auto& prim : tests)
-        {
-            if (factory.HasConstructor(prim))
-            {
-                RAY_SUCCESS("Factory has constructor for " << prim);
-                objects.push_back(std::move(factory.Create(prim).value()));
-                instances.push_back(Instance("TEST_" + Utils::ToUpper(prim), objects.size() - 1));
-            }
-            else
-            {
-                RAY_ERROR("Factory doesn't have constructor for " << prim);
-            }
-        }
-        // ###### TEMPORARY
-
         printf("Processing scene data\n");
         createBLAS();
 
