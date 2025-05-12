@@ -44,6 +44,27 @@ primitives = (
         type = "fractal";
         material = "blue";
         position = { x: 0.0; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "cylinder";
+        material = "blue";
+        position = { x: 5.0; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "cylinder";
+        material = "blue";
+        capped = false;
+        position = { x: 5.0; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "cone";
+        material = "blue";
+        position = { x: -5.0; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "mobius_strip";
+        material = "blue";
+        position = { x: 10.0; y: 1.0; z: 0.0 };
     }
 )
 
