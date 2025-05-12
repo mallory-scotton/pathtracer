@@ -9,7 +9,7 @@
 #include "Components/Scene.h"
 #include "Components/Camera.hpp"
 #include "Objects/Mesh.hpp"
-#include "Objects/Sphere.hpp"
+#include "Objects.hpp"
 
 namespace Ray
 {
@@ -202,9 +202,6 @@ namespace Ray
 
     void Scene::ProcessScene()
     {
-        objects.push_back(new Objects::Sphere());
-        instances.push_back(Instance("TEST", objects.size() - 1));
-
         printf("Processing scene data\n");
         createBLAS();
 
