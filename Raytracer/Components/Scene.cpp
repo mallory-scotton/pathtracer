@@ -11,6 +11,7 @@
 #include "Objects/Mesh.hpp"
 #include "Objects.hpp"
 #include "Factories/PrimitiveFactory.hpp"
+#include "Utils/Utils.hpp"
 
 namespace Ray
 {
@@ -198,14 +199,25 @@ namespace Ray
 
     void Scene::ProcessScene()
     {
+        // ###### TEMPORARY
         PrimitiveFactory& factory = PrimitiveFactory::GetInstance();
 
-        if (factory.HasConstructor("cube"))
+        Vector<String> tests = {"cube", "plane", "infinite_plane", "torus", "sphere", "fractal", "cone"};
+
+        for (const auto& prim : tests)
         {
-            RAY_SUCCESS("Factory has constructor for cube");
-            objects.push_back(std::move(factory.Create("cube").value()));
-            instances.push_back(Instance("TEST_CUBE", objects.size() - 1));
+            if (factory.HasConstructor(prim))
+            {
+                RAY_SUCCESS("Factory has constructor for " << prim);
+                objects.push_back(std::move(factory.Create(prim).value()));
+                instances.push_back(Instance("TEST_" + Utils::ToUpper(prim), objects.size() - 1));
+            }
+            else
+            {
+                RAY_ERROR("Factory doesn't have constructor for " << prim);
+            }
         }
+        // ###### TEMPORARY
 
         printf("Processing scene data\n");
         createBLAS();
