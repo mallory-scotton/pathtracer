@@ -123,7 +123,7 @@ MeshInstanceBuilder& MeshInstanceBuilder::SetScale(const Vec3f& scale)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-bool MeshInstanceBuilder::IDCheck(void)
+bool MeshInstanceBuilder::IDCheck(void) const
 {
     if (m_mesh.objectID == -1)
     {

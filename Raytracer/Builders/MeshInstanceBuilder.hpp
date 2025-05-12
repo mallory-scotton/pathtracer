@@ -137,8 +137,9 @@ public:
     /// \brief
     ///
     /// \return
+    ///
     ///////////////////////////////////////////////////////////////////////////
-    bool IDCheck(void);
+    bool IDCheck(void) const;
 };
 
 } // namespace Ray
