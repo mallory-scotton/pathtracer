@@ -150,7 +150,7 @@ void GuiPlugin::Update(float deltaSeconds)
         }
     }
 
-    if (m_isViewportImageHovered && ctx.scene && ctx.scene->camera)
+    if (m_isViewportImageHovered && ctx.scene->camera)
     {
         bool camera_moved_by_keyboard = false;
         float move_speed_factor = 0.1f;

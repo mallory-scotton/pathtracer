@@ -9,6 +9,7 @@
 namespace Ray
 {
 
+///////////////////////////////////////////////////////////////////////////////
 AObject::AObject(void)
     : m_bvh(std::make_unique<Ray::SplitBvh>(2.0f, 64, 0, 0.001f, 0))
 {}
