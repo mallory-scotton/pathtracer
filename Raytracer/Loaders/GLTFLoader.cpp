@@ -181,7 +181,7 @@ void LoadMeshes(Scene* scene, tinygltf::Model& gltfModel,
                        (indexAccessor.count * indexStride));
             }
 
-            Objects::Mesh* mesh = new Objects::Mesh();
+            UniquePtr<Objects::Mesh> mesh = std::make_unique<Objects::Mesh>();
 
             // Get triangles from vertex indices
             for (int v = 0; v < indices.size(); v++) {
@@ -195,7 +195,7 @@ void LoadMeshes(Scene* scene, tinygltf::Model& gltfModel,
 
             mesh->SetName(gltfMesh.name);
             int sceneMeshId = scene->objects.size();
-            scene->objects.push_back(mesh);
+            scene->objects.push_back(std::move(mesh));
             // Store a mapping for a gltf mesh and the loaded primitive data
             // This is used for creating instances based on the primitive
             int sceneMatIdx = prim.material + scene->materials.size();
