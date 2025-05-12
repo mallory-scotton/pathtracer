@@ -10,6 +10,28 @@ namespace Ray::Objects
 {
 
 ///////////////////////////////////////////////////////////////////////////////
+const Torus::ConstructorType& Torus::Constructor =
+    [](const Optional<LibConfig::Setting>& config) -> UniquePtr<IObject>
+{
+    float mainRadius = 1.0f;
+    float tubeRadius = 0.25f;
+    int mainSegments = 32;
+    int tubeSegments = 16;
+
+    if (config.has_value())
+    {
+        config->Value("mainRadius", mainRadius);
+        config->Value("tubeRadius", tubeRadius);
+        config->Value("mainSegments", mainSegments);
+        config->Value("tubeSegments", tubeSegments);
+    }
+
+    return (std::make_unique<Objects::Torus>(
+        mainRadius, tubeRadius, mainSegments, tubeSegments
+    ));
+};
+
+///////////////////////////////////////////////////////////////////////////////
 Torus::Torus(
     float mainRadius,
     float tubeRadius,
