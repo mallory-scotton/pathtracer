@@ -1,0 +1,1387 @@
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 2;
+    tilewidth = 320;
+    tileheight = 180;
+    envmapfile = "Assets/HDR/sunset.hdr";
+    envmapintensity = 5.0;
+}
+
+meshes = (
+    {
+        file = "Assets/teapot/Mesh050.obj";
+        material = "checker";
+        name = "floor";
+    }
+)
+
+primitives = (
+    {
+        type = "sphere";
+        material = "m0.0_r0.0";
+        position = { x: -12.5; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.0";
+        position = { x: -12.5; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.0";
+        position = { x: -12.5; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.0";
+        position = { x: -12.5; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.0";
+        position = { x: -12.5; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.0";
+        position = { x: -12.5; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.0";
+        position = { x: -12.5; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.0";
+        position = { x: -12.5; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.0";
+        position = { x: -12.5; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.0";
+        position = { x: -12.5; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.0";
+        position = { x: -12.5; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.1";
+        position = { x: -10.0; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.1";
+        position = { x: -10.0; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.1";
+        position = { x: -10.0; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.1";
+        position = { x: -10.0; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.1";
+        position = { x: -10.0; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.1";
+        position = { x: -10.0; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.1";
+        position = { x: -10.0; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.1";
+        position = { x: -10.0; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.1";
+        position = { x: -10.0; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.1";
+        position = { x: -10.0; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.1";
+        position = { x: -10.0; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.2";
+        position = { x: -7.5; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.2";
+        position = { x: -7.5; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.2";
+        position = { x: -7.5; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.2";
+        position = { x: -7.5; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.2";
+        position = { x: -7.5; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.2";
+        position = { x: -7.5; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.2";
+        position = { x: -7.5; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.2";
+        position = { x: -7.5; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.2";
+        position = { x: -7.5; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.2";
+        position = { x: -7.5; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.2";
+        position = { x: -7.5; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.3";
+        position = { x: -5.0; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.3";
+        position = { x: -5.0; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.3";
+        position = { x: -5.0; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.3";
+        position = { x: -5.0; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.3";
+        position = { x: -5.0; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.3";
+        position = { x: -5.0; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.3";
+        position = { x: -5.0; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.3";
+        position = { x: -5.0; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.3";
+        position = { x: -5.0; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.3";
+        position = { x: -5.0; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.3";
+        position = { x: -5.0; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.4";
+        position = { x: -2.5; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.4";
+        position = { x: -2.5; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.4";
+        position = { x: -2.5; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.4";
+        position = { x: -2.5; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.4";
+        position = { x: -2.5; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.4";
+        position = { x: -2.5; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.4";
+        position = { x: -2.5; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.4";
+        position = { x: -2.5; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.4";
+        position = { x: -2.5; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.4";
+        position = { x: -2.5; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.4";
+        position = { x: -2.5; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.5";
+        position = { x: 0.0; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.5";
+        position = { x: 0.0; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.5";
+        position = { x: 0.0; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.5";
+        position = { x: 0.0; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.5";
+        position = { x: 0.0; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.5";
+        position = { x: 0.0; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.5";
+        position = { x: 0.0; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.5";
+        position = { x: 0.0; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.5";
+        position = { x: 0.0; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.5";
+        position = { x: 0.0; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.5";
+        position = { x: 0.0; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.6";
+        position = { x: 2.5; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.6";
+        position = { x: 2.5; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.6";
+        position = { x: 2.5; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.6";
+        position = { x: 2.5; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.6";
+        position = { x: 2.5; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.6";
+        position = { x: 2.5; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.6";
+        position = { x: 2.5; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.6";
+        position = { x: 2.5; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.6";
+        position = { x: 2.5; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.6";
+        position = { x: 2.5; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.6";
+        position = { x: 2.5; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.7";
+        position = { x: 5.0; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.7";
+        position = { x: 5.0; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.7";
+        position = { x: 5.0; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.7";
+        position = { x: 5.0; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.7";
+        position = { x: 5.0; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.7";
+        position = { x: 5.0; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.7";
+        position = { x: 5.0; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.7";
+        position = { x: 5.0; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.7";
+        position = { x: 5.0; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.7";
+        position = { x: 5.0; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.7";
+        position = { x: 5.0; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.8";
+        position = { x: 7.5; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.8";
+        position = { x: 7.5; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.8";
+        position = { x: 7.5; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.8";
+        position = { x: 7.5; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.8";
+        position = { x: 7.5; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.8";
+        position = { x: 7.5; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.8";
+        position = { x: 7.5; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.8";
+        position = { x: 7.5; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.8";
+        position = { x: 7.5; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.8";
+        position = { x: 7.5; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.8";
+        position = { x: 7.5; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r0.9";
+        position = { x: 10.0; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r0.9";
+        position = { x: 10.0; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r0.9";
+        position = { x: 10.0; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r0.9";
+        position = { x: 10.0; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r0.9";
+        position = { x: 10.0; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r0.9";
+        position = { x: 10.0; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r0.9";
+        position = { x: 10.0; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r0.9";
+        position = { x: 10.0; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r0.9";
+        position = { x: 10.0; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r0.9";
+        position = { x: 10.0; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r0.9";
+        position = { x: 10.0; y: 1.0; z: 12.5 };
+    },
+    ##############################################
+    {
+        type = "sphere";
+        material = "m0.0_r1.0";
+        position = { x: 12.5; y: 1.0; z: -12.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.1_r1.0";
+        position = { x: 12.5; y: 1.0; z: -10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.2_r1.0";
+        position = { x: 12.5; y: 1.0; z: -7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.3_r1.0";
+        position = { x: 12.5; y: 1.0; z: -5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.4_r1.0";
+        position = { x: 12.5; y: 1.0; z: -2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.5_r1.0";
+        position = { x: 12.5; y: 1.0; z: 0.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.6_r1.0";
+        position = { x: 12.5; y: 1.0; z: 2.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.7_r1.0";
+        position = { x: 12.5; y: 1.0; z: 5.0 };
+    },
+    {
+        type = "sphere";
+        material = "m0.8_r1.0";
+        position = { x: 12.5; y: 1.0; z: 7.5 };
+    },
+    {
+        type = "sphere";
+        material = "m0.9_r1.0";
+        position = { x: 12.5; y: 1.0; z: 10.0 };
+    },
+    {
+        type = "sphere";
+        material = "m1.0_r1.0";
+        position = { x: 12.5; y: 1.0; z: 12.5 };
+    }
+)
+
+materials = (
+    {
+        name = "checker";
+        albedotexture = "Assets/teapot/checker.png";
+        roughness = 0.5;
+    },
+    {
+        name = "m0.0_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.1_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.2_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.3_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.4_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.5_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.6_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.7_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.8_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.9_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.0;
+    },
+    {
+        name = "m1.0_r0.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.0;
+    },
+    {
+        name = "m0.0_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.1_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.2_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.3_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.4_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.5_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.6_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.7_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.8_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.9_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.1;
+    },
+    {
+        name = "m1.0_r0.1";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.1;
+    },
+    {
+        name = "m0.0_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.1_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.2_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.3_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.4_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.5_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.6_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.7_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.8_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.9_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.2;
+    },
+    {
+        name = "m1.0_r0.2";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.2;
+    },
+    {
+        name = "m0.0_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.1_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.2_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.3_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.4_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.5_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.6_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.7_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.8_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.9_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.3;
+    },
+    {
+        name = "m1.0_r0.3";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.3;
+    },
+    {
+        name = "m0.0_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.1_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.2_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.3_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.4_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.5_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.6_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.7_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.8_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.9_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.4;
+    },
+    {
+        name = "m1.0_r0.4";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.4;
+    },
+    {
+        name = "m0.0_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.1_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.2_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.3_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.4_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.5_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.6_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.7_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.8_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.9_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.5;
+    },
+    {
+        name = "m1.0_r0.5";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.5;
+    },
+    {
+        name = "m0.0_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.1_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.2_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.3_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.4_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.5_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.6_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.7_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.8_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.9_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.6;
+    },
+    {
+        name = "m1.0_r0.6";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.6;
+    },
+    {
+        name = "m0.0_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.1_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.2_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.3_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.4_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.5_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.6_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.7_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.8_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.9_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.7;
+    },
+    {
+        name = "m1.0_r0.7";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.7;
+    },
+    {
+        name = "m0.0_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.1_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.2_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.3_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.4_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.5_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.6_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.7_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.8_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.9_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.8;
+    },
+    {
+        name = "m1.0_r0.8";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.8;
+    },
+    {
+        name = "m0.0_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.1_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.2_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.3_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.4_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.5_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.6_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.7_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.8_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.9_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 0.9;
+    },
+    {
+        name = "m1.0_r0.9";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 0.9;
+    },
+    {
+        name = "m0.0_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.0;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.1_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.1;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.2_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.2;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.3_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.3;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.4_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.4;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.5_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.5;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.6_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.6;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.7_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.7;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.8_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.8;
+        roughness = 1.0;
+    },
+    {
+        name = "m0.9_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 0.9;
+        roughness = 1.0;
+    },
+    {
+        name = "m1.0_r1.0";
+        color = { x: 0.0; y: 0.29; z: 0.88; };
+        metallic = 1.0;
+        roughness = 1.0;
+    }
+)
+
+camera:
+{
+    position = {
+        x: 20.0;
+        y: 12.0;
+        z: 0.0;
+    };
+    lookat = {
+        x: -0.953633;
+        y: 2.17253;
+        z: -0.0972613;
+    };
+    fov = 60.0;
+}
