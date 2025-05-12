@@ -28,8 +28,8 @@ void BoundingTranslator::ProcessBLAS(std::vector<UniquePtr<IObject>>& meshes)
 {
     int nodeCnt = 0;
 
-    for (size_t i = 0; i < meshes.size(); i++)
-        nodeCnt += meshes[i]->GetBVH()->m_nodecnt;
+    // for (size_t i = 0; i < meshes.size(); i++)
+        // nodeCnt += meshes[i]->GetBVH()->m_nodecnt;
     topLevelIndex = nodeCnt;
 
     // reserve space for top level nodes
@@ -44,9 +44,9 @@ void BoundingTranslator::ProcessBLAS(std::vector<UniquePtr<IObject>>& meshes)
         curNode = bvhRootIndex;
 
         bvhRootStartIndices.push_back(bvhRootIndex);
-        bvhRootIndex += mesh->GetBVH()->m_nodecnt;
+        // bvhRootIndex += mesh->GetBVH()->m_nodecnt;
 
-        ProcessBLASNodes(mesh->GetBVH()->m_root_idx, *mesh->GetBVH());
+        // ProcessBLASNodes(mesh->GetBVH()->m_root_idx, *mesh->GetBVH());
         curTriIndex += mesh->GetBVH()->GetNumIndices();
     }
 }
