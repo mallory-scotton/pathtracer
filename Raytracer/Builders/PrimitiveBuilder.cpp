@@ -69,9 +69,11 @@ PrimitiveBuilder& PrimitiveBuilder::FromConfiguration(
             return (*this);
         }
 
+        UniquePtr<IObject> object = factory.Create(type, config).value();
+
         for (Uint64 i = 0; i < ctx.scene->objects.size(); i++)
         {
-            if (ctx.scene->objects[i]->GetName() == type)
+            if (ctx.scene->objects[i]->GetHash() == object->GetHash())
             {
                 m_instance.objectID = static_cast<int>(i);
             }
@@ -80,9 +82,11 @@ PrimitiveBuilder& PrimitiveBuilder::FromConfiguration(
         if (m_instance.objectID == -1)
         {
             m_instance.objectID = static_cast<int>(ctx.scene->objects.size());
-            ctx.scene->objects.push_back(std::move(
-                factory.Create(type, config).value()
-            ));
+            ctx.scene->objects.push_back(std::move(object));
+        }
+        else
+        {
+            object.reset();
         }
 
         if (!name.empty() && name != "none")
