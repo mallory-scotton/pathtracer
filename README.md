@@ -90,6 +90,9 @@ This project builds upon knowledge gained in core computer science fundamentals 
 
 Here are some stunning example renders produced by the raytracer, showcasing its capabilities across different scenes and lighting conditions:
 
+![](./Screenshots/pathtracer.gif)
+*Demonstration of the pathtracer*
+
 ![](./Screenshots/dream.png)
 *Dream scene with complex lighting and materials*
 
