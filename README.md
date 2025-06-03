@@ -86,6 +86,40 @@ This project builds upon knowledge gained in core computer science fundamentals 
     - Cross-platform window management through `SDL2` or `SFML`
     - Easily extendable for custom functionality
 
+## 🎨 Rendering Gallery
+
+Here are some stunning example renders produced by the raytracer, showcasing its capabilities across different scenes and lighting conditions:
+
+![](./Screenshots/dream.png)
+*Dream scene with complex lighting and materials*
+
+![](./Screenshots/bistro.png)
+*Architectural scene with global illumination*
+
+![](./Screenshots/jinx.png)
+*Character rendering with subsurface scattering*
+
+![](./Screenshots/hyperion.png)
+*Complex geometry with volumetric lighting*
+
+![](./Screenshots/dragon.png)
+*High-detail mesh rendering with metallic materials*
+
+![](./Screenshots/mustang.png)
+*Automotive rendering with reflective surfaces*
+
+![](./Screenshots/still_life.png)
+*Still life with diverse material properties*
+
+![](./Screenshots/ramen.png)
+*Food scene with translucent materials*
+
+![](./Screenshots/material.png)
+*Material showcase demonstrating PBR capabilities*
+
+![](./Screenshots/p1.png)
+*Abstract geometry with procedural textures*
+
 ## 🛠️ Installation
 
 The raytracer project uses a Makefile-based build system and requires several external libraries. Follow the instructions below to set up your development environment properly.
@@ -98,35 +132,374 @@ The raytracer project uses a Makefile-based build system and requires several ex
 
 ## ⚙️ Usage
 
-TODO...
+### Basic Command Line Usage
+
+The raytracer can be executed in several ways:
+
+```bash
+# Run with default scene (first .scene file found in Scenes/ directory)
+./raytracer
+
+# Run with a specific scene file
+./raytracer path/to/scene.scene
+
+# Examples with provided scenes
+./raytracer Scenes/Primitives.scene
+./raytracer Scenes/Dragon.scene
+./raytracer Scenes/Dream.scene
+```
+
+### Scene File Format
+
+Scenes are defined using LibConfig++ syntax in `.scene` files. The format supports hierarchical configuration with the following main sections:
+
+#### Renderer Configuration
+
+```libconfig
+renderer:
+{
+    resolution = {
+        x: 1280;
+        y: 720;
+    };
+    maxdepth = 8;              // Maximum ray bounce depth
+    tilewidth = 320;           // Tile-based rendering width
+    tileheight = 180;          // Tile-based rendering height
+    envmapfile = "Assets/HDR/sunset.hdr";  // Environment map
+    envmapintensity = 5.0;     // Environment lighting intensity
+    enabledenoiser = true;     // OpenImageDenoise integration
+    maxspp = 1024;            // Maximum samples per pixel
+};
+```
+
+For comprehensive renderer configuration options, see the [Configuration](#-configuration) section.
+
+#### Camera Setup
+
+```libconfig
+camera:
+{
+    position = { x: 0.0; y: 5.0; z: 10.0 };
+    target = { x: 0.0; y: 0.0; z: 0.0 };
+    up = { x: 0.0; y: 1.0; z: 0.0 };
+    fov = 45.0;               // Field of view in degrees
+    aperture = 0.0;           // Depth of field aperture
+    focaldist = 10.0;         // Focal distance
+};
+```
+
+#### Material Definitions
+
+```libconfig
+materials = (
+    {
+        name = "metal";
+        type = "PBR";
+        albedo = { r: 0.7; g: 0.7; b: 0.7 };
+        metallic = 0.9;
+        roughness = 0.1;
+        emission = { r: 0.0; g: 0.0; b: 0.0 };
+    },
+    {
+        name = "glass";
+        type = "PBR";
+        albedo = { r: 1.0; g: 1.0; b: 1.0 };
+        metallic = 0.0;
+        roughness = 0.0;
+        transmission = 1.0;
+        ior = 1.5;
+    }
+);
+```
+
+#### Primitive Objects
+
+```libconfig
+primitives = (
+    {
+        type = "sphere";
+        material = "metal";
+        position = { x: 0.0; y: 1.0; z: 0.0 };
+        radius = 1.0;
+    },
+    {
+        type = "cube";
+        material = "glass";
+        position = { x: 2.0; y: 1.0; z: 0.0 };
+        scale = { x: 1.0; y: 1.0; z: 1.0 };
+    }
+);
+```
+
+#### Mesh Loading
+
+```libconfig
+meshes = (
+    {
+        file = "Assets/dragon/dragon.obj";
+        material = "metal";
+        name = "dragon";
+        position = { x: 0.0; y: 0.0; z: 0.0 };
+        rotation = { x: 0.0; y: 45.0; z: 0.0 };
+        scale = { x: 1.0; y: 1.0; z: 1.0 };
+    }
+);
+```
+
+#### Lighting Setup
+
+```libconfig
+lights = (
+    {
+        type = "sphere";
+        position = { x: 0.0; y: 10.0; z: 0.0 };
+        color = { r: 1.0; g: 1.0; b: 1.0 };
+        intensity = 100.0;
+        radius = 1.0;
+    },
+    {
+        type = "rect";
+        position = { x: 0.0; y: 5.0; z: -5.0 };
+        color = { r: 1.0; g: 0.8; b: 0.6 };
+        intensity = 50.0;
+        width = 2.0;
+        height = 2.0;
+    }
+);
+```
+
+### Plugin System Usage
+
+The raytracer uses a dynamic plugin architecture that loads `.rplugin` files from the `Plugins/` directory:
+
+#### Available Plugin Types
+
+- **Windowing Plugins**: `SDL2.rplugin`, `SFML.rplugin` - Handle window management and input
+- **GUI Plugins**: `Gui.rplugin` - Provide ImGui-based user interface
+- **Export Plugins**: Custom export functionality for different formats
+- **Script Plugins**: Runtime scripting capabilities
+
+#### Plugin Loading
+
+Plugins are automatically discovered and loaded at startup. The system requires at least one windowing plugin and optionally supports GUI plugins for interactive control.
+
+### Interactive Controls
+
+When using GUI plugins, the raytracer provides:
+
+- **Real-time scene parameter adjustment**
+- **Camera controls** (WASD movement, mouse look)
+- **Material property tweaking**
+- **Lighting parameter modification**
+- **Render settings adjustment**
+- **Scene loading/switching**
+
+### Export Options
+
+The raytracer supports multiple output formats:
+
+- **PNG**: High-quality image export
+- **PPM**: Portable Pixmap format
+- **HDR**: High Dynamic Range output
+- **Real-time display**: Direct OpenGL framebuffer rendering
+
+### Performance Tuning
+
+Key parameters for optimization:
+
+- **Tile size**: Adjust `tilewidth` and `tileheight` for your GPU memory
+- **Max depth**: Balance quality vs. performance with ray bounce limits
+- **Samples per pixel**: Control noise vs. render time trade-off
+- **Denoiser**: Enable OpenImageDenoise for faster convergence
+- **BVH settings**: Automatic optimization for scene complexity
 
 ## 🧩 Architecture
 
-TODO...
+The raytracer implements a modular, plugin-based architecture designed for extensibility and performance. The system is structured around several core subsystems that work together to provide a complete rendering solution.
 
-## 🎨 Rendering Examples
+### Core System Design
 
-Here are some example renders produced by the raytracer:
+#### Application Entry Point
 
-![](./Screenshots/dream.png)
+The main application (`Main.cpp`) serves as a lightweight entry point that:
+- Initializes the core `Raytracer` class with command-line arguments
+- Handles top-level exception management
+- Provides clean shutdown mechanisms
 
-![](./Screenshots/bistro.png)
+#### Context Management
 
-![](./Screenshots/jinx.png)
+The `Context` singleton (`Core/Context.cpp`) acts as the central coordination hub:
+- **Resource Management**: Manages shader paths, asset directories, and scene files
+- **OpenGL Integration**: Handles GL3W initialization and OpenGL context setup
+- **Plugin Coordination**: Maintains plugin state and GUI availability flags
+- **Scene Discovery**: Automatically discovers and catalogs available scene files
+- **Renderer Lifecycle**: Manages renderer instantiation and cleanup
 
-![](./Screenshots/hyperion.png)
+#### Core Raytracer Loop
 
-![](./Screenshots/p1.png)
+The main `Raytracer` class (`Core/Raytracer.cpp`) implements the primary execution loop:
+- **Plugin Discovery**: Scans `./Plugins/` directory for `.rplugin` files
+- **Dynamic Loading**: Uses `DynamicLibrary` wrapper for plugin management
+- **Plugin Validation**: Ensures exactly one windowing plugin is loaded
+- **Render Loop**: Coordinates plugin updates, rendering, and presentation
+- **Frame Timing**: Provides delta time for animation and performance metrics
 
-![](./Screenshots/dragon.png)
+### Plugin Architecture
 
-![](./Screenshots/mustang.png)
+#### Plugin Interface
 
-![](./Screenshots/still_life.png)
+All plugins implement the `IPlugin` interface (`Interfaces/IPlugin.hpp`):
 
-![](./Screenshots/ramen.png)
+```cpp
+enum class Type {
+    WINDOWING,  // Window management and input handling
+    GUI,        // User interface overlays
+    EXPORTER,   // Custom export functionality
+    SCRIPTS     // Runtime scripting capabilities
+};
+```
 
-![](./Screenshots/material.png)
+#### Plugin Types
+
+**Windowing Plugins** (`Plugins/SDL2/`, `Plugins/SFML/`):
+- Handle window creation and event management
+- Provide input handling (keyboard, mouse)
+- Manage OpenGL context creation
+- Support multiple backend implementations
+
+**GUI Plugins** (`Plugins/Gui/`):
+- Implement ImGui-based user interfaces
+- Provide real-time parameter adjustment
+- Support scene editing and material tweaking
+- Enable interactive camera controls
+
+**Custom Plugins** (Extensible):
+- Export functionality for various formats
+- Scripting integration for automated workflows
+- Custom rendering passes or post-processing
+
+### Rendering Pipeline
+
+#### GPU-Based Path Tracing
+
+The rendering system (`Core/Renderer.cpp`) implements a comprehensive GPU path tracer:
+
+**Shader Organization**:
+- `Stages/`: Vertex and fragment shader stages
+- `Core/`: Main ray tracing and path integration logic
+- `Intersection/`: Primitive and mesh intersection routines  
+- `Materials/`: Disney BSDF and material evaluation
+- `Lighting/`: Analytic light sampling and environment mapping
+
+**Acceleration Structures**:
+- **Two-Level BVH**: Instance-level and primitive-level optimization
+- **GPU-Optimized**: Custom BVH layout for shader efficiency
+- **Dynamic Rebuilding**: Supports animated and modified scenes
+
+#### Tile-Based Rendering
+
+The system implements efficient tile-based rendering:
+- **Memory Optimization**: Reduces GPU memory pressure
+- **Progressive Refinement**: Enables incremental quality improvement
+- **Load Balancing**: Distributes work across GPU compute units
+
+#### Denoising Integration
+
+OpenImageDenoise integration provides:
+- **AI-Accelerated Denoising**: Reduces required samples per pixel
+- **Temporal Consistency**: Frame-to-frame stability
+- **Quality/Performance Trade-offs**: Configurable denoising strength
+
+### Scene Management
+
+#### Scene Loading System
+
+The `Loader` subsystem (`Loaders/Loader.cpp`) provides:
+- **LibConfig++ Integration**: Hierarchical scene file parsing
+- **Asset Management**: Texture, mesh, and material loading
+- **GLTF/GLB Support**: Modern asset pipeline compatibility
+- **OBJ Support**: Legacy mesh format compatibility
+
+#### Scene Representation
+
+Scenes are structured using several key components:
+
+**Scene Graph** (`Components/Scene.hpp`):
+- Hierarchical object organization
+- Transform inheritance and instancing
+- Material assignment and management
+- Light distribution and organization
+
+**Asset Pipeline**:
+- **Texture Arrays**: Efficient GPU texture management
+- **Mesh Buffers**: Optimized vertex and index storage
+- **Material Database**: Centralized material parameter storage
+- **Instance Management**: Efficient object duplication and variation
+
+### Builder Pattern Implementation
+
+The system uses builder patterns for complex object construction:
+
+- **CameraBuilder** (`Builders/CameraBuilder.hpp`): Camera parameter construction
+- **LightBuilder** (`Builders/LightBuilder.hpp`): Lighting setup and validation
+- **MaterialBuilder** (`Builders/MaterialBuilder.hpp`): Material property management
+- **MeshInstanceBuilder** (`Builders/MeshInstanceBuilder.hpp`): Mesh instantiation
+- **PrimitiveBuilder** (`Builders/PrimitiveBuilder.hpp`): Primitive object creation
+- **RendererOptionsBuilder** (`Builders/RendererOptionsBuilder.hpp`): Render settings
+
+### Memory Management
+
+#### GPU Memory Architecture
+
+The system carefully manages GPU resources:
+- **Texture Arrays**: Consolidated texture storage for efficient binding
+- **Buffer Objects**: Optimized vertex, index, and uniform buffer management
+- **Frame Buffers**: Efficient render target management and swapping
+
+#### CPU-GPU Synchronization
+
+Careful synchronization ensures:
+- **Coherent State**: Scene modifications are properly synchronized
+- **Efficient Transfers**: Minimizes expensive CPU-GPU memory transfers
+- **Resource Lifecycle**: Proper cleanup and resource management
+
+### Configuration System
+
+#### LibConfig++ Integration
+
+The configuration system provides:
+- **Hierarchical Structure**: Nested configuration objects
+- **Type Safety**: Compile-time type checking for configuration values
+- **Error Handling**: Comprehensive parsing error reporting
+- **Flexibility**: Support for arrays, objects, and primitive types
+
+#### Runtime Configuration
+
+Dynamic configuration support includes:
+- **Hot Reloading**: Runtime scene file reloading
+- **Parameter Tweaking**: Live adjustment of render parameters
+- **Plugin Configuration**: Plugin-specific settings management
+
+### Build System Architecture
+
+#### Makefile-Based Build
+
+The build system (`Makefile`) provides:
+- **Modular Compilation**: Separate compilation of core and plugins
+- **Dependency Management**: Automatic dependency resolution
+- **Cross-Platform Support**: Linux, macOS, and Windows compatibility
+- **Plugin Building**: Independent plugin compilation and linking
+
+#### External Dependencies
+
+Careful integration of external libraries:
+- **OpenGL**: Graphics API abstraction and loading
+- **ImGui**: Immediate mode GUI integration
+- **OpenImageDenoise**: AI denoising integration
+- **LibConfig++**: Configuration file parsing
+- **SDL2/SFML**: Window management abstraction
+
+This architecture provides a robust foundation for advanced ray tracing while maintaining extensibility and performance. The modular design allows for easy addition of new features, rendering techniques, and export formats without disrupting the core system.
 
 ## 📚 Dependencies
 
@@ -163,7 +536,7 @@ sudo dnf install SDL2-devel SFML-devel glew-devel libconfig-devel openimagedenoi
 brew install sdl2 sfml glew libconfig openimagedenoise
 ```
 
-### Wwindows (using vcpkg)
+### Windows (using vcpkg)
 
 ```bash
 vcpkg install sdl2 sfml glew libconfig openimagedenoise
@@ -210,7 +583,152 @@ If you encounter build issues:
 
 ## 🔧 Configuration
 
-TODO...
+The raytracer offers extensive configuration options through scene files, command-line parameters, and runtime adjustments.
+
+### Scene File Configuration
+
+Scene files use LibConfig++ syntax and support comprehensive customization:
+
+#### Advanced Renderer Settings
+
+```libconfig
+renderer:
+{
+    // Resolution and Quality
+    resolution = { x: 1920; y: 1080; };
+    windowResolution = { x: 1280; y: 720; };
+    independentRenderSize = true;
+    
+    // Ray Tracing Parameters
+    maxdepth = 12;              // Maximum ray bounce depth
+    maxspp = 2048;             // Maximum samples per pixel (-1 for infinite)
+    RRDepth = 3;               // Russian Roulette depth threshold
+    enableRR = true;           // Enable Russian Roulette optimization
+    
+    // Tile-Based Rendering
+    tilewidth = 256;           // Rendering tile width
+    tileheight = 256;          // Rendering tile height
+    
+    // Environment and Lighting
+    envmapfile = "Assets/HDR/sunset.hdr";
+    envmapintensity = 3.0;
+    envmaprot = 0.0;           // Environment map rotation (degrees)
+    enableEnvMap = true;
+    enableUniformLight = false;
+    uniformLightCol = { r: 0.3; g: 0.3; b: 0.3; };
+    hideEmitters = false;
+    
+    // Background Settings
+    enableBackground = true;
+    transparentBackground = false;
+    backgroundCol = { r: 0.0; g: 0.0; b: 0.0; };
+    
+    // Post-Processing
+    enableDenoiser = true;
+    denoiserFrameCnt = 30;     // Frames to accumulate before denoising
+    enableTonemap = true;
+    enableAces = true;         // ACES tone mapping
+    simpleAcesFit = false;
+    
+    // Material and Rendering Features
+    enableRoughnessMollification = false;
+    roughnessMollificationAmt = 0.0;
+    enableVolumeMIS = false;
+    openglNormalMap = true;
+    
+    // Texture Management
+    texArrayWidth = 4096;      // Texture array dimensions
+    texArrayHeight = 4096;
+};
+```
+
+#### Camera Configuration Options
+
+```libconfig
+camera:
+{
+    // Basic Positioning
+    position = { x: 0.0; y: 5.0; z: 15.0; };
+    target = { x: 0.0; y: 0.0; z: 0.0; };
+    up = { x: 0.0; y: 1.0; z: 0.0; };
+    
+    // Lens Properties
+    fov = 35.0;               // Field of view (degrees)
+    aperture = 0.1;           // Depth of field aperture
+    focaldist = 15.0;         // Focal distance
+    
+    // Animation (optional)
+    animated = false;
+    keyframes = (
+        { time: 0.0; position: { x: 0.0; y: 5.0; z: 15.0; }; },
+        { time: 5.0; position: { x: 10.0; y: 5.0; z: 10.0; }; }
+    );
+};
+```
+
+### Runtime Configuration
+
+When GUI plugins are loaded, many parameters can be adjusted in real-time:
+
+#### Render Settings Panel
+- **Quality Controls**: Samples per pixel, max depth, tile size
+- **Performance Toggles**: Russian Roulette, denoising, tone mapping
+- **Environment Settings**: HDR environment maps, lighting intensity
+
+#### Scene Editor
+- **Object Manipulation**: Position, rotation, scale transforms
+- **Material Editor**: PBR parameters, texture assignments
+- **Lighting Controls**: Light intensity, color, positioning
+
+#### Camera Controls
+- **Interactive Movement**: WASD keys, mouse look
+- **Focus Controls**: Aperture and focal distance adjustment
+- **Animation Timeline**: Keyframe editing and playback
+
+### Command Line Options
+
+```bash
+# Basic usage with scene file
+./raytracer [scene_file.scene]
+
+# Environment variables for paths
+RAY_SHADER_PATH=./custom_shaders ./raytracer
+RAY_ASSETS_PATH=./custom_assets ./raytracer
+RAY_SCENES_PATH=./custom_scenes ./raytracer
+```
+
+### Performance Optimization Guidelines
+
+#### GPU Memory Optimization
+- **Tile Size**: Larger tiles (512x512) for high-end GPUs, smaller (128x128) for limited memory
+- **Texture Arrays**: Reduce `texArrayWidth/Height` if experiencing memory issues
+- **Max Depth**: Start with 8-12 bounces, adjust based on scene complexity
+
+#### Quality vs Speed Trade-offs
+- **Denoising**: Enable for faster convergence at lower sample counts
+- **Russian Roulette**: Improves performance in complex scenes
+- **Environment Mapping**: Disable for faster rendering when not needed
+
+#### Scene-Specific Settings
+- **Interior Scenes**: Higher max depth (12-16), enable uniform lighting
+- **Exterior Scenes**: Medium depth (8-12), strong environment mapping
+- **Material Studies**: Lower depth (4-8), focus on direct lighting
+
+### Plugin Configuration
+
+Plugins can be configured through their respective configuration files:
+
+#### GUI Plugin Settings
+- **Interface Layout**: Panel positioning and sizing
+- **Update Frequency**: Real-time vs. on-demand updates
+- **Export Options**: Image format preferences
+
+#### Windowing Plugin Options
+- **Input Mapping**: Custom key bindings
+- **Display Settings**: Fullscreen, VSync, multi-monitor support
+- **Performance Metrics**: Frame time display, GPU utilization
+
+This flexible configuration system allows the raytracer to adapt to various hardware configurations and rendering requirements, from real-time preview to high-quality final renders.
 
 ## 📝 License
 
